@@ -49,6 +49,39 @@ export default async function AdminDashboardPage() {
   // 4. Leads nuevos
   const newLeads = await prisma.lead.count();
 
+  // 5. Visitas de los últimos 7 días
+  const startOf7DaysAgo = new Date(startOfToday.getTime() - 6 * 24 * 60 * 60 * 1000);
+  const visits = await prisma.visita.findMany({
+    where: {
+      fecha: {
+        gte: startOf7DaysAgo,
+      },
+    },
+    select: {
+      fecha: true,
+    },
+  });
+
+  // Agrupar visitas por día
+  const visitsByDay: Record<string, number> = {};
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(startOf7DaysAgo.getTime() + i * 24 * 60 * 60 * 1000);
+    const dayString = day.toLocaleDateString("es-MX", { weekday: "short", day: "numeric" });
+    visitsByDay[dayString] = 0;
+  }
+
+  visits.forEach((v) => {
+    const dayString = new Date(v.fecha).toLocaleDateString("es-MX", { weekday: "short", day: "numeric" });
+    if (visitsByDay[dayString] !== undefined) {
+      visitsByDay[dayString]++;
+    }
+  });
+
+  const chartData = Object.entries(visitsByDay).map(([day, count]) => ({
+    day,
+    count,
+  }));
+
   // Load recent events (next 5 upcoming events)
   const upcomingEvents = await prisma.pedido.findMany({
     where: {
@@ -172,7 +205,43 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Lists Section */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Card: Analytics Chart */}
+        <Card className="border-slate-900 bg-slate-900/20 text-slate-100">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-violet-400" />
+              Visitas Diarias
+            </CardTitle>
+            <CardDescription className="text-slate-400">
+              Visualizaciones de invitaciones en los últimos 7 días
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <div className="flex h-44 items-end justify-between gap-3 pt-6 px-2">
+              {chartData.map((data) => {
+                const maxVal = Math.max(...chartData.map((d) => d.count), 1);
+                const heightPercent = Math.round((data.count / maxVal) * 100);
+                return (
+                  <div key={data.day} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                    <span className="text-2xs font-semibold text-violet-400 font-mono transition-opacity">
+                      {data.count}
+                    </span>
+                    <div 
+                      style={{ height: `${Math.max(4, heightPercent * 0.8)}%` }}
+                      className="w-full bg-gradient-to-t from-violet-600 to-indigo-500 rounded-t-md hover:from-violet-500 hover:to-indigo-400 transition-all duration-300 shadow-lg shadow-violet-500/10 cursor-pointer"
+                      title={`${data.count} visitas`}
+                    />
+                    <span className="text-[10px] text-slate-500 font-mono mt-1 whitespace-nowrap">
+                      {data.day}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Upcoming events list */}
         <Card className="border-slate-900 bg-slate-900/20 text-slate-100">
           <CardHeader>

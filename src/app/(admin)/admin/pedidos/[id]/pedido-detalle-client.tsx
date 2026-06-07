@@ -40,7 +40,12 @@ const pagoSchema = z.object({
   notas: z.string().optional().nullable(),
 });
 
-type PedidoFull = Pedido & { cliente: Cliente; pagos: Pago[]; rsvps: RSVP[] };
+type PedidoFull = Pedido & { 
+  cliente: Cliente; 
+  pagos: Pago[]; 
+  rsvps: RSVP[]; 
+  visitas: { id: string }[];
+};
 
 interface PedidoDetalleClientProps {
   pedido: PedidoFull;
@@ -322,6 +327,12 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                 ) : (
                   <p className="text-sm font-semibold text-slate-500 italic">No publicada aún</p>
                 )}
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-xs text-slate-500 font-medium uppercase">Visitas Registradas</p>
+                <p className="text-sm font-semibold text-white">
+                  {pedido.visitas?.length || 0} {pedido.visitas?.length === 1 ? "visita" : "visitas"}
+                </p>
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <p className="text-xs text-slate-500 font-medium uppercase">Notas / Observaciones</p>

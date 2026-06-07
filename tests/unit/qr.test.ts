@@ -31,6 +31,6 @@ describe("QR Code & Cloudinary Unit Tests", () => {
   it("debe subir un buffer a Cloudinary y retornar la URL segura", async () => {
     const mockBuffer = Buffer.from("fake-qr-buffer-data");
     const secureUrl = await uploadToCloudinary(mockBuffer, "test-folder");
-    expect(secureUrl).toBe("https://res.cloudinary.com/demo/image/upload/v123456/invitaciones/qr.png");
+    expect(secureUrl).toBe("https://res.cloudinary.com/demo/image/upload/f_auto,q_auto/v123456/invitaciones/qr.png");
   });
 });

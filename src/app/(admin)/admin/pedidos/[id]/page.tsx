@@ -27,6 +27,11 @@ export default async function PedidoDetallePage({ params }: PedidoDetallePagePro
           createdAt: "desc",
         },
       },
+      visitas: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
 

@@ -10,13 +10,23 @@ export interface ActionResult<T> {
   error?: string;
 }
 
-const pedidoSchema = z.object({
+export const pedidoSchema = z.object({
   clienteId: z.string().min(1, "El cliente es requerido"),
   tipoEvento: z.enum(["boda", "xv", "baby_shower", "cumpleanos"], {
     message: "El tipo de evento no es válido",
   }),
-  fechaEvento: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "La fecha del evento no es válida",
+  fechaEvento: z.string().refine((val) => {
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return false;
+    
+    // Timezone-agnostic calendar date comparison
+    const inputDate = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    const today = new Date();
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    return inputDate >= todayDate;
+  }, {
+    message: "La fecha del evento no puede ser anterior al día de hoy",
   }),
   template: z.enum(["boda-elegante", "xv-moderno", "baby-shower", "cumpleanos-fiesta"], {
     message: "La plantilla no es válida",

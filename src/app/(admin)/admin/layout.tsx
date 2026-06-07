@@ -10,7 +10,8 @@ import {
   Settings, 
   LogOut, 
   Menu,
-  Sparkles
+  Sparkles,
+  Mail
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ const sidebarItems: SidebarItem[] = [
   { name: "Panel Control", href: "/admin", icon: LayoutDashboard },
   { name: "Clientes", href: "/admin/clientes", icon: Users },
   { name: "Pedidos", href: "/admin/pedidos", icon: FileText },
+  { name: "Leads", href: "/admin/leads", icon: Mail },
   { name: "Configuración", href: "/admin/configuracion", icon: Settings },
 ];
 

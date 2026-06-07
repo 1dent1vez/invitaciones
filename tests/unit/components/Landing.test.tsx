@@ -1,10 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import LandingPage from "@/app/(public)/page";
 import { describe, it, expect } from "vitest";
+import { ToastProvider } from "@/components/ui/toast";
 
 describe("LandingPage Component", () => {
   it("renderiza la landing page correctamente", () => {
-    render(<LandingPage />);
+    render(
+      <ToastProvider>
+        <LandingPage />
+      </ToastProvider>
+    );
     
     // Verificar que el título principal de la marca existe
     const brandTitle = screen.getAllByText(/Kilo Invitaciones/i);
@@ -16,7 +21,11 @@ describe("LandingPage Component", () => {
   });
 
   it("muestra las secciones clave: características, ejemplos y precios", () => {
-    render(<LandingPage />);
+    render(
+      <ToastProvider>
+        <LandingPage />
+      </ToastProvider>
+    );
 
     // Verificar características
     expect(screen.getByText(/100% Responsivo/i)).toBeInTheDocument();

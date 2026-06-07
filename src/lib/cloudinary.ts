@@ -20,7 +20,11 @@ export async function uploadToCloudinary(
         if (error) {
           reject(error);
         } else if (result) {
-          resolve(result.secure_url);
+          let url = result.secure_url;
+          if (url.includes("/upload/")) {
+            url = url.replace("/upload/", "/upload/f_auto,q_auto/");
+          }
+          resolve(url);
         } else {
           reject(new Error("Upload failed with no result"));
         }

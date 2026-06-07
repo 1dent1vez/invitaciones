@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { TEMPLATE_COMPONENTS } from "@/lib/templates";
 import { TemplateWrapper } from "@/components/templates/TemplateWrapper";
 import { TemplateType, InvitacionData } from "@/types";
 import { PublicRSVPForm } from "./rsvp-form";
+import { registrarVisitaAction } from "./actions";
 
 export const revalidate = 0;
 
@@ -89,6 +91,21 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
   if (!order || !order.datosJson) {
     notFound();
   }
+
+  // Registrar visita asíncronamente (fire-and-forget)
+  let ip: string | null = null;
+  let userAgent: string | null = null;
+  try {
+    const headersList = headers();
+    ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip");
+    userAgent = headersList.get("user-agent");
+  } catch {
+    // Graceful fallback for non-request scope contexts (like Vitest)
+  }
+
+  registrarVisitaAction(slug, ip, userAgent).catch((err) => {
+    console.error("Error al registrar la visita en analytics:", err);
+  });
 
   const templateType = order.template as TemplateType;
   const TemplateComponent = TEMPLATE_COMPONENTS[templateType];

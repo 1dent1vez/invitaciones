@@ -36,7 +36,15 @@ const eventSchema = z.object({
   tipoEvento: z.enum(["boda", "xv", "baby_shower", "cumpleanos"], {
     message: "Selecciona un tipo de evento",
   }),
-  fechaEvento: z.string().min(1, "La fecha del evento es requerida"),
+  fechaEvento: z.string().min(1, "La fecha del evento es requerida").refine((val) => {
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return d >= today;
+  }, {
+    message: "La fecha del evento no puede ser anterior al día de hoy",
+  }),
   template: z.enum(["boda-elegante", "xv-moderno", "baby-shower", "cumpleanos-fiesta"], {
     message: "Selecciona una plantilla",
   }),

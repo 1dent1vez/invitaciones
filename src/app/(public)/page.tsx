@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { 
   Sparkles, 
   Check, 
@@ -12,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ContactForm } from "@/components/public/ContactForm";
+
 
 interface PlanFeature {
   text: string;
@@ -85,7 +88,7 @@ const pricingPlans: PricingPlan[] = [
 interface GalleryItem {
   title: string;
   type: string;
-  templateType: string;
+  slug: string;
   image: string;
   description: string;
 }
@@ -94,28 +97,28 @@ const galleryItems: GalleryItem[] = [
   {
     title: "Boda Elegante",
     type: "Bodas",
-    templateType: "boda-elegante",
+    slug: "ana-y-carlos",
     image: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop",
     description: "Diseño minimalista y sofisticado con tonos dorados y tipografía clásica."
   },
   {
     title: "XV Años Moderno",
     type: "XV Años",
-    templateType: "xv-moderno",
+    slug: "xv-maria-fernanda",
     image: "https://images.unsplash.com/photo-1549417229-aa67d3263c09?q=80&w=600&auto=format&fit=crop",
     description: "Diseño vibrante con tipografías audaces y galería de fotos interactiva."
   },
   {
     title: "Baby Shower Dulce Espera",
     type: "Baby Showers",
-    templateType: "baby-shower",
+    slug: "baby-mateo",
     image: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=600&auto=format&fit=crop",
     description: "Diseño tierno en colores pastel y tipografías amigables."
   },
   {
     title: "Cumpleaños Fiesta",
     type: "Cumpleaños",
-    templateType: "cumpleanos-fiesta",
+    slug: "santiago-cumple",
     image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop",
     description: "Diseño divertido con timeline de la fiesta y detalles festivos."
   }
@@ -137,6 +140,9 @@ export default function LandingPage() {
             </Link>
             <Link href="#precios" className="text-sm text-slate-400 hover:text-white transition-colors">
               Precios
+            </Link>
+            <Link href="#contacto" className="text-sm text-slate-400 hover:text-white transition-colors">
+              Contacto
             </Link>
             <Link href="/admin">
               <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-slate-900 text-sm">
@@ -236,10 +242,13 @@ export default function LandingPage() {
                 <Card key={i} className="group overflow-hidden border-slate-900 bg-slate-900/20 text-slate-100 hover:border-slate-800 flex flex-col justify-between transition-all duration-300">
                   <div>
                     <div className="relative h-48 w-full overflow-hidden">
-                      <img 
+                      <Image 
                         src={item.image} 
                         alt={item.title} 
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        loading="lazy"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-slate-950/40" />
                     </div>
@@ -255,7 +264,7 @@ export default function LandingPage() {
                     </CardHeader>
                   </div>
                   <CardFooter className="p-5 pt-0">
-                    <Link href={`/demo/${item.templateType}`} className="w-full">
+                    <Link href={`/i/${item.slug}`} className="w-full">
                       <Button className="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs font-semibold rounded-lg py-2 transition-all">
                         Ver Demo
                       </Button>
@@ -324,6 +333,21 @@ export default function LandingPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contacto" className="py-20 border-t border-slate-900 bg-slate-950/40">
+        <div className="mx-auto max-w-7xl px-6 space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              ¿Listo para crear tu Invitación?
+            </h2>
+            <p className="mx-auto max-w-2xl text-slate-400">
+              Déjanos tus datos o cuéntanos qué necesitas para tu evento. Nos pondremos en contacto contigo a la brevedad.
+            </p>
+          </div>
+          <ContactForm />
         </div>
       </section>
 

@@ -70,3 +70,36 @@ export async function createRSVPAction(
     return { success: false, error: "Ocurrió un error inesperado al registrar tu confirmación" };
   }
 }
+
+export async function registrarVisitaAction(
+  slug: string,
+  ip: string | null,
+  userAgent: string | null
+): Promise<ActionResult> {
+  try {
+    if (!slug) {
+      return { success: false, error: "El slug es requerido" };
+    }
+
+    const pedido = await prisma.pedido.findUnique({
+      where: { slug },
+    });
+
+    if (!pedido) {
+      return { success: false, error: "El pedido no existe" };
+    }
+
+    await prisma.visita.create({
+      data: {
+        pedidoId: pedido.id,
+        ip: ip || null,
+        userAgent: userAgent || null,
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("[registrarVisitaAction]", error);
+    return { success: false, error: "Error al registrar la visita" };
+  }
+}

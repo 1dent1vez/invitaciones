@@ -172,12 +172,24 @@ export async function uploadImageAction(
       return { success: false, error: "No se proporcionó ningún archivo" };
     }
 
+    // Validar tipo MIME (tipo de archivo)
+    if (!file.type.startsWith("image/")) {
+      return { success: false, error: "El archivo debe ser una imagen válida" };
+    }
+
+    // Validar tamaño (máximo 5MB)
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      return { success: false, error: "El archivo excede el tamaño máximo permitido (5MB)" };
+    }
+
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const url = await uploadToCloudinary(buffer, "invitaciones/fotos");
 
     return { success: true, data: url };
-  } catch {
+  } catch (err) {
+    console.error("[uploadImageAction] error details:", err);
     return { success: false, error: "Error al subir la imagen" };
   }
 }
