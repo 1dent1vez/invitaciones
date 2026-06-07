@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
-export interface ActionResult<T> {
+export interface ActionResult<T = void> {
   success: boolean;
   data?: T;
   error?: string;
@@ -78,4 +79,71 @@ export async function registrarPagoAction(
     console.error("[registrarPagoAction]", error);
     return { success: false, error: "Error al registrar el pago" };
   }
+}
+
+import { RSVP } from "@prisma/client";
+import { redirect } from "next/navigation";
+
+export async function getRSVPsByPedidoAction(
+  pedidoId: string
+): Promise<ActionResult<RSVP[]>> {
+  try {
+    if (!pedidoId) return { success: false, error: "El ID del pedido es requerido" };
+
+    const rsvps = await prisma.rSVP.findMany({
+      where: { pedidoId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return { success: true, data: rsvps };
+  } catch (error) {
+    console.error("[getRSVPsByPedidoAction]", error);
+    return { success: false, error: "Error al obtener las confirmaciones" };
+  }
+}
+
+export async function clonarPedidoAction(
+  pedidoId: string
+): Promise<ActionResult<string>> {
+  let newId = "";
+  try {
+    const pedido = await prisma.pedido.findUnique({
+      where: { id: pedidoId },
+    });
+    if (!pedido) {
+      return { success: false, error: "El pedido a clonar no existe" };
+    }
+
+    const oldDatos = (pedido.datosJson as Record<string, unknown>) || {};
+    const newDatos = {
+      ...oldDatos,
+      nombres: "",
+      fecha: "",
+      portadaUrl: "",
+      fotos: [],
+      mensaje: "",
+    };
+
+    const newPedido = await prisma.pedido.create({
+      data: {
+        clienteId: pedido.clienteId,
+        tipoEvento: pedido.tipoEvento,
+        fechaEvento: new Date(),
+        template: pedido.template,
+        precio: pedido.precio,
+        estado: "cotizado",
+        notas: pedido.notas,
+        slug: null,
+        urlPublica: null,
+        qrUrl: null,
+        datosJson: newDatos as unknown as Prisma.InputJsonValue,
+      },
+    });
+    newId = newPedido.id;
+  } catch (error) {
+    console.error("[clonarPedidoAction]", error);
+    return { success: false, error: "Error al clonar el pedido" };
+  }
+
+  redirect(`/admin/pedidos/${newId}/editar`);
 }

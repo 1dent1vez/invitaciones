@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { TEMPLATE_COMPONENTS } from "@/lib/templates";
 import { TemplateWrapper } from "@/components/templates/TemplateWrapper";
 import { TemplateType, InvitacionData } from "@/types";
+import { PublicRSVPForm } from "./rsvp-form";
 
 export const revalidate = 0;
 
@@ -96,6 +97,7 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
   return (
     <TemplateWrapper data={datos}>
       <TemplateComponent data={datos} />
+      <PublicRSVPForm slug={slug} />
     </TemplateWrapper>
   );
 }

@@ -22,6 +22,11 @@ export default async function PedidoDetallePage({ params }: PedidoDetallePagePro
           fecha: "desc",
         },
       },
+      rsvps: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
 

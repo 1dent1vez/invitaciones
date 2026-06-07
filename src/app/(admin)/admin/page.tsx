@@ -194,13 +194,27 @@ export default async function AdminDashboardPage() {
                     <p className="font-semibold text-white">{event.cliente.nombre}</p>
                     <p className="text-xs text-slate-500 capitalize">Evento: {event.tipoEvento} | {event.template}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right space-y-1">
                     <p className="text-sm font-semibold text-violet-400">
                       {new Intl.DateTimeFormat("es-MX", { day: "2-digit", month: "short", year: "numeric" }).format(event.fechaEvento)}
                     </p>
-                    <span className="inline-block rounded-full bg-violet-900/20 px-2 py-0.5 text-2xs font-medium text-violet-400 ring-1 ring-violet-500/20 capitalize">
-                      {event.estado}
-                    </span>
+                    <div className="flex items-center gap-1.5 justify-end">
+                      {(() => {
+                        const diffTime = new Date(event.fechaEvento).getTime() - startOfToday.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        if (diffDays >= 0 && diffDays <= 7) {
+                          return (
+                            <span className="inline-block rounded-full bg-amber-500/10 px-2 py-0.5 text-3xs font-bold text-amber-400 ring-1 ring-amber-500/20 uppercase tracking-wider">
+                              Próximo
+                            </span>
+                          );
+                        }
+                        return null;
+                      })()}
+                      <span className="inline-block rounded-full bg-violet-900/20 px-2 py-0.5 text-2xs font-medium text-violet-400 ring-1 ring-violet-500/20 capitalize">
+                        {event.estado}
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))

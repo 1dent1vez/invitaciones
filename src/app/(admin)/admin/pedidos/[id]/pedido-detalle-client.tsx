@@ -12,18 +12,24 @@ import {
   Loader2, 
   Clock, 
   ExternalLink,
-  QrCode
+  QrCode,
+  Send,
+  Copy,
+  X,
+  Check
 } from "lucide-react";
 import Link from "next/link";
-import { Pedido, Cliente, Pago, Prisma } from "@prisma/client";
+import { Pedido, Cliente, Pago, RSVP, Prisma } from "@prisma/client";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { registrarPagoAction, PagoInput } from "./actions";
+import { registrarPagoAction, PagoInput, clonarPedidoAction } from "./actions";
 import { updatePedidoEstadoAction } from "../actions";
 import { generarQRAction } from "./editar/actions";
+import { generarTextoNotificacion } from "@/lib/notificaciones";
+import { RSVPTable } from "./rsvp-table";
 
 const pagoSchema = z.object({
   monto: z.preprocess((val) => Number(val), z.number().min(0.01, "El monto debe ser mayor a 0")),
@@ -34,7 +40,7 @@ const pagoSchema = z.object({
   notas: z.string().optional().nullable(),
 });
 
-type PedidoFull = Pedido & { cliente: Cliente; pagos: Pago[] };
+type PedidoFull = Pedido & { cliente: Cliente; pagos: Pago[]; rsvps: RSVP[] };
 
 interface PedidoDetalleClientProps {
   pedido: PedidoFull;
@@ -47,6 +53,46 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
   const [error, setError] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
   const [qrError, setQrError] = useState<string | null>(null);
+
+  const [isCloning, setIsCloning] = useState(false);
+  const [isNotifyOpen, setIsNotifyOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [notifyText, setNotifyText] = useState("");
+
+  const handleOpenNotify = () => {
+    const text = generarTextoNotificacion(
+      pedido.cliente.nombre,
+      pedido.urlPublica || "",
+      pedido.qrUrl || ""
+    );
+    setNotifyText(text);
+    setCopied(false);
+    setIsNotifyOpen(true);
+  };
+
+  const handleCopyText = async () => {
+    try {
+      await navigator.clipboard.writeText(notifyText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert("No se pudo copiar el texto al portapapeles");
+    }
+  };
+
+  const handleClonar = () => {
+    if (!confirm("¿Estás seguro de que deseas clonar este pedido? Se creará una copia en estado 'cotizado'.")) {
+      return;
+    }
+    setIsCloning(true);
+    startTransition(async () => {
+      const res = await clonarPedidoAction(pedido.id);
+      if (res && !res.success) {
+        alert(res.error || "No se pudo clonar el pedido");
+        setIsCloning(false);
+      }
+    });
+  };
 
   const handleGenerateQR = async () => {
     setQrLoading(true);
@@ -175,21 +221,34 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
         </div>
 
         {/* Change Order State on the fly */}
-        <div className="flex items-center gap-3 bg-slate-900/40 border border-slate-900 rounded-xl px-4 py-2 self-stretch sm:self-auto justify-between">
-          <span className="text-xs font-semibold text-slate-400">Estado del Pedido:</span>
-          <select
-            value={pedido.estado}
-            onChange={handleStateChange}
-            disabled={isPending}
-            className="bg-transparent text-sm font-semibold text-white focus:outline-none cursor-pointer capitalize"
-          >
-            <option value="cotizado" className="bg-slate-900">Cotizado</option>
-            <option value="pagado" className="bg-slate-900">Pagado</option>
-            <option value="en_produccion" className="bg-slate-900">En Producción</option>
-            <option value="entregado" className="bg-slate-900">Entregado</option>
-            <option value="completado" className="bg-slate-900">Completado</option>
-          </select>
-          {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin text-violet-400 shrink-0" />}
+        <div className="flex items-center gap-3 self-stretch sm:self-auto justify-between sm:justify-end">
+          {pedido.urlPublica && (
+            <Button
+              onClick={handleOpenNotify}
+              size="sm"
+              className="bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs gap-1.5 shadow-lg shadow-violet-500/10 h-10 px-4 rounded-xl"
+            >
+              <Send className="h-3.5 w-3.5" />
+              Notificar Cliente
+            </Button>
+          )}
+
+          <div className="flex items-center gap-3 bg-slate-900/40 border border-slate-900 rounded-xl px-4 py-2 justify-between">
+            <span className="text-xs font-semibold text-slate-400">Estado del Pedido:</span>
+            <select
+              value={pedido.estado}
+              onChange={handleStateChange}
+              disabled={isPending}
+              className="bg-transparent text-sm font-semibold text-white focus:outline-none cursor-pointer capitalize"
+            >
+              <option value="cotizado" className="bg-slate-900">Cotizado</option>
+              <option value="pagado" className="bg-slate-900">Pagado</option>
+              <option value="en_produccion" className="bg-slate-900">En Producción</option>
+              <option value="entregado" className="bg-slate-900">Entregado</option>
+              <option value="completado" className="bg-slate-900">Completado</option>
+            </select>
+            {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin text-violet-400 shrink-0" />}
+          </div>
         </div>
       </div>
 
@@ -204,11 +263,34 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                 <FileText className="h-4.5 w-4.5 text-violet-400" />
                 Detalles del Pedido
               </CardTitle>
-              <Link href={`/admin/pedidos/${pedido.id}/editar`}>
-                <Button size="sm" variant="outline" className="border-slate-800 hover:bg-slate-900 text-slate-300 hover:text-white gap-1 text-xs">
-                  Editar Invitación
-                </Button>
-              </Link>
+              <div className="flex gap-2">
+                {pedido.estado === "completado" && (
+                  <Button 
+                    onClick={handleClonar}
+                    disabled={isCloning}
+                    size="sm" 
+                    variant="outline" 
+                    className="border-violet-500/20 hover:bg-violet-600/10 text-violet-400 gap-1.5 text-xs font-semibold"
+                  >
+                    {isCloning ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Clonando...
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" />
+                        Clonar Pedido
+                      </>
+                    )}
+                  </Button>
+                )}
+                <Link href={`/admin/pedidos/${pedido.id}/editar`}>
+                  <Button size="sm" variant="outline" className="border-slate-800 hover:bg-slate-900 text-slate-300 hover:text-white gap-1 text-xs font-semibold">
+                    Editar Invitación
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
               <div className="space-y-1.5">
@@ -287,6 +369,13 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
               )}
             </CardContent>
           </Card>
+
+          {/* RSVP Table panel */}
+          <RSVPTable 
+            rsvps={pedido.rsvps} 
+            precio={Number(pedido.precio)} 
+            datosJson={pedido.datosJson} 
+          />
         </div>
 
         {/* Right Side: Financials, Payments & Forms */}
@@ -521,6 +610,65 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
           </Card>
         </div>
       </div>
+      {/* NOTIFICAR CLIENTE MODAL */}
+      {isNotifyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            onClick={() => setIsNotifyOpen(false)}
+            className="absolute inset-0 bg-black/80 backdrop-blur-xs"
+          />
+          <div className="relative w-full max-w-md bg-slate-950 border border-slate-900 rounded-2xl p-6 text-left shadow-2xl space-y-4">
+            <button
+              onClick={() => setIsNotifyOpen(false)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="space-y-1 pb-3 border-b border-slate-900">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Send className="h-4.5 w-4.5 text-violet-400" />
+                Notificar Cliente
+              </h3>
+              <p className="text-xs text-slate-400">
+                Copia este texto preformateado para enviarlo por WhatsApp.
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <textarea
+                value={notifyText}
+                onChange={(e) => setNotifyText(e.target.value)}
+                rows={5}
+                className="w-full rounded-lg border border-slate-900 bg-slate-900/40 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-violet-500 focus:border-violet-500 transition-all resize-none"
+              />
+            </div>
+            <div className="flex gap-3 pt-3 border-t border-slate-900">
+              <Button
+                variant="outline"
+                className="flex-1 border-slate-900 text-slate-400 hover:text-white"
+                onClick={() => setIsNotifyOpen(false)}
+              >
+                Cerrar
+              </Button>
+              <Button
+                onClick={handleCopyText}
+                className="flex-1 bg-violet-600 hover:bg-violet-500 text-white font-semibold flex items-center justify-center gap-1.5"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    ¡Copiado!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copiar Texto
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
