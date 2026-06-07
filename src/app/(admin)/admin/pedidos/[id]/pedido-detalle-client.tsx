@@ -11,7 +11,8 @@ import {
   PlusCircle, 
   Loader2, 
   Clock, 
-  ExternalLink
+  ExternalLink,
+  QrCode
 } from "lucide-react";
 import Link from "next/link";
 import { Pedido, Cliente, Pago, Prisma } from "@prisma/client";
@@ -22,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { registrarPagoAction, PagoInput } from "./actions";
 import { updatePedidoEstadoAction } from "../actions";
+import { generarQRAction } from "./editar/actions";
 
 const pagoSchema = z.object({
   monto: z.preprocess((val) => Number(val), z.number().min(0.01, "El monto debe ser mayor a 0")),
@@ -43,6 +45,25 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState<string | null>(null);
+
+  const handleGenerateQR = async () => {
+    setQrLoading(true);
+    setQrError(null);
+    try {
+      const res = await generarQRAction(pedido.id);
+      if (res.success && res.data) {
+        setPedido((prev: PedidoFull) => ({ ...prev, qrUrl: res.data || prev.qrUrl }));
+      } else {
+        setQrError(res.error || "No se pudo generar el código QR.");
+      }
+    } catch {
+      setQrError("Error de red al intentar generar el QR.");
+    } finally {
+      setQrLoading(false);
+    }
+  };
 
   const {
     register,
@@ -178,11 +199,16 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
         <div className="space-y-6 md:col-span-2">
           {/* Card: Order Details */}
           <Card className="border-slate-900 bg-slate-900/10 text-slate-100 backdrop-blur-xs">
-            <CardHeader className="border-b border-slate-900">
+            <CardHeader className="border-b border-slate-900 flex flex-row items-center justify-between space-y-0 py-4">
               <CardTitle className="text-base font-bold text-white flex items-center gap-2">
                 <FileText className="h-4.5 w-4.5 text-violet-400" />
                 Detalles del Pedido
               </CardTitle>
+              <Link href={`/admin/pedidos/${pedido.id}/editar`}>
+                <Button size="sm" variant="outline" className="border-slate-800 hover:bg-slate-900 text-slate-300 hover:text-white gap-1 text-xs">
+                  Editar Invitación
+                </Button>
+              </Link>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
               <div className="space-y-1.5">
@@ -201,15 +227,19 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
               </div>
               <div className="space-y-1.5">
                 <p className="text-xs text-slate-500 font-medium uppercase">URL Pública de Invitación</p>
-                <a 
-                  href={pedido.urlPublica || "#"} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="text-sm font-semibold text-violet-400 hover:text-violet-300 flex items-center gap-1 w-fit"
-                >
-                  /i/{pedido.slug}
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
+                {pedido.urlPublica ? (
+                  <a 
+                    href={pedido.urlPublica} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="text-sm font-semibold text-violet-400 hover:text-violet-300 flex items-center gap-1 w-fit"
+                  >
+                    /i/{pedido.slug}
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                ) : (
+                  <p className="text-sm font-semibold text-slate-500 italic">No publicada aún</p>
+                )}
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <p className="text-xs text-slate-500 font-medium uppercase">Notas / Observaciones</p>
@@ -261,6 +291,70 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
 
         {/* Right Side: Financials, Payments & Forms */}
         <div className="space-y-6">
+          {/* Card: QR Code of Invitation */}
+          {pedido.urlPublica && (
+            <Card className="border-slate-900 bg-slate-900/10 text-slate-100">
+              <CardHeader className="pb-3 border-b border-slate-900">
+                <CardTitle className="text-base font-bold text-white flex items-center gap-1.5">
+                  <QrCode className="h-4.5 w-4.5 text-violet-400" />
+                  Código QR de Invitación
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4 flex flex-col items-center justify-center space-y-4">
+                {pedido.qrUrl ? (
+                  <>
+                    <div className="bg-white p-2 rounded-xl border border-slate-800 shadow-lg w-40 h-40 flex items-center justify-center">
+                      <img src={pedido.qrUrl} alt="QR Invitación" className="w-full h-full object-contain" />
+                    </div>
+                    <p className="text-xs text-slate-400 text-center">
+                      Escanea este código para acceder directamente a la invitación pública.
+                    </p>
+                    <a 
+                      href={pedido.qrUrl} 
+                      download="invitacion-qr.png" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full"
+                    >
+                      <Button className="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs gap-1.5 font-semibold">
+                        <QrCode className="h-4 w-4" />
+                        Descargar QR
+                      </Button>
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-slate-400 text-center">
+                      Aún no se ha generado el código QR para esta invitación.
+                    </p>
+                    <Button 
+                      onClick={handleGenerateQR}
+                      disabled={qrLoading}
+                      className="w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs gap-1.5"
+                    >
+                      {qrLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generando QR...
+                        </>
+                      ) : (
+                        <>
+                          <QrCode className="h-4 w-4" />
+                          Generar Código QR
+                        </>
+                      )}
+                    </Button>
+                  </>
+                )}
+                {qrError && (
+                  <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs font-medium text-rose-400 w-full text-center">
+                    {qrError}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Card: Financial Summary Details */}
           <Card className="border-slate-900 bg-slate-900/10 text-slate-100">
             <CardHeader className="pb-3 border-b border-slate-900">
