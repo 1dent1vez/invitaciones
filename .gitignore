@@ -36,8 +36,8 @@ yarn-error.log*
 next-env.d.ts
 
 #context
-/.opencode
+
 kilo-code-settings.json
-sprint-01-report.md
+
 .env
 
