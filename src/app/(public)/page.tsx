@@ -3,8 +3,6 @@ import {
   Sparkles, 
   Check, 
   ArrowRight, 
-  Heart, 
-  Gift, 
   Smartphone, 
   MapPin, 
   Clock, 
@@ -87,17 +85,40 @@ const pricingPlans: PricingPlan[] = [
 interface GalleryItem {
   title: string;
   type: string;
-  gradient: string;
-  icon: React.ComponentType<{ className?: string }>;
+  templateType: string;
+  image: string;
+  description: string;
 }
 
 const galleryItems: GalleryItem[] = [
-  { title: "Boda Bosque Encantado", type: "Bodas", gradient: "from-emerald-500/20 to-teal-500/20", icon: Heart },
-  { title: "XV Años Neon Fest", type: "XV Años", gradient: "from-pink-500/20 to-purple-500/20", icon: Sparkles },
-  { title: "Baby Shower Nubes de Algodón", type: "Baby Showers", gradient: "from-blue-400/20 to-indigo-400/20", icon: Gift },
-  { title: "Boda Clásica Real", type: "Bodas", gradient: "from-amber-500/20 to-orange-500/20", icon: Heart },
-  { title: "Cumpleaños Pool Party", type: "Cumpleaños", gradient: "from-cyan-400/20 to-sky-500/20", icon: Sparkles },
-  { title: "Baby Shower Teddy Bear", type: "Baby Showers", gradient: "from-rose-400/20 to-pink-500/20", icon: Gift },
+  {
+    title: "Boda Elegante",
+    type: "Bodas",
+    templateType: "boda-elegante",
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop",
+    description: "Diseño minimalista y sofisticado con tonos dorados y tipografía clásica."
+  },
+  {
+    title: "XV Años Moderno",
+    type: "XV Años",
+    templateType: "xv-moderno",
+    image: "https://images.unsplash.com/photo-1549417229-aa67d3263c09?q=80&w=600&auto=format&fit=crop",
+    description: "Diseño vibrante con tipografías audaces y galería de fotos interactiva."
+  },
+  {
+    title: "Baby Shower Dulce Espera",
+    type: "Baby Showers",
+    templateType: "baby-shower",
+    image: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=600&auto=format&fit=crop",
+    description: "Diseño tierno en colores pastel y tipografías amigables."
+  },
+  {
+    title: "Cumpleaños Fiesta",
+    type: "Cumpleaños",
+    templateType: "cumpleanos-fiesta",
+    image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop",
+    description: "Diseño divertido con timeline de la fiesta y detalles festivos."
+  }
 ];
 
 export default function LandingPage() {
@@ -209,25 +230,37 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {galleryItems.map((item, i) => {
-              const Icon = item.icon;
               return (
-                <Card key={i} className="group overflow-hidden border-slate-900 bg-slate-900/20 text-slate-100 hover:border-slate-800 transition-all duration-300">
-                  <div className={`relative h-48 w-full bg-gradient-to-br ${item.gradient} flex items-center justify-center transition-all duration-300 group-hover:scale-[1.02]`}>
-                    <Icon className="h-12 w-12 text-slate-300 opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
-                    <div className="absolute inset-0 bg-slate-950/20" />
-                  </div>
-                  <CardHeader className="p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-violet-400">{item.type}</span>
-                      <span className="inline-block rounded-full bg-slate-800 px-2.5 py-0.5 text-xs text-slate-400">Demo Activa</span>
+                <Card key={i} className="group overflow-hidden border-slate-900 bg-slate-900/20 text-slate-100 hover:border-slate-800 flex flex-col justify-between transition-all duration-300">
+                  <div>
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-slate-950/40" />
                     </div>
-                    <CardTitle className="text-lg font-bold text-white group-hover:text-violet-400 transition-colors duration-200">{item.title}</CardTitle>
-                    <CardDescription className="text-slate-400 text-sm mt-1">
-                      Un ejemplo interactivo de invitación lista para enviar por WhatsApp.
-                    </CardDescription>
-                  </CardHeader>
+                    <CardHeader className="p-5">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-violet-400">{item.type}</span>
+                        <span className="inline-block rounded-full bg-slate-800 px-2.5 py-0.5 text-xs text-slate-400">Demo Activa</span>
+                      </div>
+                      <CardTitle className="text-lg font-bold text-white group-hover:text-violet-400 transition-colors duration-200">{item.title}</CardTitle>
+                      <CardDescription className="text-slate-400 text-sm mt-1">
+                        {item.description}
+                      </CardDescription>
+                    </CardHeader>
+                  </div>
+                  <CardFooter className="p-5 pt-0">
+                    <Link href={`/demo/${item.templateType}`} className="w-full">
+                      <Button className="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs font-semibold rounded-lg py-2 transition-all">
+                        Ver Demo
+                      </Button>
+                    </Link>
+                  </CardFooter>
                 </Card>
               );
             })}
