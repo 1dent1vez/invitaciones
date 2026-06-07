@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id        String   @id @default(cuid())
+  nombre    String
+  telefono  String?
+  fuente    String   // tienda | instagram | whatsapp | referido
+  email     String?
+  notas     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pedidos   Pedido[]
+}
+
+model Pedido {
+  id           String   @id @default(cuid())
+  clienteId    String
+  cliente      Cliente  @relation(fields: [clienteId], references: [id])
+  tipoEvento   String   // boda | xv | baby_shower | cumpleanos
+  fechaEvento  DateTime
+  template     String   // boda-elegante | xv-moderno | baby-shower | cumpleanos-fiesta
+  precio       Decimal  @db.Decimal(10, 2)
+  estado       String   @default("cotizado") // cotizado | pagado | en_produccion | entregado | completado
+  notas        String?
+  slug         String?  @unique
+  urlPublica   String?
+  qrUrl        String?
+  datosJson    Json?    // { nombres, fecha, ubicacion, fotos[], colores, mensaje, ... }
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  pagos        Pago[]
+  rsvps        RSVP[]
+  visitas      Visita[]
+}
+
+model Pago {
+  id          String   @id @default(cuid())
+  pedidoId    String
+  pedido      Pedido   @relation(fields: [pedidoId], references: [id])
+  monto       Decimal  @db.Decimal(10, 2)
+  metodo      String   // efectivo | transferencia
+  comprobante String?  // URL Cloudinary
+  fecha       DateTime @default(now())
+  notas       String?
+}
+
+model RSVP {
+  id        String   @id @default(cuid())
+  pedidoId  String
+  pedido      Pedido   @relation(fields: [pedidoId], references: [id])
+  nombre    String
+  asiste    Boolean
+  pax       Int      @default(1)
+  telefono  String?
+  mensaje   String?
+  createdAt DateTime @default(now())
+}
+
+model Visita {
+  id        String   @id @default(cuid())
+  pedidoId  String
+  pedido      Pedido   @relation(fields: [pedidoId], references: [id])
+  ip        String?
+  userAgent String?
+  fecha     DateTime @default(now())
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  nombre    String
+  evento    String?
+  fecha     DateTime?
+  telefono  String?
+  mensaje   String
+  createdAt DateTime @default(now())
+}
