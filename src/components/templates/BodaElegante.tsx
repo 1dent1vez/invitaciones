@@ -80,7 +80,7 @@ export function BodaElegante({ data }: BodaEleganteProps) {
         
         {/* Countdown */}
         {mounted && timeLeft && (
-          <div className="bg-slate-950/40 backdrop-blur-md rounded-xl p-6 border border-slate-900/60 shadow-xl text-center space-y-4">
+          <div className="bg-slate-950/40 backdrop-blur-md rounded-xl p-6 border border-[var(--secondary)]/20 shadow-xl text-center space-y-4">
             <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-sans">Faltan</span>
             <div className="grid grid-cols-4 gap-2 font-sans">
               <div className="flex flex-col items-center">
@@ -107,7 +107,7 @@ export function BodaElegante({ data }: BodaEleganteProps) {
         <div className="space-y-6">
           {/* Date Card */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/50 border border-slate-900 text-[var(--primary)] shrink-0">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/50 border border-[var(--secondary)]/25 text-[var(--primary)] shrink-0">
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
@@ -118,7 +118,7 @@ export function BodaElegante({ data }: BodaEleganteProps) {
 
           {/* Location Card */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/50 border border-slate-900 text-[var(--primary)] shrink-0">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/50 border border-[var(--secondary)]/25 text-[var(--primary)] shrink-0">
               <MapPin className="h-5 w-5" />
             </div>
             <div className="space-y-1 w-full">
@@ -141,7 +141,7 @@ export function BodaElegante({ data }: BodaEleganteProps) {
 
         {/* Parents / Godparents */}
         {(data.padres || data.padrinos) && (
-          <div className="border-t border-slate-900/60 pt-8 space-y-6 text-center">
+          <div className="border-t border-[var(--secondary)]/20 pt-8 space-y-6 text-center">
             {data.padres && (
               <div className="space-y-1">
                 <span className="text-[10px] uppercase tracking-widest text-[var(--primary)] font-sans">Con la bendición de nuestros padres</span>
@@ -159,23 +159,23 @@ export function BodaElegante({ data }: BodaEleganteProps) {
 
         {/* Dress Code */}
         {data.dressCode && (
-          <div className="border-t border-slate-900/60 pt-8 text-center space-y-2">
+          <div className="border-t border-[var(--secondary)]/20 pt-8 text-center space-y-2">
             <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-sans">Código de Vestimenta</span>
-            <div className="bg-slate-950/30 border border-slate-900/50 rounded-xl py-4 px-6 inline-block">
+            <div className="bg-slate-950/30 border border-[var(--secondary)]/25 rounded-xl py-4 px-6 inline-block">
               <p className="text-sm font-light text-white tracking-wide">{data.dressCode}</p>
             </div>
           </div>
         )}
 
         {/* RSVP Placeholder */}
-        <div className="border-t border-slate-900/60 pt-8 text-center space-y-4">
+        <div className="border-t border-[var(--secondary)]/20 pt-8 text-center space-y-4">
           <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-sans">Confirmar Asistencia</span>
           <p className="text-xs text-slate-400 font-sans px-4">Por favor, confírmanos tu asistencia antes del evento.</p>
           <button 
             disabled 
-            className="w-full py-3 bg-[var(--primary)] text-[#0e0e13] font-sans font-semibold rounded-lg text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-[var(--primary)]/10 transition-all cursor-not-allowed opacity-80"
+            className="w-full py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-[#0e0e13] font-sans font-semibold rounded-lg text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-[var(--primary)]/10 transition-all cursor-not-allowed opacity-80"
           >
-            Confirmar Lugar (Muy Pronto)
+            Confirmar Asistencia (Muy Pronto)
           </button>
         </div>
 

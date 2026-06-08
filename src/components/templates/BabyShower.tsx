@@ -27,23 +27,23 @@ export function BabyShower({ data }: BabyShowerProps) {
     <div className="flex-1 flex flex-col justify-between bg-[#F7F4EB] text-[#4E4438] pb-16 relative">
       {/* Decorative Soft Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#d3cbb5_1px,transparent_1px)] [background-size:16px_16px] opacity-30 pointer-events-none" />
-      <div className="absolute inset-4 border border-[#e3dac9] pointer-events-none rounded-2xl" />
+      <div className="absolute inset-4 border border-[var(--secondary)]/15 pointer-events-none rounded-2xl" />
 
       {/* Header */}
       <div className="pt-16 px-6 text-center flex flex-col items-center gap-4 relative">
-        <div className="h-14 w-14 rounded-full bg-[#EAE2D5] flex items-center justify-center text-[#9E8B75] shadow-inner mb-2 animate-bounce">
+        <div className="h-14 w-14 rounded-full bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] shadow-inner mb-2 animate-bounce">
           <Heart className="h-6 w-6 fill-current" />
         </div>
-        <span className="text-xs uppercase tracking-[0.2em] text-[#9E8B75] font-semibold">¡Llega una nueva vida!</span>
+        <span className="text-xs uppercase tracking-[0.2em] text-[var(--primary)]/80 font-semibold">¡Llega una nueva vida!</span>
         <h1 className="text-3xl font-bold tracking-tight text-[#3d3329] leading-tight font-sans">
           Baby Shower
         </h1>
         {data.nombreBebe && (
-          <div className="bg-[#EBE5D8] text-[#5C4D3C] font-semibold text-lg py-1.5 px-6 rounded-full inline-block shadow-sm">
+          <div className="bg-[var(--primary)]/10 text-[var(--primary)] font-semibold text-lg py-1.5 px-6 rounded-full inline-block shadow-sm">
             {data.nombreBebe}
           </div>
         )}
-        <p className="text-xs text-[#7A6C5C] font-medium mt-1">
+        <p className="text-xs text-[var(--primary)]/80 font-medium mt-1">
           Organizado con amor por: <span className="font-semibold">{data.nombres}</span>
         </p>
       </div>
@@ -53,38 +53,38 @@ export function BabyShower({ data }: BabyShowerProps) {
         
         {/* Welcome Message */}
         {data.mensaje && (
-          <div className="text-center italic text-sm text-[#7A6C5C] px-4 leading-relaxed font-medium">
+          <div className="text-center italic text-sm text-[var(--primary)]/80 px-4 leading-relaxed font-medium">
             &ldquo;{data.mensaje}&rdquo;
           </div>
         )}
 
         {/* Date and Place cards */}
-        <div className="bg-[#FAF8F5] border border-[#EBE6DC] rounded-2xl p-5 space-y-5 shadow-sm">
+        <div className="bg-white/40 border border-[var(--secondary)]/20 rounded-2xl p-5 space-y-5 shadow-sm">
           {/* Calendar */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[#EFECE6] text-[#9E8B75] shrink-0 shadow-sm">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] shrink-0 shadow-sm">
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] tracking-wider text-[#9E8B75] uppercase font-bold">¿Cuándo será?</span>
+              <span className="text-[10px] tracking-wider text-[var(--primary)]/80 uppercase font-bold">¿Cuándo será?</span>
               <p className="text-sm font-semibold text-[#3d3329] capitalize">{dateText}</p>
             </div>
           </div>
 
           {/* Place */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[#EFECE6] text-[#9E8B75] shrink-0 shadow-sm">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] shrink-0 shadow-sm">
               <MapPin className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] tracking-wider text-[#9E8B75] uppercase font-bold">¿Dónde nos vemos?</span>
+              <span className="text-[10px] tracking-wider text-[var(--primary)]/80 uppercase font-bold">¿Dónde nos vemos?</span>
               <p className="text-sm font-semibold text-[#3d3329]">{data.ubicacion}</p>
               {data.mapaUrl && (
                 <a
                   href={data.mapaUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-[#9E8B75] hover:text-[#5C4D3C] font-bold mt-1 underline"
+                  className="inline-flex items-center gap-1 text-xs text-[var(--primary)] hover:text-[var(--secondary)] font-bold mt-1 underline"
                 >
                   Abrir mapa
                   <Sparkles className="h-3 w-3" />
@@ -96,24 +96,24 @@ export function BabyShower({ data }: BabyShowerProps) {
 
         {/* Gift Table Section */}
         {data.regalosDatos && (
-          <div className="bg-[#FAF8F5] border border-[#EBE6DC] rounded-2xl p-5 space-y-3 shadow-sm">
-            <div className="flex items-center gap-2 text-[#9E8B75]">
+          <div className="bg-white/40 border border-[var(--secondary)]/20 rounded-2xl p-5 space-y-3 shadow-sm">
+            <div className="flex items-center gap-2 text-[var(--primary)]">
               <Gift className="h-5 w-5" />
               <span className="text-xs uppercase tracking-widest font-bold">Sugerencias de Regalos</span>
             </div>
-            <p className="text-sm text-[#5C4D3C] leading-relaxed whitespace-pre-wrap font-medium">
+            <p className="text-sm text-[var(--primary)]/80 leading-relaxed whitespace-pre-wrap font-medium">
               {data.regalosDatos}
             </p>
           </div>
         )}
 
         {/* RSVP Form Card */}
-        <div className="border-t border-[#EBE6DC] pt-6 text-center space-y-4">
-          <span className="text-xs uppercase tracking-widest text-[#9E8B75] font-bold">Confirmación</span>
-          <p className="text-xs text-[#7A6C5C]">Por favor, confírmanos si podrás acompañarnos en este día tan alegre.</p>
+        <div className="border-t border-[var(--secondary)]/20 pt-6 text-center space-y-4">
+          <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold">Confirmación</span>
+          <p className="text-xs text-[var(--primary)]/80">Por favor, confírmanos si podrás acompañarnos en este día tan alegre.</p>
           <button 
             disabled 
-            className="w-full py-3 bg-[#9E8B75] hover:bg-[#8F7C66] text-[#FAF4EB] font-bold rounded-xl text-xs uppercase tracking-widest shadow-md transition-all cursor-not-allowed opacity-80"
+            className="w-full py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white font-bold rounded-xl text-xs uppercase tracking-widest shadow-md transition-all cursor-not-allowed opacity-80"
           >
             Confirmar Asistencia (Muy Pronto)
           </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition, useEffect, useMemo } from "react";
+import React, { useState, useTransition, useMemo } from "react";
 import Link from "next/link";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +26,7 @@ import { getTemplateConfig, TEMPLATE_COMPONENTS } from "@/lib/templates";
 import { TemplateWrapper } from "@/components/templates/TemplateWrapper";
 import { TemplateType, InvitacionData } from "@/types";
 import { useToast } from "@/components/ui/toast";
+import { hexColorRegex, urlValidation } from "./schemas";
 import {
   savePedidoDatosAction,
   publicarInvitacionAction,
@@ -33,23 +34,35 @@ import {
   uploadImageAction
 } from "./actions";
 
-// Form Schema generator matching InvitacionData depending on template
-const getEditorSchema = (templateType: TemplateType) => {
-  const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-  const urlValidation = z.string().optional().nullable().or(z.literal(""))
-    .refine(
-      (val) => {
-        if (!val) return true;
-        try {
-          new URL(val);
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      { message: "Debe ser una URL válida (ej. https://ejemplo.com)" }
-    );
+// Form Schema generator for Drafts (all fields optional, formats validated)
+const getDraftFormSchema = () => {
+  return z.object({
+    nombres: z.string().optional().nullable().or(z.literal("")),
+    fechaPart: z.string().optional().nullable().or(z.literal("")),
+    horaPart: z.string().optional().nullable().or(z.literal("")),
+    ubicacion: z.string().optional().nullable().or(z.literal("")),
+    mapaUrl: urlValidation,
+    mensaje: z.string().optional().nullable().or(z.literal("")),
+    colorPrincipal: z.string().optional().nullable().or(z.literal(""))
+      .refine((val) => !val || hexColorRegex.test(val), {
+        message: "Debe ser un color hexadecimal válido (ej. #FFFFFF)",
+      }),
+    colorSecundario: z.string().optional().nullable().or(z.literal(""))
+      .refine((val) => !val || hexColorRegex.test(val), {
+        message: "Debe ser un color hexadecimal válido (ej. #FFFFFF)",
+      }),
+    portadaUrl: urlValidation,
+    dressCode: z.string().optional().nullable().or(z.literal("")),
+    regalosDatos: z.string().optional().nullable().or(z.literal("")),
+    musicaUrl: urlValidation,
+    nombreBebe: z.string().optional().nullable().or(z.literal("")),
+    padrinos: z.string().optional().nullable().or(z.literal("")),
+    padres: z.string().optional().nullable().or(z.literal("")),
+  });
+};
 
+// Form Schema generator for Publications (required fields enforced)
+const getPublishFormSchema = (templateType: TemplateType) => {
   const base: Record<string, z.ZodTypeAny> = {
     nombres: z.string().min(2, "El nombre del evento debe tener al menos 2 caracteres"),
     fechaPart: z.string().min(1, "La fecha del evento es requerida"),
@@ -133,16 +146,34 @@ function cleanFormValues(data: EditorFormValues): InvitacionData {
   } as unknown as InvitacionData;
 }
 
-function getSafeTemplateData(data: Partial<InvitacionData> | null | undefined): InvitacionData {
+function getSafeTemplateData(data: Partial<InvitacionData> | null | undefined, templateType: string): InvitacionData {
   const safe = data || {};
+  
+  // Template specific defaults
+  let defaultPrimary = "#8B5CF6";
+  let defaultSecondary = "#EC4899";
+  if (templateType === "boda-elegante") {
+    defaultPrimary = "#C5A880";
+    defaultSecondary = "#1e293b";
+  } else if (templateType === "xv-moderno") {
+    defaultPrimary = "#EC4899";
+    defaultSecondary = "#4C1D95";
+  } else if (templateType === "baby-shower") {
+    defaultPrimary = "#725C42";
+    defaultSecondary = "#1e293b";
+  } else if (templateType === "cumpleanos-fiesta") {
+    defaultPrimary = "#F59E0B";
+    defaultSecondary = "#1e293b";
+  }
+
   return {
     nombres: safe.nombres || "",
     fecha: safe.fecha || new Date().toISOString(),
     ubicacion: safe.ubicacion || "",
     mapaUrl: safe.mapaUrl || "",
     mensaje: safe.mensaje || "",
-    colorPrincipal: safe.colorPrincipal || "#8B5CF6",
-    colorSecundario: safe.colorSecundario || "#EC4899",
+    colorPrincipal: safe.colorPrincipal || defaultPrimary,
+    colorSecundario: safe.colorSecundario || defaultSecondary,
     portadaUrl: safe.portadaUrl || "",
     fotos: safe.fotos || [],
     dressCode: safe.dressCode || "",
@@ -186,26 +217,25 @@ class PreviewErrorBoundary extends React.Component<
   }
 }
 
-// Predefined Form Sections
 const SECTIONS = [
   {
     id: "general",
-    title: "Información general",
+    title: "👤 Información del evento",
     keys: ["nombres", "nombreBebe", "fecha", "ubicacion", "mapaUrl", "dressCode", "padres", "padrinos"],
   },
   {
-    id: "fotos",
-    title: "Fotos",
-    keys: ["portadaUrl", "fotos"],
-  },
-  {
     id: "colores",
-    title: "Colores y estilo",
+    title: "🎨 Colores y estilo",
     keys: ["colorPrincipal", "colorSecundario"],
   },
   {
+    id: "fotos",
+    title: "📸 Fotos",
+    keys: ["portadaUrl", "fotos"],
+  },
+  {
     id: "mensajes",
-    title: "Mensajes y música",
+    title: "💬 Mensajes",
     keys: ["mensaje", "musicaUrl", "regalosDatos"],
   },
 ];
@@ -255,8 +285,8 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
     return { fechaPart: "", horaPart: "18:00" };
   }, [dbDatos.fecha, pedido.fechaEvento]);
 
-  // Get dynamic resolver schema
-  const schema = useMemo(() => getEditorSchema(templateType), [templateType]);
+  // Initialize form with loose Draft Zod Schema
+  const schema = useMemo(() => getDraftFormSchema(), []);
 
   const defaultValues = useMemo<EditorFormValues>(() => ({
     nombres: dbDatos.nombres || pedido.cliente?.nombre || "",
@@ -281,31 +311,22 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
     handleSubmit,
     setValue,
     watch,
-    trigger,
+    setError,
+    clearErrors,
+    getValues,
     formState: { errors },
   } = useForm<EditorFormValues>({
+    mode: "onSubmit",
     resolver: zodResolver(schema) as unknown as Resolver<EditorFormValues>,
     defaultValues,
   });
 
+  // Watch for real-time instantaneous sync
   const watchedData = watch();
-
-  // Debounced Live Preview Data
-  const [previewData, setPreviewData] = useState<InvitacionData>(() =>
-    getSafeTemplateData(cleanFormValues(defaultValues))
-  );
-
-  useEffect(() => {
-    const subscription = watch((value) => {
-      const handler = setTimeout(() => {
-        const cleaned = cleanFormValues(value as EditorFormValues);
-        const safe = getSafeTemplateData(cleaned);
-        setPreviewData(safe);
-      }, 300);
-      return () => clearTimeout(handler);
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
+  const currentPreviewData = useMemo(() => {
+    const cleaned = cleanFormValues(watchedData);
+    return getSafeTemplateData(cleaned, templateType);
+  }, [watchedData, templateType]);
 
   // Image Upload File Handler
   const handleImageUploadFile = async (file: File, fieldKey: keyof EditorFormValues) => {
@@ -381,10 +402,21 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
 
   const onPublish = async () => {
     setActionError(null);
+    clearErrors();
 
-    // Validate form fields before publication
-    const isValid = await trigger();
-    if (!isValid) {
+    // Validate form fields manually for publication
+    const currentValues = getValues();
+    const publishSchema = getPublishFormSchema(templateType);
+    const parsed = publishSchema.safeParse(currentValues);
+    if (!parsed.success) {
+      // Set RHF errors to show up in red on UI
+      parsed.error.issues.forEach((issue) => {
+        const fieldKey = issue.path[0] as keyof EditorFormValues;
+        setError(fieldKey, {
+          type: "required",
+          message: issue.message,
+        });
+      });
       toast({
         title: "Campos requeridos",
         description: "Por favor, completa correctamente los campos obligatorios del formulario.",
@@ -393,8 +425,7 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
       return;
     }
 
-    const currentData = watchedData;
-    const mappedData = cleanFormValues(currentData);
+    const mappedData = cleanFormValues(currentValues);
 
     startTransition(async () => {
       const saveRes = await savePedidoDatosAction(pedido.id, mappedData);
@@ -495,10 +526,10 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
 
   try {
     return (
-      <div className="flex flex-col lg:grid lg:grid-cols-12 min-h-[calc(100vh-4rem)] bg-slate-950 text-slate-100 font-sans">
+      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-4rem)] bg-slate-950 text-slate-100 font-sans">
         
         {/* MOBILE & TABLET NAVIGATION TABS */}
-        <div className="lg:hidden flex border-b border-slate-900 bg-slate-950/90 p-2.5 sticky top-0 z-30 backdrop-blur-md gap-2">
+        <div className="lg:hidden flex border-b border-slate-900 bg-slate-950/90 p-2.5 sticky top-0 z-30 backdrop-blur-md gap-2 w-full">
           <button
             type="button"
             onClick={() => setActiveTab("edit")}
@@ -509,7 +540,7 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
                 : "text-slate-400 hover:text-slate-200 border-transparent"
             )}
           >
-            Editar Formulario
+            ✏️ Editar Formulario
           </button>
           <button
             type="button"
@@ -521,14 +552,14 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
                 : "text-slate-400 hover:text-slate-200 border-transparent"
             )}
           >
-            Vista Previa
+            👁️ Vista Previa
           </button>
         </div>
 
-        {/* LEFT COLUMN: FORM FIELD CONTROLS */}
+        {/* LEFT COLUMN: FORM FIELD CONTROLS (35% on Desktop) */}
         <div
           className={cn(
-            "lg:col-span-5 border-r border-slate-900 flex flex-col h-[calc(100vh-4rem)] relative",
+            "w-full lg:w-[35%] border-r border-slate-900 flex flex-col h-[calc(100vh-4rem)] relative",
             activeTab === "edit" ? "flex" : "hidden lg:flex"
           )}
         >
@@ -634,22 +665,26 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
 
                           {field.type === "color" && (
                             <div className={cn(
-                              "flex items-center gap-3 bg-slate-950 p-2 rounded-lg border w-full",
+                              "flex items-center gap-3 bg-slate-950 p-2.5 rounded-xl border w-full hover:border-slate-700 transition-colors",
                               errors[registerKey] ? "border-rose-500" : "border-slate-800"
                             )}>
-                              <div className="relative w-10 h-10 rounded-md overflow-hidden border border-slate-750 shrink-0 shadow-inner">
+                              <div 
+                                className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-800 shrink-0 shadow-md transition-transform hover:scale-105 active:scale-95"
+                                style={{ backgroundColor: watchedData[registerKey] || "#000000" }}
+                              >
                                 <input
                                   type="color"
                                   value={watchedData[registerKey] || "#000000"}
-                                  onChange={(e) => setValue(registerKey, e.target.value, { shouldDirty: true, shouldValidate: true })}
-                                  className="absolute inset-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer border-0 p-0 bg-transparent"
+                                  onChange={(e) => setValue(registerKey, e.target.value, { shouldDirty: true })}
+                                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
                                 />
                               </div>
-                              <div className="flex-1">
+                              <div className="flex-1 flex items-center gap-2">
+                                <span className="text-xs font-mono text-slate-500">HEX:</span>
                                 <Input
                                   type="text"
                                   placeholder="#000000"
-                                  className="border-transparent bg-transparent font-mono text-sm focus-visible:ring-0 focus-visible:border-transparent h-9 w-full p-0"
+                                  className="border-transparent bg-transparent font-mono text-sm focus-visible:ring-0 focus-visible:border-transparent h-9 w-full p-0 text-white"
                                   {...register(registerKey)}
                                 />
                               </div>
@@ -844,8 +879,17 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
               variant="outline"
               className="flex-1 border-slate-800 bg-slate-900/40 text-slate-300 hover:text-white hover:bg-slate-900 font-semibold gap-1.5 h-11 rounded-lg"
             >
-              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              Guardar borrador
+              {isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Guardar borrador
+                </>
+              )}
             </Button>
 
             <Button
@@ -854,16 +898,25 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
               disabled={isPending}
               className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 font-bold text-white hover:from-violet-500 hover:to-indigo-500 gap-1.5 shadow-lg shadow-violet-500/20 h-11 rounded-lg"
             >
-              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
-              Publicar
+              {isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Publicando...
+                </>
+              ) : (
+                <>
+                  <Globe className="h-4 w-4" />
+                  Publicar
+                </>
+              )}
             </Button>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: LIVE MOBILE PREVIEW */}
+        {/* RIGHT COLUMN: LIVE MOBILE PREVIEW (65% on Desktop) */}
         <div
           className={cn(
-            "lg:col-span-7 bg-[#05070f] overflow-y-auto flex items-center justify-center p-6 lg:p-12 h-[calc(100vh-4rem)] border-t lg:border-t-0 border-slate-900 relative",
+            "w-full lg:w-[65%] bg-[#05070f] overflow-y-auto flex items-center justify-center p-6 lg:p-12 h-[calc(100vh-4rem)] border-t lg:border-t-0 border-slate-900 relative",
             activeTab === "preview" ? "flex" : "hidden lg:flex"
           )}
         >
@@ -884,8 +937,8 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
             {/* TemplateWrapper inside Device */}
             <div className="h-full w-full overflow-y-auto flex flex-col pt-5">
               <PreviewErrorBoundary>
-                <TemplateWrapper data={previewData}>
-                  <TemplateComponent data={previewData} />
+                <TemplateWrapper data={currentPreviewData}>
+                  <TemplateComponent data={currentPreviewData} />
                 </TemplateWrapper>
               </PreviewErrorBoundary>
             </div>
@@ -894,6 +947,7 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
 
       </div>
     );
+
   } catch (err) {
     console.error("EditorClient rendering error:", err);
     return (
@@ -912,3 +966,4 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
     );
   }
 }
+

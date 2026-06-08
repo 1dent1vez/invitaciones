@@ -99,10 +99,10 @@ export function XVModerno({ data }: XVModernoProps) {
         )}
 
         {/* Date and Location Info */}
-        <div className="bg-[#140f23]/60 border border-[#2b1f48] rounded-2xl p-6 space-y-6 shadow-xl">
+        <div className="bg-[#140f23]/60 border border-[var(--secondary)]/30 rounded-2xl p-6 space-y-6 shadow-xl">
           {/* Date */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[#1b1432] text-[var(--primary)] shrink-0">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--secondary)]/15 text-[var(--primary)] shrink-0">
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
@@ -113,7 +113,7 @@ export function XVModerno({ data }: XVModernoProps) {
 
           {/* Location */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[#1b1432] text-[var(--primary)] shrink-0">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--secondary)]/15 text-[var(--primary)] shrink-0">
               <MapPin className="h-5 w-5" />
             </div>
             <div className="space-y-1">
@@ -139,7 +139,7 @@ export function XVModerno({ data }: XVModernoProps) {
           <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold text-center block">Galería de Fotos</span>
           <div className="grid grid-cols-2 gap-3">
             {sampleGallery.map((img, idx) => (
-              <div key={idx} className="h-40 rounded-xl overflow-hidden shadow-md border border-[#2b1f48]/40">
+              <div key={idx} className="h-40 rounded-xl overflow-hidden shadow-md border border-[var(--secondary)]/30">
                 <img src={img} alt={`Quinceañera ${idx}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
               </div>
             ))}
@@ -148,7 +148,7 @@ export function XVModerno({ data }: XVModernoProps) {
 
         {/* Dress Code */}
         {data.dressCode && (
-          <div className="text-center space-y-2 py-4 border-t border-[#2b1f48]/40">
+          <div className="text-center space-y-2 py-4 border-t border-[var(--secondary)]/30">
             <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold">Código de Vestimenta</span>
             <p className="text-sm font-medium text-slate-200">{data.dressCode}</p>
           </div>
@@ -156,14 +156,14 @@ export function XVModerno({ data }: XVModernoProps) {
 
         {/* Music Hint if not playing */}
         {mounted && data.musicaUrl && !isPlaying && (
-          <div className="text-center py-2 bg-[#140f23]/30 border border-[#2b1f48]/30 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-400">
+          <div className="text-center py-2 bg-slate-900/30 border border-[var(--secondary)]/20 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-400">
             <Music2 className="h-4 w-4 text-[var(--primary)] animate-pulse" />
             Haz clic en el botón flotante para activar la música
           </div>
         )}
 
         {/* RSVP Placeholder */}
-        <div className="border-t border-[#2b1f48]/40 pt-6 text-center space-y-4">
+        <div className="border-t border-[var(--secondary)]/30 pt-6 text-center space-y-4">
           <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold">Confirmar Lugar</span>
           <p className="text-xs text-slate-400 leading-relaxed">Confirma tu asistencia con nuestro botón interactivo.</p>
           <button 

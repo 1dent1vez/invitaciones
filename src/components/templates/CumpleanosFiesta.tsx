@@ -36,11 +36,11 @@ export function CumpleanosFiesta({ data }: CumpleanosFiestaProps) {
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
         <div className="absolute top-12 left-10 h-3 w-3 rounded-full bg-amber-400 animate-ping" />
         <div className="absolute top-36 right-16 h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-        <div className="absolute top-2/3 left-16 h-3 w-3 rounded-full bg-violet-400 animate-bounce" />
-        <div className="absolute top-1/2 right-12 h-2.5 w-2.5 rounded-full bg-rose-500" />
+        <div className="absolute top-2/3 left-16 h-3 w-3 rounded-full bg-[var(--secondary)] animate-bounce" />
+        <div className="absolute top-1/2 right-12 h-2.5 w-2.5 rounded-full bg-[var(--primary)]" />
       </div>
 
-      <div className="absolute inset-4 border border-slate-900 pointer-events-none rounded-xl" />
+      <div className="absolute inset-4 border border-[var(--secondary)]/15 pointer-events-none rounded-xl" />
 
       {/* Header */}
       <div className="pt-20 px-6 text-center flex flex-col items-center gap-4 relative">
@@ -65,10 +65,10 @@ export function CumpleanosFiesta({ data }: CumpleanosFiestaProps) {
       <div className="px-6 space-y-8 my-8 relative">
         
         {/* Date and Location Card */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-5 shadow-xl">
+        <div className="bg-slate-900/60 border border-[var(--secondary)]/25 rounded-2xl p-5 space-y-5 shadow-xl">
           {/* Date */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-slate-800">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-[var(--secondary)]/20">
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
@@ -79,7 +79,7 @@ export function CumpleanosFiesta({ data }: CumpleanosFiestaProps) {
 
           {/* Location */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-slate-800">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-[var(--secondary)]/20">
               <MapPin className="h-5 w-5" />
             </div>
             <div className="space-y-1">
@@ -103,20 +103,20 @@ export function CumpleanosFiesta({ data }: CumpleanosFiestaProps) {
         {/* Timeline Schedule */}
         <div className="space-y-4">
           <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold text-center block">Programa de la Fiesta</span>
-          <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-5 space-y-4">
+          <div className="bg-slate-900/40 border border-[var(--secondary)]/25 rounded-2xl p-5 space-y-4">
             {defaultTimeline.map((item, idx) => (
               <div key={idx} className="flex gap-4 items-start relative pb-4 last:pb-0">
                 {/* Connector line */}
                 {idx < defaultTimeline.length - 1 && (
-                  <div className="absolute left-5 top-10 bottom-0 w-[1px] bg-slate-800" />
+                  <div className="absolute left-5 top-10 bottom-0 w-[1px] bg-[var(--secondary)]/30" />
                 )}
-                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-slate-400 shrink-0 border border-slate-800/60 z-10">
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-slate-400 shrink-0 border border-[var(--secondary)]/20 z-10">
                   <Clock className="h-4 w-4" />
                 </div>
                 <div className="space-y-0.5">
                   <span className="text-xs font-mono text-[var(--primary)] font-semibold">{item.hora}</span>
                   <h4 className="text-sm font-bold text-white">{item.titulo}</h4>
-                  {item.notas && <p className="text-xs text-slate-400">{item.notas}</p>}
+                  {item.notas ? <p className="text-xs text-slate-400">{item.notas}</p> : null}
                 </div>
               </div>
             ))}
@@ -125,7 +125,7 @@ export function CumpleanosFiesta({ data }: CumpleanosFiestaProps) {
 
         {/* Gift details */}
         {data.regalosDatos && (
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
+          <div className="bg-slate-900/60 border border-[var(--secondary)]/25 rounded-2xl p-5 space-y-3 shadow-xl">
             <div className="flex items-center gap-2 text-[var(--primary)]">
               <Gift className="h-5 w-5" />
               <span className="text-xs uppercase tracking-widest font-bold">Mesa de Regalos</span>
@@ -137,7 +137,7 @@ export function CumpleanosFiesta({ data }: CumpleanosFiestaProps) {
         )}
 
         {/* RSVP Placeholder */}
-        <div className="border-t border-slate-900 pt-6 text-center space-y-4">
+        <div className="border-t border-[var(--secondary)]/20 pt-6 text-center space-y-4">
           <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold">Confirmar Asistencia</span>
           <p className="text-xs text-slate-400">¡Asegura tu lugar para no perderte de la diversión!</p>
           <button 
