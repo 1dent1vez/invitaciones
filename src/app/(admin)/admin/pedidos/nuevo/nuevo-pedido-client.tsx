@@ -23,7 +23,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClienteAction } from "../../clientes/actions";
-import { createPedidoAction, PedidoInput } from "../actions";
+import { createPedidoAction } from "../actions";
+import { PedidoInput } from "@/types";
+
 
 const quickClientSchema = z.object({
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -112,7 +114,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
       template: "boda-elegante",
       precio: 1500,
       notas: "",
-    } as any,
+    } as EventFormValues,
   });
 
   // Watch event type to automatically set template matching it

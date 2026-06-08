@@ -25,9 +25,11 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { registrarPagoAction, PagoInput, clonarPedidoAction } from "./actions";
+import { registrarPagoAction, clonarPedidoAction } from "./actions";
+import { PagoInput } from "@/types";
 import { updatePedidoEstadoAction } from "../actions";
 import { generarQRAction } from "./editar/actions";
+
 import { generarTextoNotificacion } from "@/lib/notificaciones";
 import { RSVPTable } from "./rsvp-table";
 

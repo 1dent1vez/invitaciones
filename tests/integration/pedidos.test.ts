@@ -60,6 +60,7 @@ describe("Pedidos Integration Tests", () => {
       where: { id: res.data!.id },
     });
     expect(check).toBeDefined();
+    console.log("CHECKED PEDIDO:", JSON.stringify(check, null, 2));
     expect(check?.estado).toBe("cotizado");
     expect(Number(check?.precio)).toBe(2500);
     expect(check?.slug).toBe("test-client-for-pedidos-2026");

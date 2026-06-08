@@ -487,7 +487,8 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
       groupedFields.unshift({
         id: "other",
         title: "Otros datos",
-        fields: remainingFields
+        fields: remainingFields,
+        keys: []
       });
     }
   }

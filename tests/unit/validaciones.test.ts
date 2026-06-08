@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { pedidoSchema } from "@/app/(admin)/admin/pedidos/actions";
+import { pedidoSchema } from "@/app/(admin)/admin/pedidos/schemas";
 import { uploadImageAction } from "@/app/(admin)/admin/pedidos/[id]/editar/actions";
 
 // Mock Cloudinary to avoid network calls

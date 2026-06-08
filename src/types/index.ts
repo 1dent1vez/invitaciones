@@ -1,3 +1,9 @@
+import { z } from "zod";
+import { pedidoSchema } from "@/app/(admin)/admin/pedidos/schemas";
+import { pagoSchema } from "@/app/(admin)/admin/pedidos/[id]/schemas";
+import { savePedidoSchema } from "@/app/(admin)/admin/pedidos/[id]/editar/schemas";
+import { clienteSchema } from "@/app/(admin)/admin/clientes/schemas";
+
 export type TemplateType = 'boda-elegante' | 'xv-moderno' | 'baby-shower' | 'cumpleanos-fiesta';
 
 export interface TimelineEvent {
@@ -40,3 +46,15 @@ export interface TemplateConfig {
   name: string;
   fields: FieldConfig[];
 }
+
+export interface ActionResult<T = void> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export type PedidoInput = z.infer<typeof pedidoSchema>;
+export type PagoInput = z.infer<typeof pagoSchema>;
+export type ClienteInput = z.infer<typeof clienteSchema>;
+export type SavePedidoInput = z.infer<ReturnType<typeof savePedidoSchema>>;
+

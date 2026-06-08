@@ -41,9 +41,10 @@ import {
 import {
   createClienteAction,
   updateClienteAction,
-  deleteClienteAction,
-  ClienteInput
+  deleteClienteAction
 } from "./actions";
+import { ClienteInput } from "@/types";
+
 
 const clienteSchema = z.object({
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),

@@ -1,38 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { ActionResult, PedidoInput } from "@/types";
+import { pedidoSchema } from "./schemas";
 
-export interface ActionResult<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-export const pedidoSchema = z.object({
-  clienteId: z.string().min(1, "El cliente es requerido"),
-  tipoEvento: z.enum(["boda", "xv", "baby_shower", "cumpleanos"], {
-    message: "El tipo de evento no es válido",
-  }),
-  fechaEvento: z.string().min(1, "La fecha y hora del evento es requerida").refine((val) => {
-    const d = new Date(val);
-    if (isNaN(d.getTime())) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return d >= today;
-  }, {
-    message: "La fecha y hora del evento no puede ser anterior a hoy",
-  }),
-  template: z.enum(["boda-elegante", "xv-moderno", "baby-shower", "cumpleanos-fiesta"], {
-    message: "La plantilla no es válida",
-  }),
-  precio: z.preprocess((val) => Number(val), z.number().positive("El precio debe ser un número positivo")),
-  notas: z.string().optional().transform(val => val || ""),
-});
-
-export type PedidoInput = z.infer<typeof pedidoSchema>;
 
 function slugify(text: string): string {
   return text
@@ -85,7 +58,6 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
       return { success: false, error: "La fecha del evento no es válida" };
     }
 
-    const baseSlug = `${client.nombre}-${eventDate.getFullYear()}`;
     const slug = await getUniqueSlug(client.nombre, eventDate);
 
     // Initial default variables for the invitation template

@@ -1,26 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { ActionResult, PagoInput } from "@/types";
+import { pagoSchema } from "./schemas";
 
-export interface ActionResult<T = void> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-const pagoSchema = z.object({
-  monto: z.preprocess((val) => Number(val), z.number().min(0.01, "El monto debe ser mayor a 0")),
-  metodo: z.enum(["efectivo", "transferencia"], {
-    message: "El método de pago no es válido",
-  }),
-  comprobante: z.string().optional().nullable(),
-  notas: z.string().optional().nullable(),
-});
-
-export type PagoInput = z.infer<typeof pagoSchema>;
 
 export async function registrarPagoAction(
   pedidoId: string,

@@ -1,27 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Cliente } from "@prisma/client";
+import { ActionResult, ClienteInput } from "@/types";
+import { clienteSchema } from "./schemas";
 
-export interface ActionResult<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-const clienteSchema = z.object({
-  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  telefono: z.string().optional().nullable(),
-  fuente: z.enum(["tienda", "instagram", "whatsapp", "referido"], {
-    message: "La fuente no es válida",
-  }),
-  email: z.preprocess((val) => (val === "" ? null : val), z.string().email("El correo electrónico no es válido").optional().nullable()),
-  notas: z.string().optional().nullable(),
-});
-
-export type ClienteInput = z.infer<typeof clienteSchema>;
 
 export async function getClientesAction(search?: string): Promise<ActionResult<Cliente[]>> {
   try {
