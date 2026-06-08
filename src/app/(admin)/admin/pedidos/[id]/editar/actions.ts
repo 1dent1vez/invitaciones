@@ -83,37 +83,40 @@ export async function publicarInvitacionAction(
       return { success: false, error: "El pedido no existe" };
     }
 
-    const datos = (pedido.datosInvitacion as unknown as InvitacionData) || {};
-    const names = datos.nombres || pedido.cliente.nombre || "evento";
+    let slug = pedido.slug;
+    if (!slug) {
+      const datos = (pedido.datosInvitacion as unknown as InvitacionData) || {};
+      const names = datos.nombre || datos.nombres || pedido.cliente.nombre || "evento";
 
-    let baseSlug = await slugify(names);
-    const date = new Date(pedido.fechaEvento);
-    if (!isNaN(date.getTime())) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      baseSlug = `${baseSlug}-${year}-${month}-${day}`;
-    }
-
-    let slug = baseSlug;
-    let suffix = 1;
-
-    // Colisión de slugs - busca un slug libre
-    while (true) {
-      const existing = await prisma.pedido.findFirst({
-        where: {
-          slug,
-          id: { not: pedidoId },
-        },
-      });
-      if (!existing) {
-        break;
+      let baseSlug = await slugify(names);
+      const date = new Date(pedido.fechaEvento);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        baseSlug = `${baseSlug}-${year}-${month}-${day}`;
       }
-      slug = `${baseSlug}-${suffix}`;
-      suffix++;
+
+      slug = baseSlug;
+      let suffix = 1;
+
+      // Colisión de slugs - busca un slug libre
+      while (true) {
+        const existing = await prisma.pedido.findFirst({
+          where: {
+            slug,
+            id: { not: pedidoId },
+          },
+        });
+        if (!existing) {
+          break;
+        }
+        slug = `${baseSlug}-${suffix}`;
+        suffix++;
+      }
     }
 
-    const host = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+    const host = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
     const urlPublica = `${host}/i/${slug}`;
 
     const updated = await prisma.pedido.update({
@@ -121,6 +124,7 @@ export async function publicarInvitacionAction(
       data: {
         slug,
         urlPublica,
+        estadoInvitacion: "PUBLICADA",
         estado: "entregado", // publicando marca el pedido como entregado
       },
     });

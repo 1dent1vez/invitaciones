@@ -24,14 +24,17 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
       where: { slug },
     });
 
-    if (!order || !order.datosInvitacion) {
+    if (!order || !order.datosInvitacion || order.estadoInvitacion !== "PUBLICADA") {
       return {
         title: "Invitación Digital",
       };
     }
 
     const datos = order.datosInvitacion as unknown as InvitacionData;
-    const title = datos.nombres || "Invitación Especial";
+    const isCumple = order.tipoEvento === "cumpleanos";
+    const title = isCumple
+      ? (datos.nombre || datos.nombres || "Mi Cumpleaños")
+      : (datos.nombres || datos.nombre || "Invitación Especial");
     
     let dateText = "";
     try {
@@ -49,7 +52,9 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
 
     const eventName = order.tipoEvento === "boda" ? "nuestra Boda" : order.tipoEvento === "xv" ? "mis XV Años" : order.tipoEvento === "baby_shower" ? "nuestro Baby Shower" : "mi Cumpleaños";
     const description = `Te invitamos a celebrar ${eventName} el día ${dateText}. Haz clic para ver los detalles del evento y confirmar tu asistencia.`;
-    const ogImage = datos.portadaUrl || (datos.fotos && datos.fotos[0]) || "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop";
+    const ogImage = isCumple
+      ? (datos.fotoPortada || datos.portadaUrl || (datos.fotos && datos.fotos[0]) || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop")
+      : (datos.portadaUrl || datos.fotoPortada || (datos.fotos && datos.fotos[0]) || "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop");
 
     return {
       title: `${title} | Invitación Digital`,
@@ -88,7 +93,7 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
     where: { slug },
   });
 
-  if (!order || !order.datosInvitacion) {
+  if (!order || !order.datosInvitacion || order.estadoInvitacion !== "PUBLICADA") {
     notFound();
   }
 
@@ -114,7 +119,7 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
   return (
     <TemplateWrapper data={datos}>
       <TemplateComponent data={datos} />
-      <PublicRSVPForm slug={slug} />
+      <PublicRSVPForm slug={slug} fechaLimiteRSVP={datos.fechaLimiteRSVP} />
     </TemplateWrapper>
   );
 }

@@ -28,13 +28,21 @@ type RSVPFormValues = z.infer<typeof rsvpFormSchema>;
 
 interface PublicRSVPFormProps {
   slug: string;
+  fechaLimiteRSVP?: string;
 }
 
-export function PublicRSVPForm({ slug }: PublicRSVPFormProps) {
+export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const isPastDeadline = React.useMemo(() => {
+    if (!fechaLimiteRSVP) return false;
+    const limit = new Date(fechaLimiteRSVP).getTime();
+    if (isNaN(limit)) return false;
+    return Date.now() > limit;
+  }, [fechaLimiteRSVP]);
 
   const {
     register,
@@ -57,6 +65,10 @@ export function PublicRSVPForm({ slug }: PublicRSVPFormProps) {
   const watchAsiste = watch("asiste");
 
   const onSubmit = async (data: RSVPFormValues) => {
+    if (isPastDeadline) {
+      setSubmitError("El período de confirmación ha cerrado.");
+      return;
+    }
     setSubmitError(null);
     startTransition(async () => {
       const res = await createRSVPAction(slug, {
@@ -85,7 +97,12 @@ export function PublicRSVPForm({ slug }: PublicRSVPFormProps) {
         Por favor, confírmanos tu asistencia para asegurar tu lugar en nuestro evento.
       </p>
 
-      {isSubmitted ? (
+      {isPastDeadline ? (
+        <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-6 flex flex-col items-center gap-2 max-w-sm mx-auto">
+          <p className="text-sm font-semibold text-rose-400">Confirmación Cerrada</p>
+          <p className="text-xs text-slate-400">El período de confirmación ha cerrado.</p>
+        </div>
+      ) : isSubmitted ? (
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6 flex flex-col items-center gap-3 animate-fade-in">
           <CheckCircle className="h-10 w-10 text-emerald-400" />
           <p className="text-sm font-semibold text-white">¡Confirmación Registrada!</p>

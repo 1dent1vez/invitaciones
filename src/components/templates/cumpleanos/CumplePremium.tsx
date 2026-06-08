@@ -7,6 +7,153 @@ import {
   QrCode, UserCheck, Video 
 } from "lucide-react";
 import { InvitacionData } from "@/types";
+import { motion } from "framer-motion";
+
+function triggerConfetti() {
+  if (typeof window === "undefined") return () => {};
+  
+  const canvas = document.createElement("canvas");
+  canvas.style.position = "fixed";
+  canvas.style.top = "0";
+  canvas.style.left = "0";
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.style.pointerEvents = "none";
+  canvas.style.zIndex = "9999";
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return () => {};
+
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  const resizeHandler = () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  };
+  window.addEventListener("resize", resizeHandler);
+
+  const colors = ["#FF6B6B", "#4ECDC4", "#FFE66D", "#aa77ff", "#ff77ff"];
+  const particles: Array<{
+    x: number;
+    y: number;
+    size: number;
+    color: string;
+    speedX: number;
+    speedY: number;
+    rotation: number;
+    rotationSpeed: number;
+  }> = [];
+
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * -height - 20,
+      size: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speedX: Math.random() * 3 - 1.5,
+      speedY: Math.random() * 4 + 2,
+      rotation: Math.random() * 360,
+      rotationSpeed: Math.random() * 3 - 1.5,
+    });
+  }
+
+  let animationFrameId: number;
+  function update() {
+    ctx!.clearRect(0, 0, width, height);
+    let alive = false;
+
+    particles.forEach((p) => {
+      p.x += p.speedX;
+      p.y += p.speedY;
+      p.rotation += p.rotationSpeed;
+
+      if (p.y < height) {
+        alive = true;
+      }
+
+      ctx!.save();
+      ctx!.translate(p.x, p.y);
+      ctx!.rotate((p.rotation * Math.PI) / 180);
+      ctx!.fillStyle = p.color;
+      ctx!.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx!.restore();
+    });
+
+    if (alive) {
+      animationFrameId = requestAnimationFrame(update);
+    } else {
+      if (canvas.parentNode) {
+        document.body.removeChild(canvas);
+      }
+      window.removeEventListener("resize", resizeHandler);
+    }
+  }
+
+  update();
+  
+  return () => {
+    cancelAnimationFrame(animationFrameId);
+    window.removeEventListener("resize", resizeHandler);
+    if (canvas.parentNode) {
+      document.body.removeChild(canvas);
+    }
+  };
+}
+
+function CountdownTimer({ fecha }: { fecha: string }) {
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+
+  useEffect(() => {
+    const target = new Date(fecha).getTime();
+    if (isNaN(target)) return;
+
+    const calculateTime = () => {
+      const now = new Date().getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setTimeLeft(null);
+      } else {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeft({ days, hours, minutes, seconds });
+      }
+    };
+
+    calculateTime();
+    const interval = setInterval(calculateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, [fecha]);
+
+  if (!timeLeft) return null;
+
+  const units = [
+    { label: "Días", value: timeLeft.days },
+    { label: "Hrs", value: timeLeft.hours },
+    { label: "Min", value: timeLeft.minutes },
+    { label: "Seg", value: timeLeft.seconds },
+  ];
+
+  return (
+    <div className="grid grid-cols-4 gap-2 text-center max-w-xs mx-auto">
+      {units.map((unit) => (
+        <motion.div
+          key={unit.label}
+          layout
+          className="bg-slate-900/60 border border-[var(--primary)]/15 rounded-xl p-2 backdrop-blur-md"
+        >
+          <div className="text-lg font-bold text-white font-mono tracking-tight">{String(unit.value).padStart(2, "0")}</div>
+          <div className="text-[9px] uppercase tracking-wider text-[var(--primary)] mt-0.5 font-semibold">{unit.label}</div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
 
 interface CumplePremiumProps {
   data: InvitacionData;
@@ -74,6 +221,14 @@ export function CumplePremium({ data }: CumplePremiumProps) {
     }).filter(i => i.event !== "");
   };
 
+  // Trigger Confetti effect on mount if enabled
+  useEffect(() => {
+    if (data.confettiAnimacion !== false) {
+      const cleanup = triggerConfetti();
+      return cleanup;
+    }
+  }, [data.confettiAnimacion, data.fecha]); // include date to re-trigger if dates change
+
   const nombreFestejado = data.nombre || data.nombres || "Festejado";
   const edadFestejado = data.edad || "";
   const fraseMensaje = data.mensaje || "¡Celebremos juntos esta fecha especial!";
@@ -109,6 +264,24 @@ export function CumplePremium({ data }: CumplePremiumProps) {
   const videoURL = data.videoURL || "";
   const colorAcento = data.colorAcento || "Dorado";
 
+  // Parse RSVP deadline date
+  let limitDateText = "";
+  try {
+    if (data.fechaLimiteRSVP) {
+      const d = new Date(data.fechaLimiteRSVP);
+      if (!isNaN(d.getTime())) {
+        limitDateText = d.toLocaleDateString("es-ES", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+      }
+    }
+  } catch {
+    // fallback
+  }
+
   return (
     <div className="flex-1 flex flex-col justify-between bg-[#0B0C10] text-[#C5C6C7] pb-16 relative">
       {/* CSS Confetti / Falling particles */}
@@ -135,6 +308,17 @@ export function CumplePremium({ data }: CumplePremiumProps) {
           className="absolute inset-0 w-full h-full object-cover select-none"
         />
         
+        {/* Confetti float button */}
+        {data.confettiAnimacion !== false && (
+          <button
+            onClick={() => triggerConfetti()}
+            className="absolute top-6 left-6 z-20 h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/70 border border-white/10 text-xl backdrop-blur-sm shadow-xl active:scale-95 transition-all hover:bg-slate-900"
+            title="Lanzar Confetti"
+          >
+            🎉
+          </button>
+        )}
+
         {/* Play/Pause float button for background music */}
         {data.musicaUrl && (
           <button
@@ -174,6 +358,13 @@ export function CumplePremium({ data }: CumplePremiumProps) {
           </p>
         </div>
 
+        {/* Countdown Timer */}
+        {data.cuentaRegresiva !== false && data.fecha && (
+          <div className="py-2 animate-fade-in">
+            <CountdownTimer fecha={data.fecha} />
+          </div>
+        )}
+
         {/* Date and Location Card */}
         <div className="bg-slate-900/60 border border-[var(--primary)]/10 rounded-2xl p-5 space-y-5 shadow-xl backdrop-blur-md">
           <div className="flex gap-4 items-start">
@@ -208,6 +399,19 @@ export function CumplePremium({ data }: CumplePremiumProps) {
               )}
             </div>
           </div>
+
+          {limitDateText && (
+            <div className="flex gap-4 items-start border-t border-[var(--primary)]/10 pt-4">
+              <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-amber-500 shrink-0 border border-amber-500/15 animate-pulse">
+                <Clock className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">Límite para Confirmar</span>
+                <p className="text-sm font-semibold text-white">Antes del {limitDateText}</p>
+                <p className="text-[10px] text-slate-400">Agradecemos tu pronta confirmación.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Pases Personalizados */}
@@ -397,6 +601,15 @@ export function CumplePremium({ data }: CumplePremiumProps) {
         )}
 
       </div>
+
+      {/* Mensaje de Agradecimiento */}
+      {data.mensajeAgradecimiento && (
+        <div className="text-center px-6 pt-8 pb-2 relative z-10">
+          <p className="text-xs text-[var(--primary)] font-medium italic max-w-xs mx-auto leading-relaxed">
+            {data.mensajeAgradecimiento}
+          </p>
+        </div>
+      )}
 
       <div className="text-center pt-12 text-[10px] text-slate-700 uppercase tracking-[0.3em] relative z-10">
         ¡Una celebración inolvidable!

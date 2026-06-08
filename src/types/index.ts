@@ -84,9 +84,13 @@ export interface InvitacionData {
   colorPrincipal?: string;
   padres?: string;
   fotos?: string[];
+  fechaLimiteRSVP?: string;
+  mensajeAgradecimiento?: string;
+  confettiAnimacion?: boolean;
+  cuentaRegresiva?: boolean;
 }
 
-export type FieldType = 'text' | 'date' | 'color' | 'image' | 'textarea' | 'timeline' | 'time' | 'number' | 'tel' | 'url' | 'select' | 'boolean';
+export type FieldType = 'text' | 'date' | 'color' | 'image' | 'textarea' | 'timeline' | 'time' | 'number' | 'tel' | 'url' | 'select' | 'boolean' | 'gallery';
 
 export interface FieldConfig {
   key: keyof InvitacionData | string;

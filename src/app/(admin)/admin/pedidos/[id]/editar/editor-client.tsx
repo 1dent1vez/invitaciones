@@ -89,6 +89,25 @@ const getDraftFormSchema = () => {
     colorAcento: z.string().optional().nullable().or(z.literal("")),
     padrinos: z.string().optional().nullable().or(z.literal("")),
     padres: z.string().optional().nullable().or(z.literal("")),
+    nombreBebe: z.string().optional().nullable().or(z.literal("")),
+    fechaLimiteRSVP: z.string().optional().nullable().or(z.literal("")),
+    mensajeAgradecimiento: z.string().optional().nullable().or(z.literal("")),
+    confettiAnimacion: z.boolean().optional().nullable().or(z.literal(false)),
+    cuentaRegresiva: z.boolean().optional().nullable().or(z.literal(false)),
+    tipoCelebracion: z.string().optional().nullable().or(z.literal("")),
+    tipoBebe: z.string().optional().nullable().or(z.literal("")),
+    nombreMama: z.string().optional().nullable().or(z.literal("")),
+    nombrePapa: z.string().optional().nullable().or(z.literal("")),
+    listaRegalos: z.string().optional().nullable().or(z.literal("")),
+    juegos: z.string().optional().nullable().or(z.literal("")),
+    historiaEmbarazo: z.string().optional().nullable().or(z.literal("")),
+    historiaVivencia: z.string().optional().nullable().or(z.literal("")),
+    historiaSignificado: z.string().optional().nullable().or(z.literal("")),
+    historiaConocieron: z.string().optional().nullable().or(z.literal("")),
+    historiaPropuesta: z.string().optional().nullable().or(z.literal("")),
+    historiaPadres: z.string().optional().nullable().or(z.literal("")),
+    historiaAmigos: z.string().optional().nullable().or(z.literal("")),
+    chambelanes: z.string().optional().nullable().or(z.literal("")),
   });
 };
 
@@ -169,6 +188,25 @@ type EditorFormValues = {
   colorAcento?: string | null;
   padrinos?: string | null;
   padres?: string | null;
+  nombreBebe?: string | null;
+  fechaLimiteRSVP?: string | null;
+  mensajeAgradecimiento?: string | null;
+  confettiAnimacion?: boolean;
+  cuentaRegresiva?: boolean;
+  tipoCelebracion?: string | null;
+  tipoBebe?: string | null;
+  nombreMama?: string | null;
+  nombrePapa?: string | null;
+  listaRegalos?: string | null;
+  juegos?: string | null;
+  historiaEmbarazo?: string | null;
+  historiaVivencia?: string | null;
+  historiaSignificado?: string | null;
+  historiaConocieron?: string | null;
+  historiaPropuesta?: string | null;
+  historiaPadres?: string | null;
+  historiaAmigos?: string | null;
+  chambelanes?: string | null;
 };
 
 type PedidoWithCliente = Pedido & { cliente: Cliente };
@@ -266,6 +304,145 @@ function getSafeTemplateData(data: Partial<InvitacionData> | null | undefined, t
     padrinos: safe.padrinos || "",
     padres: safe.padres || "",
   };
+}
+
+interface MultiImageUploaderProps {
+  value: string[];
+  onChange: (value: string[]) => void;
+  maxImages: number;
+}
+
+function MultiImageUploader({ value, onChange, maxImages }: MultiImageUploaderProps) {
+  const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const filesArray = Array.from(files);
+    const remainingSlots = maxImages - value.length;
+    if (filesArray.length > remainingSlots) {
+      toast({
+        title: "Límite superado",
+        description: `Solo puedes subir hasta ${maxImages} imágenes en este paquete.`,
+        type: "error",
+      });
+      return;
+    }
+
+    setUploading(true);
+    const newUrls = [...value];
+
+    for (const file of filesArray) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await uploadImageAction(formData);
+        if (res.success && res.data) {
+          newUrls.push(res.data);
+        } else {
+          toast({
+            title: "Error al subir imagen",
+            description: res.error || "No se pudo subir una de las imágenes.",
+            type: "error",
+          });
+        }
+      } catch {
+        toast({
+          title: "Error de red",
+          description: "No se pudo conectar al servidor para subir las imágenes.",
+          type: "error",
+        });
+      }
+    }
+
+    onChange(newUrls);
+    setUploading(false);
+  };
+
+  const removeImage = (indexToRemove: number) => {
+    const newUrls = value.filter((_, idx) => idx !== indexToRemove);
+    onChange(newUrls);
+  };
+
+  const moveImage = (index: number, direction: "up" | "down") => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= value.length) return;
+    const newUrls = [...value];
+    const temp = newUrls[index];
+    newUrls[index] = newUrls[targetIndex];
+    newUrls[targetIndex] = temp;
+    onChange(newUrls);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center text-xs text-slate-400">
+        <span>Fotos de galería:</span>
+        <span className="font-bold">{value.length} de {maxImages}</span>
+      </div>
+
+      {value.length > 0 && (
+        <div className="grid grid-cols-3 gap-2">
+          {value.map((url, idx) => (
+            <div key={idx} className="relative aspect-square rounded-lg border border-slate-800 overflow-hidden bg-slate-950 group">
+              <img src={url} alt={`Galería ${idx + 1}`} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1">
+                <div className="flex justify-between w-full">
+                  <button
+                    type="button"
+                    disabled={idx === 0}
+                    onClick={() => moveImage(idx, "up")}
+                    className="p-1 bg-slate-900 rounded text-slate-300 hover:text-white disabled:opacity-30 text-xs font-bold"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    disabled={idx === value.length - 1}
+                    onClick={() => moveImage(idx, "down")}
+                    className="p-1 bg-slate-900 rounded text-slate-300 hover:text-white disabled:opacity-30 text-xs font-bold"
+                  >
+                    →
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="self-center p-1 bg-rose-600 hover:bg-rose-500 rounded text-white text-[10px] font-semibold flex items-center gap-0.5"
+                >
+                  <Trash2 className="h-2.5 w-2.5" />
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {value.length < maxImages && (
+        <div className="border-2 border-dashed border-slate-800 hover:border-violet-500/50 hover:bg-violet-600/5 rounded-xl p-4 transition-all text-center flex flex-col items-center justify-center cursor-pointer group relative">
+          <input
+            type="file"
+            multiple
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            accept="image/*"
+            disabled={uploading}
+            onChange={handleUpload}
+          />
+          {uploading ? (
+            <Loader2 className="h-5 w-5 animate-spin text-violet-400 mb-1" />
+          ) : (
+            <Upload className="h-5 w-5 text-slate-400 group-hover:text-violet-400 transition-colors mb-1" />
+          )}
+          <p className="text-xs font-semibold text-slate-300">
+            {uploading ? "Subiendo fotos..." : "Subir fotos"}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 class PreviewErrorBoundary extends React.Component<
@@ -373,21 +550,66 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
   const schema = useMemo(() => getDraftFormSchema(), []);
 
   const defaultValues = useMemo<EditorFormValues>(() => ({
-    nombres: dbDatos.nombres || pedido.cliente?.nombre || "",
+    // Campos comunes / boda / xv / babyshower / cumpleanos
+    nombres: dbDatos.nombres || "",
+    nombre: dbDatos.nombre || pedido.cliente?.nombre || "",
+    edad: dbDatos.edad || "",
     fechaPart: initialDateParts.fechaPart,
     horaPart: initialDateParts.horaPart,
-    ubicacion: dbDatos.ubicacion || pedido.notas || "",
+    ubicacion: dbDatos.ubicacion || "",
+    lugar: dbDatos.lugar || pedido.notas || "",
+    direccion: dbDatos.direccion || "",
     mapaUrl: dbDatos.mapaUrl || "",
+    mapsLink: dbDatos.mapsLink || "",
     mensaje: dbDatos.mensaje || "",
-    colorPrincipal: dbDatos.colorPrincipal || (templateType.startsWith("boda") ? "#C5A880" : templateType.startsWith("xv") ? "#EC4899" : templateType.startsWith("babyshower") ? "#a8d8ea" : "#F59E0B"),
+    colorPrimario: dbDatos.colorPrimario || (templateType.startsWith("cumpleanos") ? "#f59e0b" : ""),
     colorSecundario: dbDatos.colorSecundario || (templateType.startsWith("xv") ? "#4C1D95" : "#1e293b"),
+    colorPrincipal: dbDatos.colorPrincipal || (templateType.startsWith("boda") ? "#C5A880" : templateType.startsWith("xv") ? "#EC4899" : templateType.startsWith("babyshower") ? "#a8d8ea" : "#F59E0B"),
     portadaUrl: dbDatos.portadaUrl || "",
+    fotoPortada: dbDatos.fotoPortada || "",
     dressCode: dbDatos.dressCode || "",
+    dressCodeDesc: dbDatos.dressCodeDesc || "",
+    mensajeFestejo: dbDatos.mensajeFestejo || "",
+    itinerario: dbDatos.itinerario || "",
+    datosRegalo: dbDatos.datosRegalo || "",
     regalosDatos: dbDatos.regalosDatos || "",
     musicaUrl: dbDatos.musicaUrl || "",
-    nombreBebe: dbDatos.nombreBebe || "",
+    musica: dbDatos.musica || "",
+    whatsapp: dbDatos.whatsapp || "",
+    mesaRegalos: dbDatos.mesaRegalos || false,
+    mesaRegalosDatos: dbDatos.mesaRegalosDatos || "",
+    historiaEdad: dbDatos.historiaEdad || "",
+    historiaSeresQueridos: dbDatos.historiaSeresQueridos || "",
+    historiaRecuerdo: dbDatos.historiaRecuerdo || "",
+    fotosExtra: dbDatos.fotosExtra || [],
+    fotosGaleria: dbDatos.fotosGaleria || dbDatos.fotos || [],
+    buzonDeseos: dbDatos.buzonDeseos !== undefined ? dbDatos.buzonDeseos : false,
+    pases: dbDatos.pases !== undefined ? dbDatos.pases : false,
+    numPases: dbDatos.numPases || 2,
+    tematica: dbDatos.tematica || "",
+    videoURL: dbDatos.videoURL || "",
+    colorAcento: dbDatos.colorAcento || "",
     padrinos: dbDatos.padrinos || "",
     padres: dbDatos.padres || "",
+    nombreBebe: dbDatos.nombreBebe || "",
+    fechaLimiteRSVP: dbDatos.fechaLimiteRSVP || "",
+    mensajeAgradecimiento: dbDatos.mensajeAgradecimiento || "",
+    confettiAnimacion: dbDatos.confettiAnimacion !== undefined ? dbDatos.confettiAnimacion : true,
+    cuentaRegresiva: dbDatos.cuentaRegresiva !== undefined ? dbDatos.cuentaRegresiva : true,
+    tipoCelebracion: dbDatos.tipoCelebracion || "",
+    tipoBebe: dbDatos.tipoBebe || "",
+    nombreMama: dbDatos.nombreMama || "",
+    nombrePapa: dbDatos.nombrePapa || "",
+    listaRegalos: dbDatos.listaRegalos || "",
+    juegos: dbDatos.juegos || "",
+    historiaEmbarazo: dbDatos.historiaEmbarazo || "",
+    historiaVivencia: dbDatos.historiaVivencia || "",
+    historiaSignificado: dbDatos.historiaSignificado || "",
+    historiaConocieron: dbDatos.historiaConocieron || "",
+    historiaPropuesta: dbDatos.historiaPropuesta || "",
+    historiaPadres: dbDatos.historiaPadres || "",
+    historiaAmigos: dbDatos.historiaAmigos || "",
+    chambelanes: dbDatos.chambelanes || "",
   }), [dbDatos, pedido, initialDateParts, templateType]);
 
   const {
@@ -936,6 +1158,14 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
                                   errors[registerKey] ? "border-rose-500" : "border-slate-800"
                                 )}
                                 {...register(registerKey)}
+                              />
+                            )}
+
+                            {field.type === "gallery" && (
+                              <MultiImageUploader
+                                value={(watchedData[registerKey] as string[]) || []}
+                                onChange={(urls) => setValue(registerKey, urls, { shouldDirty: true, shouldValidate: true })}
+                                maxImages={config.id.includes("premium") ? 6 : 3}
                               />
                             )}
 

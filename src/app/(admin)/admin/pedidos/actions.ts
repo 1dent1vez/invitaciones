@@ -18,7 +18,7 @@ function slugify(text: string): string {
     .replace(/-+/g, "-"); // collapse multiple dashes
 }
 
-async function getUniqueSlug(clientName: string, eventDate: Date): Promise<string> {
+export async function getUniqueSlug(clientName: string, eventDate: Date): Promise<string> {
   const year = eventDate.getFullYear();
   const baseSlug = `${slugify(clientName)}-${year}`;
   let slug = baseSlug;
@@ -58,8 +58,6 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
       return { success: false, error: "La fecha del evento no es válida" };
     }
 
-    const slug = await getUniqueSlug(client.nombre, eventDate);
-
     // Initial default variables for the invitation template
     const isCumple = parsed.data.tipoEvento === "cumpleanos";
     const defaultDatosJson = isCumple ? {
@@ -93,8 +91,8 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
         precio: new Prisma.Decimal(parsed.data.precio),
         notas: parsed.data.notas || null,
         estado: "cotizado",
-        slug,
-        urlPublica: `http://localhost:3000/i/${slug}`,
+        slug: null,
+        urlPublica: null,
         datosInvitacion: defaultDatosJson as Prisma.InputJsonValue,
       },
     });

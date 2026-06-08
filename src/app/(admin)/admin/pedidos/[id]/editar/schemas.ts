@@ -38,7 +38,7 @@ export const draftPedidoSchema = z.object({
   nombreBebe: z.string().optional().nullable().or(z.literal("")),
   padrinos: z.string().optional().nullable().or(z.literal("")),
   padres: z.string().optional().nullable().or(z.literal("")),
-});
+}).passthrough();
 
 // Publication Schema: Enforces required fields based on template
 export const publishPedidoSchema = (templateType: string) => {

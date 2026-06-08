@@ -88,7 +88,7 @@ describe("EditorClient Component Tests", () => {
     const wrapper = container.querySelector('[style*="--primary"]');
     expect(wrapper).not.toBeNull();
     let styleAttr = wrapper?.getAttribute("style") || "";
-    expect(styleAttr).toContain("--primary: #F59E0B");
+    expect(styleAttr.toLowerCase()).toContain("--primary: #f59e0b");
 
     // Get color principal text input (associated with default color value)
     const colorInput = container.querySelector('input[name="colorPrimario"]') as HTMLInputElement;

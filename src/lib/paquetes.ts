@@ -12,7 +12,7 @@ export type Paquete = typeof PAQUETES[number];
 
 export interface CampoConfig {
   id: string;
-  tipo: "text" | "textarea" | "date" | "time" | "number" | "tel" | "url" | "upload" | "select" | "boolean" | "color";
+  tipo: "text" | "textarea" | "date" | "time" | "number" | "tel" | "url" | "upload" | "select" | "boolean" | "color" | "gallery";
   label: string;
   required: boolean;
   placeholder?: string;
@@ -359,7 +359,7 @@ export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteCo
         { id: "whatsapp", tipo: "tel", label: "WhatsApp", required: true },
         { id: "colorPrimario", tipo: "color", label: "Color primario", required: false, default: "#f59e0b" },
         { id: "colorSecundario", tipo: "color", label: "Color secundario", required: false, default: "#1f2937" },
-        { id: "fotosGaleria", tipo: "upload", label: "Fotos galería", required: false, max: 6 },
+        { id: "fotosGaleria", tipo: "gallery", label: "Fotos galería", required: false, max: 3 },
         { id: "dressCode", tipo: "select", label: "Dress code", required: true, options: ["Casual", "Fiesta", "Temático", "Elegante"] },
         { id: "dressCodeDesc", tipo: "textarea", label: "Descripción", required: false, placeholder: "Vengan cómodos, habrá baile" },
         { id: "mensajeFestejo", tipo: "textarea", label: "Mensaje del festejado", required: false, placeholder: "¡Gracias por ser parte de mi vida!" },
@@ -388,7 +388,7 @@ export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteCo
         { id: "whatsapp", tipo: "tel", label: "WhatsApp", required: true },
         { id: "colorPrimario", tipo: "color", label: "Color primario", required: false, default: "#f59e0b" },
         { id: "colorSecundario", tipo: "color", label: "Color secundario", required: false, default: "#1f2937" },
-        { id: "fotosGaleria", tipo: "upload", label: "Fotos galería", required: false, max: 6 },
+        { id: "fotosGaleria", tipo: "gallery", label: "Fotos galería", required: false, max: 6 },
         { id: "dressCode", tipo: "select", label: "Dress code", required: true, options: ["Casual", "Fiesta", "Temático", "Elegante"] },
         { id: "dressCodeDesc", tipo: "textarea", label: "Descripción", required: false },
         { id: "mensajeFestejo", tipo: "textarea", label: "Mensaje festejado", required: false },
@@ -406,6 +406,10 @@ export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteCo
         { id: "tematica", tipo: "select", label: "Temática", required: true, options: ["Tropical", "Vintage", "Neon", "Elegante", "Infantil"] },
         { id: "videoURL", tipo: "url", label: "Link video", required: false },
         { id: "colorAcento", tipo: "select", label: "Color de acento", required: true, options: ["Dorado", "Plateado", "Rosa", "Azul", "Verde"] },
+        { id: "fechaLimiteRSVP", tipo: "date", label: "Fecha límite de confirmación", required: false },
+        { id: "mensajeAgradecimiento", tipo: "textarea", label: "Mensaje de agradecimiento", required: false },
+        { id: "confettiAnimacion", tipo: "boolean", label: "Activar confetti", required: false, default: true },
+        { id: "cuentaRegresiva", tipo: "boolean", label: "Mostrar cuenta regresiva", required: false, default: true },
       ],
     },
   },
