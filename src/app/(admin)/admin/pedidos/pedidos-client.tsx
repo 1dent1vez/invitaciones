@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   FileText, 
   ArrowLeft, 
@@ -33,6 +34,7 @@ const ESTADOS = [
 ];
 
 export function PedidosClient({ initialPedidos }: PedidosClientProps) {
+  const router = useRouter();
   const [pedidos, setPedidos] = useState(initialPedidos);
   const [search, setSearch] = useState("");
   const [eventTypeFilter, setEventTypeFilter] = useState("todos");
@@ -159,8 +161,9 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
                   colPedidos.map((pedido) => (
                     <div
                       key={pedido.id}
+                      onClick={() => router.push(`/admin/pedidos/${pedido.id}`)}
                       className={cn(
-                        "group relative rounded-xl border p-4 bg-slate-950/40 hover:border-slate-800 hover:bg-slate-950 transition-all duration-300 shadow-md hover:shadow-lg",
+                        "group relative rounded-xl border p-4 bg-slate-950/40 hover:border-slate-800 hover:bg-slate-950 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer",
                         isPending && "opacity-60"
                       )}
                     >
@@ -200,7 +203,10 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleMoveState(pedido.id, col.key, "prev")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMoveState(pedido.id, col.key, "prev");
+                            }}
                             className="h-7 w-7 text-slate-500 hover:text-white disabled:opacity-30 hover:bg-slate-900"
                             disabled={col.key === "cotizado" || isPending}
                             title="Mover al estado anterior"
@@ -209,10 +215,10 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
                           </Button>
 
                           {/* Detail View Button */}
-                          <Link href={`/admin/pedidos/${pedido.id}`} className="inline-flex">
+                          <Link href={`/admin/pedidos/${pedido.id}`} className="inline-flex" onClick={(e) => e.stopPropagation()}>
                             <Button
-                              variant="ghost"
-                              className="h-7 px-2 text-4xs font-bold text-slate-400 hover:text-white hover:bg-slate-900 flex items-center gap-1"
+                              variant="outline"
+                              className="h-7 px-3 text-4xs font-bold border-violet-500/30 text-violet-400 hover:text-white hover:bg-violet-600 hover:border-violet-600 flex items-center gap-1 shadow-sm transition-all"
                               title="Ver detalle del pedido"
                             >
                               <Eye className="h-3 w-3" />
@@ -224,7 +230,10 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleMoveState(pedido.id, col.key, "next")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMoveState(pedido.id, col.key, "next");
+                            }}
                             className="h-7 w-7 text-slate-500 hover:text-white disabled:opacity-30 hover:bg-slate-900"
                             disabled={col.key === "completado" || isPending}
                             title="Mover al siguiente estado"

@@ -2,6 +2,19 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { EditorClient } from "@/app/(admin)/admin/pedidos/[id]/editar/editor-client";
 import { describe, it, expect, vi } from "vitest";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
+
+vi.mock("@/components/ui/toast", () => ({
+  useToast: () => ({
+    toast: vi.fn(),
+  }),
+}));
+
 // Mock the actions to prevent database/server-side operations
 vi.mock("@/app/(admin)/admin/pedidos/[id]/editar/actions", () => {
   return {
@@ -55,7 +68,7 @@ describe("EditorClient Component Tests", () => {
 
     render(<EditorClient pedido={mockPedido as any} />);
 
-    const publishBtn = screen.getByRole("button", { name: /Publicar Invitación/i });
+    const publishBtn = screen.getByRole("button", { name: /^Publicar$/i });
     expect(publishBtn).toBeInTheDocument();
 
     fireEvent.click(publishBtn);

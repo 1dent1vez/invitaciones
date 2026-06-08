@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export interface ActionResult<T> {
   success: boolean;
@@ -15,24 +16,20 @@ export const pedidoSchema = z.object({
   tipoEvento: z.enum(["boda", "xv", "baby_shower", "cumpleanos"], {
     message: "El tipo de evento no es válido",
   }),
-  fechaEvento: z.string().refine((val) => {
+  fechaEvento: z.string().min(1, "La fecha y hora del evento es requerida").refine((val) => {
     const d = new Date(val);
     if (isNaN(d.getTime())) return false;
-    
-    // Timezone-agnostic calendar date comparison
-    const inputDate = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
     const today = new Date();
-    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    
-    return inputDate >= todayDate;
+    today.setHours(0, 0, 0, 0);
+    return d >= today;
   }, {
-    message: "La fecha del evento no puede ser anterior al día de hoy",
+    message: "La fecha y hora del evento no puede ser anterior a hoy",
   }),
   template: z.enum(["boda-elegante", "xv-moderno", "baby-shower", "cumpleanos-fiesta"], {
     message: "La plantilla no es válida",
   }),
-  precio: z.preprocess((val) => Number(val), z.number().min(0, "El precio debe ser un número positivo")),
-  notas: z.string().optional().nullable(),
+  precio: z.preprocess((val) => Number(val), z.number().positive("El precio debe ser un número positivo")),
+  notas: z.string().optional().transform(val => val || ""),
 });
 
 export type PedidoInput = z.infer<typeof pedidoSchema>;
@@ -70,6 +67,7 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
   try {
     const parsed = pedidoSchema.safeParse(input);
     if (!parsed.success) {
+      console.error("[createPedidoAction] Zod validation failed:", parsed.error.format());
       return { success: false, error: parsed.error.issues[0]?.message || "Datos no válidos" };
     }
 
@@ -82,6 +80,12 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
     }
 
     const eventDate = new Date(parsed.data.fechaEvento);
+    if (isNaN(eventDate.getTime())) {
+      console.error("[createPedidoAction] Invalid date:", parsed.data.fechaEvento);
+      return { success: false, error: "La fecha del evento no es válida" };
+    }
+
+    const baseSlug = `${client.nombre}-${eventDate.getFullYear()}`;
     const slug = await getUniqueSlug(client.nombre, eventDate);
 
     // Initial default variables for the invitation template
@@ -103,7 +107,7 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
         tipoEvento: parsed.data.tipoEvento,
         fechaEvento: eventDate,
         template: parsed.data.template,
-        precio: parsed.data.precio,
+        precio: new Prisma.Decimal(parsed.data.precio),
         notas: parsed.data.notas || null,
         estado: "cotizado",
         slug,
@@ -115,8 +119,8 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
     revalidatePath("/admin/pedidos");
     return { success: true, data: { id: pedido.id } };
   } catch (error) {
-    console.error("[createPedidoAction]", error);
-    return { success: false, error: "Error al registrar el pedido" };
+    console.error("[createPedidoAction] Database error:", error);
+    return { success: false, error: "Error al registrar el pedido. Por favor, intente nuevamente." };
   }
 }
 

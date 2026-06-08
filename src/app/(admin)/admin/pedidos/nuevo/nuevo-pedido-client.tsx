@@ -32,24 +32,36 @@ const quickClientSchema = z.object({
   fuente: z.enum(["tienda", "instagram", "whatsapp", "referido"]),
 });
 
+interface EventFormValues {
+  clienteId: string;
+  tipoEvento: "boda" | "xv" | "baby_shower" | "cumpleanos";
+  fechaPart: string;
+  horaPart: string;
+  template: "boda-elegante" | "xv-moderno" | "baby-shower" | "cumpleanos-fiesta";
+  precio: number;
+  notas: string;
+}
+
 const eventSchema = z.object({
+  clienteId: z.string().optional(),
   tipoEvento: z.enum(["boda", "xv", "baby_shower", "cumpleanos"], {
     message: "Selecciona un tipo de evento",
   }),
-  fechaEvento: z.string().min(1, "La fecha del evento es requerida").refine((val) => {
-    const d = new Date(val);
-    if (isNaN(d.getTime())) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return d >= today;
-  }, {
-    message: "La fecha del evento no puede ser anterior al día de hoy",
-  }),
+  fechaPart: z.string().min(1, "La fecha del evento es requerida"),
+  horaPart: z.string().min(1, "La hora del evento es requerida"),
   template: z.enum(["boda-elegante", "xv-moderno", "baby-shower", "cumpleanos-fiesta"], {
     message: "Selecciona una plantilla",
   }),
-  precio: z.preprocess((val) => Number(val), z.number().min(0, "El precio debe ser positivo")),
+  precio: z.preprocess((val) => Number(val), z.number().positive("El precio debe ser un número positivo")),
   notas: z.string().optional().transform(val => val || ""),
+}).refine((data) => {
+  if (!data.fechaPart || !data.horaPart) return true;
+  const combined = new Date(`${data.fechaPart}T${data.horaPart}`);
+  if (isNaN(combined.getTime())) return false;
+  return combined > new Date();
+}, {
+  message: "La fecha y hora del evento debe ser futura",
+  path: ["fechaPart"],
 });
 
 interface NuevoPedidoClientProps {
@@ -90,16 +102,17 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
     formState: { errors: eventErrors },
     setValue: setEventValue,
     watch: watchEvent,
-  } = useForm<PedidoInput>({
-    resolver: zodResolver(eventSchema) as unknown as Resolver<PedidoInput>,
+  } = useForm<EventFormValues>({
+    resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormValues>,
     defaultValues: {
       clienteId: "",
       tipoEvento: "boda",
-      fechaEvento: "",
+      fechaPart: "",
+      horaPart: "18:00",
       template: "boda-elegante",
       precio: 1500,
       notas: "",
-    },
+    } as any,
   });
 
   // Watch event type to automatically set template matching it
@@ -118,6 +131,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
       setError("Por favor, selecciona un cliente para continuar.");
       return;
     }
+    setEventValue("clienteId", selectedClienteId);
     setError(null);
     setStep(2);
   };
@@ -140,6 +154,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
         };
         setClientes(prev => [newClient, ...prev]);
         setSelectedClienteId(newClient.id);
+        setEventValue("clienteId", newClient.id);
         setIsNewClientForm(false);
         setStep(2);
         resetClientForm();
@@ -153,13 +168,18 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
     }
   };
 
-  const handleSavePedido = async (data: PedidoInput) => {
+  const handleSavePedido = async (data: EventFormValues) => {
     setIsLoading(true);
     setError(null);
     try {
-      const payload = {
-        ...data,
+      const combinedDate = new Date(`${data.fechaPart}T${data.horaPart}`);
+      const payload: PedidoInput = {
         clienteId: selectedClienteId,
+        tipoEvento: data.tipoEvento,
+        fechaEvento: combinedDate.toISOString(),
+        template: data.template,
+        precio: data.precio,
+        notas: data.notas,
       };
       const res = await createPedidoAction(payload);
       if (res.success && res.data) {
@@ -168,8 +188,9 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
       } else {
         setError(res.error || "Error al guardar el pedido");
       }
-    } catch {
-      setError("Error inesperado al guardar el pedido");
+    } catch (err) {
+      console.error("[handleSavePedido] Client catch error:", err);
+      setError(err instanceof Error ? err.message : "Error inesperado al guardar el pedido");
     } finally {
       setIsLoading(false);
     }
@@ -271,18 +292,26 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium text-slate-300">Nombre *</label>
-                      <Input
+                      <input
                         placeholder="Ej. Juan Gómez"
-                        className="border-slate-850 bg-slate-950/60 text-slate-100"
+                        className={cn(
+                          "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                          clientErrors.nombre && "border-rose-500 focus-visible:ring-rose-500"
+                        )}
+                        aria-invalid={!!clientErrors.nombre}
                         {...registerClient("nombre")}
                       />
                       {clientErrors.nombre && <p className="text-xs text-rose-500">{clientErrors.nombre.message}</p>}
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium text-slate-300">Teléfono</label>
-                      <Input
+                      <input
                         placeholder="Ej. 5512345678"
-                        className="border-slate-850 bg-slate-950/60 text-slate-100"
+                        className={cn(
+                          "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                          clientErrors.telefono && "border-rose-500 focus-visible:ring-rose-500"
+                        )}
+                        aria-invalid={!!clientErrors.telefono}
                         {...registerClient("telefono")}
                       />
                     </div>
@@ -290,9 +319,13 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium text-slate-300">Correo Electrónico</label>
-                      <Input
+                      <input
                         placeholder="Ej. juan@example.com"
-                        className="border-slate-850 bg-slate-950/60 text-slate-100"
+                        className={cn(
+                          "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                          clientErrors.email && "border-rose-500 focus-visible:ring-rose-500"
+                        )}
+                        aria-invalid={!!clientErrors.email}
                         {...registerClient("email")}
                       />
                       {clientErrors.email && <p className="text-xs text-rose-500">{clientErrors.email.message}</p>}
@@ -344,7 +377,10 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                     {filteredClientes.map((c) => (
                       <div
                         key={c.id}
-                        onClick={() => setSelectedClienteId(c.id)}
+                        onClick={() => {
+                          setSelectedClienteId(c.id);
+                          setEventValue("clienteId", c.id);
+                        }}
                         className={cn(
                           "flex items-center justify-between p-4 cursor-pointer transition-colors",
                           selectedClienteId === c.id 
@@ -442,26 +478,52 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                   </div>
                 </div>
 
-                {/* Date & Price */}
-                <div className="grid gap-4 sm:grid-cols-2">
+                {/* Date, Time & Price */}
+                <div className="grid gap-4 sm:grid-cols-3">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Fecha del Evento *</label>
-                    <Input
+                    <label htmlFor="fechaEvento" className="text-sm font-medium text-slate-300">Fecha del Evento *</label>
+                    <input
+                      id="fechaEvento"
                       type="date"
-                      className="border-slate-850 bg-slate-950/60 text-slate-100 focus-visible:ring-violet-500 focus-visible:ring-offset-slate-900"
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                        eventErrors.fechaPart && "border-rose-500 focus-visible:ring-rose-500"
+                      )}
                       disabled={isLoading}
-                      {...registerEvent("fechaEvento")}
+                      aria-invalid={!!eventErrors.fechaPart}
+                      {...registerEvent("fechaPart")}
                     />
-                    {eventErrors.fechaEvento && <p className="text-xs text-rose-500">{eventErrors.fechaEvento.message}</p>}
+                    {eventErrors.fechaPart && <p className="text-xs text-rose-500">{eventErrors.fechaPart.message}</p>}
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Precio Total (MXN) *</label>
-                    <Input
+                    <label htmlFor="horaPart" className="text-sm font-medium text-slate-300">Hora del Evento *</label>
+                    <input
+                      id="horaPart"
+                      type="time"
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                        eventErrors.horaPart && "border-rose-500 focus-visible:ring-rose-500"
+                      )}
+                      disabled={isLoading}
+                      aria-invalid={!!eventErrors.horaPart}
+                      {...registerEvent("horaPart")}
+                    />
+                    {eventErrors.horaPart && <p className="text-xs text-rose-500">{eventErrors.horaPart.message}</p>}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label htmlFor="precio" className="text-sm font-medium text-slate-300">Precio Total (MXN) *</label>
+                    <input
+                      id="precio"
                       type="number"
                       placeholder="Ej. 1500"
-                      className="border-slate-850 bg-slate-950/60 text-slate-100 focus-visible:ring-violet-500 focus-visible:ring-offset-slate-900"
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                        eventErrors.precio && "border-rose-500 focus-visible:ring-rose-500"
+                      )}
                       disabled={isLoading}
+                      aria-invalid={!!eventErrors.precio}
                       {...registerEvent("precio")}
                     />
                     {eventErrors.precio && <p className="text-xs text-rose-500">{eventErrors.precio.message}</p>}

@@ -19,6 +19,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Cliente } from "@prisma/client";
 import { 
   Table, 
@@ -63,6 +65,7 @@ interface ClientesClientProps {
 }
 
 export function ClientesClient({ initialClientes }: ClientesClientProps) {
+  const router = useRouter();
   const [clientes, setClientes] = useState(initialClientes);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -123,6 +126,8 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
             prev.map(c => (c.id === editingCliente.id ? { ...c, ...data } : c))
           );
           setIsOpen(false);
+          router.push("/admin/clientes");
+          router.refresh();
         } else {
           setError(res.error || "Ocurrió un error al actualizar");
         }
@@ -141,6 +146,8 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
           };
           setClientes(prev => [newClient, ...prev]);
           setIsOpen(false);
+          router.push("/admin/clientes");
+          router.refresh();
         } else {
           setError(res.error || "Ocurrió un error al crear");
         }
@@ -324,11 +331,15 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
               <label htmlFor="nombre" className="text-sm font-medium text-slate-300">
                 Nombre Completo <span className="text-violet-400">*</span>
               </label>
-              <Input
+              <input
                 id="nombre"
                 placeholder="Ej. María López"
-                className="border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 focus-visible:ring-violet-500 focus-visible:ring-offset-slate-900"
+                className={cn(
+                  "flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                  errors.nombre && "border-rose-500 focus-visible:ring-rose-500"
+                )}
                 disabled={isLoading}
+                aria-invalid={!!errors.nombre}
                 {...register("nombre")}
               />
               {errors.nombre && (
@@ -341,11 +352,15 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
               <label htmlFor="telefono" className="text-sm font-medium text-slate-300">
                 Teléfono
               </label>
-              <Input
+              <input
                 id="telefono"
                 placeholder="Ej. 5512345678"
-                className="border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 focus-visible:ring-violet-500 focus-visible:ring-offset-slate-900"
+                className={cn(
+                  "flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                  errors.telefono && "border-rose-500 focus-visible:ring-rose-500"
+                )}
                 disabled={isLoading}
+                aria-invalid={!!errors.telefono}
                 {...register("telefono")}
               />
               {errors.telefono && (
@@ -358,12 +373,16 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
               <label htmlFor="email" className="text-sm font-medium text-slate-300">
                 Correo Electrónico
               </label>
-              <Input
+              <input
                 id="email"
                 type="text"
                 placeholder="Ej. maria@example.com"
-                className="border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 focus-visible:ring-violet-500 focus-visible:ring-offset-slate-900"
+                className={cn(
+                  "flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                  errors.email && "border-rose-500 focus-visible:ring-rose-500"
+                )}
                 disabled={isLoading}
+                aria-invalid={!!errors.email}
                 {...register("email")}
               />
               {errors.email && (

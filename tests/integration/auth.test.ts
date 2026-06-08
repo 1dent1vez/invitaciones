@@ -1,16 +1,30 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { loginAction } from "@/app/(admin)/login/actions";
+import LoginPage from "@/app/(admin)/login/page";
 import { middleware } from "@/middleware";
 import { NextRequest } from "next/server";
 
 const mockCookieSet = vi.fn();
 const mockCookieGet = vi.fn();
+const mockPush = vi.fn();
+const mockRefresh = vi.fn();
 
 vi.mock("next/headers", () => {
   return {
     cookies: () => ({
       set: mockCookieSet,
       get: mockCookieGet,
+    }),
+  };
+});
+
+vi.mock("next/navigation", () => {
+  return {
+    useRouter: () => ({
+      push: mockPush,
+      refresh: mockRefresh,
     }),
   };
 });
@@ -66,6 +80,38 @@ describe("Autenticación y Middleware", () => {
       
       expect(res).toBeDefined();
       expect(res?.status).not.toBe(307);
+    });
+  });
+
+  describe("LoginPage Component", () => {
+    it("permite iniciar sesión con contraseña correcta y redirige a /admin", async () => {
+      render(React.createElement(LoginPage));
+
+      const input = screen.getByPlaceholderText("••••••••");
+      const button = screen.getByRole("button", { name: /Entrar al Panel/i });
+
+      fireEvent.change(input, { target: { value: "test_admin_password" } });
+      fireEvent.click(button);
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith("/admin");
+        expect(mockRefresh).toHaveBeenCalled();
+      });
+    });
+
+    it("muestra mensaje de error cuando la contraseña es incorrecta", async () => {
+      render(React.createElement(LoginPage));
+
+      const input = screen.getByPlaceholderText("••••••••");
+      const button = screen.getByRole("button", { name: /Entrar al Panel/i });
+
+      fireEvent.change(input, { target: { value: "wrong_password" } });
+      fireEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByText("Contraseña incorrecta")).toBeInTheDocument();
+      });
+      expect(mockPush).not.toHaveBeenCalled();
     });
   });
 });

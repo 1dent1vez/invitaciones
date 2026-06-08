@@ -31,14 +31,35 @@ import { generarQRAction } from "./editar/actions";
 import { generarTextoNotificacion } from "@/lib/notificaciones";
 import { RSVPTable } from "./rsvp-table";
 
-const pagoSchema = z.object({
-  monto: z.preprocess((val) => Number(val), z.number().min(0.01, "El monto debe ser mayor a 0")),
+const getPagoSchema = (balance: number) => z.object({
+  monto: z.preprocess((val) => Number(val), z.number().positive("El monto debe ser un número positivo")),
   metodo: z.enum(["efectivo", "transferencia"], {
     message: "Selecciona un método válido",
   }),
-  comprobante: z.string().optional().nullable(),
-  notas: z.string().optional().nullable(),
+  comprobante: z.string().optional().nullable().or(z.literal("")),
+  notas: z.string().optional().nullable().or(z.literal("")),
+}).refine((data) => data.monto <= balance, {
+  message: `El monto no puede exceder el saldo pendiente (${balance} MXN)`,
+  path: ["monto"],
 });
+
+const formatFriendlyDate = (dateString: string | Date) => {
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return "Fecha no válida";
+  const formattedDate = new Intl.DateTimeFormat("es-MX", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(d);
+
+  const formattedTime = new Intl.DateTimeFormat("es-MX", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(d).toUpperCase();
+
+  return `${formattedDate}, ${formattedTime.replace(/P\.?\s*M\.?/i, "PM").replace(/A\.?\s*M\.?/i, "AM")}`;
+};
 
 type PedidoFull = Pedido & { 
   cliente: Cliente; 
@@ -116,13 +137,18 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
     }
   };
 
+  // Calculate financials
+  const price = Number(pedido.precio);
+  const totalPaid = pedido.pagos.reduce((sum: number, p: Pago) => sum + Number(p.monto), 0);
+  const balance = price - totalPaid;
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<PagoInput>({
-    resolver: zodResolver(pagoSchema) as unknown as Resolver<PagoInput>,
+    resolver: zodResolver(getPagoSchema(balance)) as unknown as Resolver<PagoInput>,
     defaultValues: {
       monto: 0,
       metodo: "transferencia",
@@ -130,11 +156,6 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
       notas: "",
     },
   });
-
-  // Calculate financials
-  const price = Number(pedido.precio);
-  const totalPaid = pedido.pagos.reduce((sum: number, p: Pago) => sum + Number(p.monto), 0);
-  const balance = price - totalPaid;
 
   const handleStateChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const nextState = e.target.value;
@@ -305,7 +326,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
               <div className="space-y-1.5">
                 <p className="text-xs text-slate-500 font-medium uppercase">Fecha del Evento</p>
                 <p className="text-sm font-semibold text-white">
-                  {new Intl.DateTimeFormat("es-MX", { dateStyle: "long" }).format(new Date(pedido.fechaEvento))}
+                  {formatFriendlyDate(pedido.fechaEvento)}
                 </p>
               </div>
               <div className="space-y-1.5">
@@ -505,7 +526,10 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                         type="number"
                         step="0.01"
                         placeholder="Ej. 500"
-                        className="pl-7 border-slate-850 bg-slate-950/60 text-slate-100"
+                        className={cn(
+                          "pl-7 border-slate-855 bg-slate-950/60 text-slate-100",
+                          errors.monto && "border-rose-500 focus-visible:ring-rose-500"
+                        )}
                         disabled={isLoading}
                         {...register("monto")}
                       />

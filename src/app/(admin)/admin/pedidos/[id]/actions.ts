@@ -53,23 +53,25 @@ export async function registrarPagoAction(
       return { success: false, error: `El pago excede el saldo pendiente (${balance} MXN)` };
     }
 
-    await prisma.pago.create({
-      data: {
-        pedidoId,
-        monto: parsed.data.monto,
-        metodo: parsed.data.metodo,
-        comprobante: parsed.data.comprobante || null,
-        notas: parsed.data.notas || null,
-      },
-    });
-
-    // If fully paid, optionally transition state to pagado (only if it's currently cotizado)
-    if (parsed.data.monto === balance && pedido.estado === "cotizado") {
-      await prisma.pedido.update({
-        where: { id: pedidoId },
-        data: { estado: "pagado" },
+    await prisma.$transaction(async (tx) => {
+      await tx.pago.create({
+        data: {
+          pedidoId,
+          monto: parsed.data.monto,
+          metodo: parsed.data.metodo,
+          comprobante: parsed.data.comprobante || null,
+          notas: parsed.data.notas || null,
+        },
       });
-    }
+
+      // If fully paid, optionally transition state to pagado (only if it's currently cotizado)
+      if (parsed.data.monto === balance && pedido.estado === "cotizado") {
+        await tx.pedido.update({
+          where: { id: pedidoId },
+          data: { estado: "pagado" },
+        });
+      }
+    });
 
     revalidatePath(`/admin/pedidos/${pedidoId}`);
     revalidatePath("/admin/pedidos");

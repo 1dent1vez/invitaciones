@@ -1,4 +1,6 @@
-import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { prisma } from "@/lib/prisma";
 import { 
   createClienteAction, 
@@ -6,9 +8,21 @@ import {
   updateClienteAction, 
   deleteClienteAction 
 } from "@/app/(admin)/admin/clientes/actions";
+import { ClientesClient } from "@/app/(admin)/admin/clientes/clientes-client";
+
+const mockPush = vi.fn();
+const mockRefresh = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: mockPush,
+    refresh: mockRefresh,
+  }),
+}));
 
 describe("Clientes CRUD Integration Tests", () => {
   beforeEach(async () => {
+    vi.clearAllMocks();
     // Clean database in reverse order of dependencies
     await prisma.visita.deleteMany();
     await prisma.rSVP.deleteMany();
@@ -127,5 +141,25 @@ describe("Clientes CRUD Integration Tests", () => {
       where: { id: client.id },
     });
     expect(check).not.toBeNull();
+  });
+
+  describe("ClientesClient Component", () => {
+    it("debe abrir el diálogo y al guardar correctamente un nuevo cliente redirige a /admin/clientes", async () => {
+      render(React.createElement(ClientesClient, { initialClientes: [] }));
+
+      const openBtn = screen.getByRole("button", { name: /Registrar Cliente/i });
+      fireEvent.click(openBtn);
+
+      const nombreInput = screen.getByPlaceholderText("Ej. María López");
+      const saveBtn = screen.getByRole("button", { name: /Guardar/i });
+
+      fireEvent.change(nombreInput, { target: { value: "Maria Perez Test" } });
+      fireEvent.click(saveBtn);
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith("/admin/clientes");
+        expect(mockRefresh).toHaveBeenCalled();
+      });
+    });
   });
 });

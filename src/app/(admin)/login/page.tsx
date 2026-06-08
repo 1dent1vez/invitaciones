@@ -9,7 +9,7 @@ import { Lock, Loader2, Sparkles } from "lucide-react";
 
 import { loginAction } from "./actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -92,12 +92,16 @@ export default function LoginPage() {
               >
                 Contraseña <span className="text-violet-400">*</span>
               </label>
-              <Input
+              <input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="border-slate-800 bg-slate-950/50 text-slate-100 placeholder:text-slate-600 focus-visible:ring-violet-500 focus-visible:ring-offset-slate-950"
+                className={cn(
+                  "h-8 w-full min-w-0 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-1 text-base text-slate-100 placeholder:text-slate-600 transition-colors outline-none focus-visible:ring-violet-500 focus-visible:ring-offset-slate-950 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-rose-500 md:text-sm",
+                  errors.password && "border-rose-500 focus-visible:ring-rose-500"
+                )}
                 disabled={isLoading}
+                aria-invalid={!!errors.password}
                 {...register("password")}
               />
               {errors.password && (

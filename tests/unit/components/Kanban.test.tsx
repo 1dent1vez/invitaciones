@@ -2,6 +2,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { PedidosClient } from "@/app/(admin)/admin/pedidos/pedidos-client";
 import { describe, it, expect, vi } from "vitest";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
+
 vi.mock("@/app/(admin)/admin/pedidos/actions", () => {
   return {
     updatePedidoEstadoAction: vi.fn(() => Promise.resolve({ success: true })),

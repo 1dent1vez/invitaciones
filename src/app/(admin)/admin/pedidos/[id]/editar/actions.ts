@@ -6,6 +6,53 @@ import { uploadToCloudinary } from "@/lib/cloudinary";
 import { generateQRBuffer } from "@/lib/qr";
 import { InvitacionData } from "@/types";
 import { Prisma } from "@prisma/client";
+import { z } from "zod";
+
+const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+const urlValidation = z.string().optional().nullable().or(z.literal(""))
+  .refine(
+    (val) => {
+      if (!val) return true;
+      try {
+        new URL(val);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    { message: "Debe ser una URL válida (ej. https://ejemplo.com)" }
+  );
+
+const savePedidoSchema = (templateType: string) => {
+  const base: Record<string, z.ZodTypeAny> = {
+    nombres: z.string().min(2, "El nombre del evento debe tener al menos 2 caracteres"),
+    fecha: z.string().min(1, "La fecha y hora del evento es requerida"),
+    ubicacion: z.string().min(1, "La ubicación es requerida"),
+    mapaUrl: urlValidation,
+    mensaje: z.string().optional().nullable().or(z.literal("")),
+    colorPrincipal: z.string().optional().nullable().or(z.literal(""))
+      .refine((val) => !val || hexColorRegex.test(val), {
+        message: "Debe ser un color hexadecimal válido (ej. #FFFFFF)",
+      }),
+    colorSecundario: z.string().optional().nullable().or(z.literal(""))
+      .refine((val) => !val || hexColorRegex.test(val), {
+        message: "Debe ser un color hexadecimal válido (ej. #FFFFFF)",
+      }),
+    portadaUrl: urlValidation,
+    dressCode: z.string().optional().nullable().or(z.literal("")),
+    regalosDatos: z.string().optional().nullable().or(z.literal("")),
+    musicaUrl: urlValidation,
+    nombreBebe: z.string().optional().nullable().or(z.literal("")),
+    padrinos: z.string().optional().nullable().or(z.literal("")),
+    padres: z.string().optional().nullable().or(z.literal("")),
+  };
+
+  if (templateType === "baby-shower") {
+    base.nombreBebe = z.string().min(1, "El nombre del bebé es requerido");
+  }
+
+  return z.object(base);
+};
 
 export interface ActionResult<T> {
   success: boolean;
@@ -37,20 +84,40 @@ export async function savePedidoDatosAction(
       return { success: false, error: "El pedido no existe" };
     }
 
-    // Save dynamic JSON
+    // Server-side Zod validation matching template
+    const parsed = savePedidoSchema(pedido.template).safeParse(datos);
+    if (!parsed.success) {
+      const errorMsg = parsed.error.errors.map(e => `${e.path.join(".")}: ${e.message}`).join(", ");
+      return { success: false, error: `Validación de datos fallida: ${errorMsg}` };
+    }
+
+    const updateData: Record<string, any> = {
+      datosJson: datos as unknown as Prisma.InputJsonValue,
+    };
+
+    if (datos.fecha) {
+      const parsedDate = new Date(datos.fecha);
+      if (!isNaN(parsedDate.getTime())) {
+        updateData.fechaEvento = parsedDate;
+      }
+    }
+
+    // Save dynamic JSON & synchronize date
     const updated = await prisma.pedido.update({
       where: { id: pedidoId },
-      data: {
-        datosJson: datos as unknown as Prisma.InputJsonValue,
-      },
+      data: updateData,
     });
 
     revalidatePath(`/admin/pedidos/${pedidoId}`);
     revalidatePath(`/admin/pedidos/${pedidoId}/editar`);
 
     return { success: true, data: updated.datosJson as unknown as InvitacionData };
-  } catch {
-    return { success: false, error: "Error al guardar los datos de la invitación" };
+  } catch (error) {
+    console.error("[savePedidoDatosAction] Failed to save invitation data:", error);
+    return { 
+      success: false, 
+      error: "Error al guardar los datos de la invitación" 
+    };
   }
 }
 
@@ -119,8 +186,12 @@ export async function publicarInvitacionAction(
         slug: updated.slug || slug,
       },
     };
-  } catch {
-    return { success: false, error: "Error al publicar la invitación" };
+  } catch (error) {
+    console.error("[publicarInvitacionAction] Failed to publish invitation:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error al publicar la invitación"
+    };
   }
 }
 
@@ -158,8 +229,12 @@ export async function generarQRAction(
     revalidatePath(`/admin/pedidos/${pedidoId}/editar`);
 
     return { success: true, data: qrUrl };
-  } catch {
-    return { success: false, error: "Error al generar el código QR" };
+  } catch (error) {
+    console.error("[generarQRAction] Failed to generate QR:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error al generar el código QR"
+    };
   }
 }
 

@@ -1,11 +1,26 @@
-import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { prisma } from "@/lib/prisma";
 import { createPedidoAction, updatePedidoEstadoAction } from "@/app/(admin)/admin/pedidos/actions";
+import { NuevoPedidoClient } from "@/app/(admin)/admin/pedidos/nuevo/nuevo-pedido-client";
+import { Cliente } from "@prisma/client";
+
+const mockPush = vi.fn();
+const mockRefresh = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: mockPush,
+    refresh: mockRefresh,
+  }),
+}));
 
 describe("Pedidos Integration Tests", () => {
   let testClienteId: string;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     // Clean database
     await prisma.visita.deleteMany();
     await prisma.rSVP.deleteMany();
@@ -69,10 +84,17 @@ describe("Pedidos Integration Tests", () => {
       fechaEvento: "2026-09-20", // same year
       template: "xv-moderno" as const,
       precio: 3000,
-      notas: "",
-    };
+      notes: "",
+    } as any; // Allow the legacy notes if needed, but actions.ts parses it correctly
 
-    const res2 = await createPedidoAction(input2);
+    const res2 = await createPedidoAction({
+      clienteId: testClienteId,
+      tipoEvento: "xv" as const,
+      fechaEvento: "2026-09-20",
+      template: "xv-moderno" as const,
+      precio: 3000,
+      notas: "",
+    });
     expect(res2.success).toBe(true);
 
     const check1 = await prisma.pedido.findUnique({ where: { id: res1.data!.id } });
@@ -121,5 +143,89 @@ describe("Pedidos Integration Tests", () => {
 
     const check = await prisma.pedido.findUnique({ where: { id: order.id } });
     expect(check?.estado).toBe("cotizado");
+  });
+
+  it("debe rechazar la creación de un pedido si el precio es negativo o cero", async () => {
+    const inputNegative = {
+      clienteId: testClienteId,
+      tipoEvento: "boda" as const,
+      fechaEvento: "2026-09-20T18:00:00.000Z",
+      template: "boda-elegante" as const,
+      precio: -100,
+      notas: "",
+    };
+
+    const resNegative = await createPedidoAction(inputNegative);
+    expect(resNegative.success).toBe(false);
+    expect(resNegative.error).toContain("El precio debe ser un número positivo");
+
+    const inputZero = {
+      ...inputNegative,
+      precio: 0,
+    };
+    const resZero = await createPedidoAction(inputZero);
+    expect(resZero.success).toBe(false);
+    expect(resZero.error).toContain("El precio debe ser un número positivo");
+  });
+
+  it("debe rechazar la creación de un pedido si la fecha es en el pasado", async () => {
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - 1);
+
+    const input = {
+      clienteId: testClienteId,
+      tipoEvento: "boda" as const,
+      fechaEvento: pastDate.toISOString(),
+      template: "boda-elegante" as const,
+      precio: 1500,
+      notas: "",
+    };
+
+    const res = await createPedidoAction(input);
+    expect(res.success).toBe(false);
+    expect(res.error).toContain("La fecha y hora del evento no puede ser anterior a hoy");
+  });
+
+  describe("NuevoPedidoClient Component", () => {
+    let mockClient: Cliente;
+
+    beforeEach(async () => {
+      mockClient = await prisma.cliente.create({
+        data: {
+          nombre: "Client For Wizard Test",
+          fuente: "tienda",
+        },
+      });
+    });
+
+    it("debe completar el wizard de 2 pasos y redirigir a /admin/pedidos al crear el pedido", async () => {
+      render(React.createElement(NuevoPedidoClient, { clientes: [mockClient] }));
+
+      const clientRow = screen.getByText("Client For Wizard Test");
+      fireEvent.click(clientRow);
+
+      const continuarBtn = screen.getByRole("button", { name: /Continuar/i });
+      fireEvent.click(continuarBtn);
+
+      const dateInput = screen.getByLabelText(/Fecha del Evento/i);
+      const timeInput = screen.getByLabelText(/Hora del Evento/i);
+      const priceInput = screen.getByPlaceholderText("Ej. 1500");
+      const submitBtn = screen.getByRole("button", { name: /Crear Pedido/i });
+
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 5);
+      const dateString = futureDate.toISOString().split("T")[0];
+
+      fireEvent.change(dateInput, { target: { value: dateString } });
+      fireEvent.change(timeInput, { target: { value: "18:00" } });
+      fireEvent.change(priceInput, { target: { value: "2000" } });
+
+      fireEvent.click(submitBtn);
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith(expect.stringMatching(/^\/admin\/pedidos\/.+/));
+        expect(mockRefresh).toHaveBeenCalled();
+      });
+    });
   });
 });
