@@ -2,8 +2,11 @@ import { z } from "zod";
 
 export const pedidoSchema = z.object({
   clienteId: z.string().min(1, "El cliente es requerido"),
-  tipoEvento: z.enum(["boda", "xv", "baby_shower", "cumpleanos"], {
+  tipoEvento: z.enum(["boda", "xv", "babyshower", "cumpleanos"], {
     message: "El tipo de evento no es válido",
+  }),
+  paquete: z.enum(["esencial", "completa", "premium"], {
+    message: "El paquete no es válido",
   }),
   fechaEvento: z.string().min(1, "La fecha y hora del evento es requerida").refine((val) => {
     const d = new Date(val);
@@ -14,9 +17,7 @@ export const pedidoSchema = z.object({
   }, {
     message: "La fecha y hora del evento no puede ser anterior a hoy",
   }),
-  template: z.enum(["boda-elegante", "xv-moderno", "baby-shower", "cumpleanos-fiesta"], {
-    message: "La plantilla no es válida",
-  }),
+  template: z.string().min(1, "La plantilla no es válida"),
   precio: z.preprocess((val) => Number(val), z.number().positive("El precio debe ser un número positivo")),
   notas: z.string().optional().transform(val => val || ""),
 });

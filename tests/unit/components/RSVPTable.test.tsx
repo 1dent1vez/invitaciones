@@ -31,7 +31,7 @@ describe("RSVPTable Component Tests", () => {
       <RSVPTable
         rsvps={mockRSVPs as any}
         precio={2500}
-        datosJson={{ invitadosEsperados: 120 }}
+        datosInvitacion={{ invitadosEsperados: 120 }}
       />
     );
 
@@ -50,7 +50,7 @@ describe("RSVPTable Component Tests", () => {
       <RSVPTable
         rsvps={mockRSVPs as any}
         precio={3000}
-        datosJson={null}
+        datosInvitacion={null}
       />
     );
 
@@ -63,7 +63,7 @@ describe("RSVPTable Component Tests", () => {
       <RSVPTable
         rsvps={mockRSVPs as any}
         precio={2000}
-        datosJson={null}
+        datosInvitacion={null}
       />
     );
 

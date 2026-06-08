@@ -31,7 +31,7 @@ describe("Visitas Integration Tests", () => {
         estado: "cotizado",
         slug: testSlug,
         urlPublica: `http://localhost:3000/i/${testSlug}`,
-        datosJson: {
+        datosInvitacion: {
           nombres: "María Fernanda",
         },
       },

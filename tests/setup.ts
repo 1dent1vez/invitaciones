@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
+import { vi, afterEach } from "vitest";
 
 // Mock next/cache globally to avoid "static generation store missing" in tests
 vi.mock("next/cache", () => ({
@@ -13,3 +13,9 @@ if (typeof window !== "undefined") {
   window.HTMLMediaElement.prototype.play = async () => {};
   window.HTMLMediaElement.prototype.pause = () => {};
 }
+
+afterEach(() => {
+  if (typeof document !== "undefined") {
+    document.body.innerHTML = "";
+  }
+});

@@ -9,12 +9,13 @@ vi.mock("@/lib/cloudinary", () => ({
 
 describe("Date Validation Tests", () => {
   it("debe aceptar la fecha de hoy", () => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString();
     const data = {
       clienteId: "client-id",
       tipoEvento: "boda",
+      paquete: "esencial",
       fechaEvento: today,
-      template: "boda-elegante",
+      template: "boda-esencial",
       precio: 1000,
     };
 
@@ -30,8 +31,9 @@ describe("Date Validation Tests", () => {
     const data = {
       clienteId: "client-id",
       tipoEvento: "boda",
+      paquete: "esencial",
       fechaEvento: dateStr,
-      template: "boda-elegante",
+      template: "boda-esencial",
       precio: 1000,
     };
 
@@ -47,8 +49,9 @@ describe("Date Validation Tests", () => {
     const data = {
       clienteId: "client-id",
       tipoEvento: "boda",
+      paquete: "esencial",
       fechaEvento: dateStr,
-      template: "boda-elegante",
+      template: "boda-esencial",
       precio: 1000,
     };
 

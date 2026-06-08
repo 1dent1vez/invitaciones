@@ -24,13 +24,13 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
       where: { slug },
     });
 
-    if (!order || !order.datosJson) {
+    if (!order || !order.datosInvitacion) {
       return {
         title: "Invitación Digital",
       };
     }
 
-    const datos = order.datosJson as unknown as InvitacionData;
+    const datos = order.datosInvitacion as unknown as InvitacionData;
     const title = datos.nombres || "Invitación Especial";
     
     let dateText = "";
@@ -88,7 +88,7 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
     where: { slug },
   });
 
-  if (!order || !order.datosJson) {
+  if (!order || !order.datosInvitacion) {
     notFound();
   }
 
@@ -109,7 +109,7 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
 
   const templateType = order.template as TemplateType;
   const TemplateComponent = TEMPLATE_COMPONENTS[templateType];
-  const datos = order.datosJson as unknown as InvitacionData;
+  const datos = order.datosInvitacion as unknown as InvitacionData;
 
   return (
     <TemplateWrapper data={datos}>

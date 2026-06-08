@@ -15,6 +15,7 @@ export function BodaElegante({ data }: BodaEleganteProps) {
   useEffect(() => {
     setMounted(true);
     const calculateTimeLeft = () => {
+      if (!data.fecha) return;
       const difference = new Date(data.fecha).getTime() - Date.now();
       if (difference <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -34,16 +35,18 @@ export function BodaElegante({ data }: BodaEleganteProps) {
   }, [data.fecha]);
 
   // Date Parsing
-  let dateText = data.fecha;
+  let dateText = data.fecha || "";
   try {
-    const d = new Date(data.fecha);
-    if (!isNaN(d.getTime())) {
-      dateText = d.toLocaleDateString("es-ES", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }) + " - " + d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+    if (data.fecha) {
+      const d = new Date(data.fecha);
+      if (!isNaN(d.getTime())) {
+        dateText = d.toLocaleDateString("es-ES", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }) + " - " + d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+      }
     }
   } catch {
     // fallback to text
@@ -58,10 +61,10 @@ export function BodaElegante({ data }: BodaEleganteProps) {
       <div className="pt-20 px-8 text-center flex flex-col items-center gap-6">
         <span className="text-xs uppercase tracking-[0.3em] text-[var(--primary)] font-sans">Nuestra Boda</span>
         <h1 className="text-4xl md:text-5xl font-light text-white tracking-wide leading-tight px-4 font-serif">
-          {data.nombres.split("&").map((name, i) => (
+          {(data.nombres || "").split("&").map((name, i) => (
             <span key={i} className="block">
               {name.trim()}
-              {i === 0 && data.nombres.includes("&") && (
+              {i === 0 && (data.nombres || "").includes("&") && (
                 <span className="block my-2 text-2xl text-[var(--primary)] font-light font-sans">&</span>
               )}
             </span>

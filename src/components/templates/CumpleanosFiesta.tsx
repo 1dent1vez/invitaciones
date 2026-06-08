@@ -15,16 +15,18 @@ export function CumpleanosFiesta({ data }: CumpleanosFiestaProps) {
     { hora: "11:30 PM", titulo: "DJ & Fiesta", notas: "Hasta que el cuerpo aguante" },
   ];
 
-  let dateText = data.fecha;
+  let dateText = data.fecha || "";
   try {
-    const d = new Date(data.fecha);
-    if (!isNaN(d.getTime())) {
-      dateText = d.toLocaleDateString("es-ES", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }) + " - " + d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+    if (data.fecha) {
+      const d = new Date(data.fecha);
+      if (!isNaN(d.getTime())) {
+        dateText = d.toLocaleDateString("es-ES", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }) + " - " + d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+      }
     }
   } catch {
     // fallback

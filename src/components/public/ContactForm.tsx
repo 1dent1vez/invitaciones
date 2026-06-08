@@ -130,7 +130,7 @@ export function ContactForm() {
           >
             <option value="boda">Boda</option>
             <option value="xv">XV Años</option>
-            <option value="baby_shower">Baby Shower</option>
+            <option value="babyshower">Baby Shower</option>
             <option value="cumpleanos">Cumpleaños</option>
             <option value="otro">Otro</option>
           </select>

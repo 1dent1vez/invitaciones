@@ -11,14 +11,14 @@ import { Input } from "@/components/ui/input";
 interface RSVPTableProps {
   rsvps: RSVP[];
   precio: number;
-  datosJson: unknown;
+  datosInvitacion: unknown;
 }
 
-export function RSVPTable({ rsvps, precio, datosJson }: RSVPTableProps) {
+export function RSVPTable({ rsvps, precio, datosInvitacion }: RSVPTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<"all" | "asiste" | "no-asiste">("all");
 
-  const invitadosEsperados = Number((datosJson as Record<string, unknown>)?.invitadosEsperados) || Math.round(precio / 20) || 100;
+  const invitadosEsperados = Number((datosInvitacion as Record<string, unknown>)?.invitadosEsperados) || Math.round(precio / 20) || 100;
   const paxConfirmados = rsvps
     .filter((r) => r.asiste)
     .reduce((sum, r) => sum + r.pax, 0);

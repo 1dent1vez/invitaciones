@@ -46,9 +46,10 @@ describe("Pedidos Integration Tests", () => {
     const input = {
       clienteId: testClienteId,
       tipoEvento: "boda" as const,
+      paquete: "esencial" as const,
       fechaEvento: "2026-09-20",
-      template: "boda-elegante" as const,
-      precio: 2500,
+      template: "boda-esencial" as const,
+      precio: 350,
       notas: "Notas de pedido de prueba",
     };
 
@@ -62,7 +63,7 @@ describe("Pedidos Integration Tests", () => {
     expect(check).toBeDefined();
     console.log("CHECKED PEDIDO:", JSON.stringify(check, null, 2));
     expect(check?.estado).toBe("cotizado");
-    expect(Number(check?.precio)).toBe(2500);
+    expect(Number(check?.precio)).toBe(350);
     expect(check?.slug).toBe("test-client-for-pedidos-2026");
   });
 
@@ -70,30 +71,23 @@ describe("Pedidos Integration Tests", () => {
     const input1 = {
       clienteId: testClienteId,
       tipoEvento: "boda" as const,
+      paquete: "esencial" as const,
       fechaEvento: "2026-09-20",
-      template: "boda-elegante" as const,
-      precio: 2500,
+      template: "boda-esencial" as const,
+      precio: 350,
       notas: "",
     };
 
     const res1 = await createPedidoAction(input1);
     expect(res1.success).toBe(true);
 
-    const input2 = {
-      clienteId: testClienteId,
-      tipoEvento: "xv" as const,
-      fechaEvento: "2026-09-20", // same year
-      template: "xv-moderno" as const,
-      precio: 3000,
-      notes: "",
-    } as any; // Allow the legacy notes if needed, but actions.ts parses it correctly
-
     const res2 = await createPedidoAction({
       clienteId: testClienteId,
       tipoEvento: "xv" as const,
+      paquete: "esencial" as const,
       fechaEvento: "2026-09-20",
-      template: "xv-moderno" as const,
-      precio: 3000,
+      template: "xv-esencial" as const,
+      precio: 350,
       notas: "",
     });
     expect(res2.success).toBe(true);
@@ -110,9 +104,10 @@ describe("Pedidos Integration Tests", () => {
       data: {
         clienteId: testClienteId,
         tipoEvento: "cumpleanos",
+        paquete: "esencial",
         fechaEvento: new Date(),
-        template: "cumpleanos-fiesta",
-        precio: 1000,
+        template: "cumpleanos-esencial",
+        precio: 350,
         estado: "cotizado",
         slug: "test-update-state",
       },
@@ -130,9 +125,10 @@ describe("Pedidos Integration Tests", () => {
       data: {
         clienteId: testClienteId,
         tipoEvento: "cumpleanos",
+        paquete: "esencial",
         fechaEvento: new Date(),
-        template: "cumpleanos-fiesta",
-        precio: 1000,
+        template: "cumpleanos-esencial",
+        precio: 350,
         estado: "cotizado",
         slug: "test-invalid-state",
       },
@@ -150,8 +146,9 @@ describe("Pedidos Integration Tests", () => {
     const inputNegative = {
       clienteId: testClienteId,
       tipoEvento: "boda" as const,
+      paquete: "esencial" as const,
       fechaEvento: "2026-09-20T18:00:00.000Z",
-      template: "boda-elegante" as const,
+      template: "boda-esencial" as const,
       precio: -100,
       notas: "",
     };
@@ -176,9 +173,10 @@ describe("Pedidos Integration Tests", () => {
     const input = {
       clienteId: testClienteId,
       tipoEvento: "boda" as const,
+      paquete: "esencial" as const,
       fechaEvento: pastDate.toISOString(),
-      template: "boda-elegante" as const,
-      precio: 1500,
+      template: "boda-esencial" as const,
+      precio: 350,
       notas: "",
     };
 
@@ -210,7 +208,7 @@ describe("Pedidos Integration Tests", () => {
 
       const dateInput = screen.getByLabelText(/Fecha del Evento/i);
       const timeInput = screen.getByLabelText(/Hora del Evento/i);
-      const priceInput = screen.getByPlaceholderText("Ej. 1500");
+      const priceInput = screen.getByPlaceholderText("Ej. 350");
       const submitBtn = screen.getByRole("button", { name: /Crear Pedido/i });
 
       const futureDate = new Date();
@@ -219,8 +217,7 @@ describe("Pedidos Integration Tests", () => {
 
       fireEvent.change(dateInput, { target: { value: dateString } });
       fireEvent.change(timeInput, { target: { value: "18:00" } });
-      fireEvent.change(priceInput, { target: { value: "2000" } });
-
+      // The price field is readOnly, but let's simulate form check if needed or just submit
       fireEvent.click(submitBtn);
 
       await waitFor(() => {

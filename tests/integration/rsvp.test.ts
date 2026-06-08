@@ -24,13 +24,14 @@ describe("RSVP Integration Tests", () => {
       data: {
         clienteId: client.id,
         tipoEvento: "boda",
+        paquete: "esencial",
         fechaEvento: new Date("2026-12-18T18:00:00Z"),
-        template: "boda-elegante",
+        template: "boda-esencial",
         precio: 2500,
         estado: "cotizado",
         slug: testSlug,
         urlPublica: `http://localhost:3000/i/${testSlug}`,
-        datosJson: {
+        datosInvitacion: {
           nombres: "Ana & Carlos",
         },
       },

@@ -117,7 +117,7 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
             { key: "todos", label: "Todos" },
             { key: "boda", label: "Bodas" },
             { key: "xv", label: "XV Años" },
-            { key: "baby_shower", label: "Baby Shower" },
+            { key: "babyshower", label: "Baby Shower" },
             { key: "cumpleanos", label: "Cumpleaños" }
           ].map(tab => (
             <button

@@ -61,7 +61,17 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
     const slug = await getUniqueSlug(client.nombre, eventDate);
 
     // Initial default variables for the invitation template
-    const defaultDatosJson = {
+    const isCumple = parsed.data.tipoEvento === "cumpleanos";
+    const defaultDatosJson = isCumple ? {
+      nombre: client.nombre,
+      fecha: parsed.data.fechaEvento,
+      lugar: "",
+      direccion: "",
+      colorPrimario: "#f59e0b",
+      colorSecundario: "#1f2937",
+      fotoPortada: "",
+      mensaje: "¡Estás invitado a celebrar conmigo!",
+    } : {
       nombres: client.nombre,
       fecha: parsed.data.fechaEvento,
       ubicacion: "",
@@ -77,6 +87,7 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
       data: {
         clienteId: parsed.data.clienteId,
         tipoEvento: parsed.data.tipoEvento,
+        paquete: parsed.data.paquete,
         fechaEvento: eventDate,
         template: parsed.data.template,
         precio: new Prisma.Decimal(parsed.data.precio),
@@ -84,7 +95,7 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
         estado: "cotizado",
         slug,
         urlPublica: `http://localhost:3000/i/${slug}`,
-        datosJson: defaultDatosJson,
+        datosInvitacion: defaultDatosJson as Prisma.InputJsonValue,
       },
     });
 

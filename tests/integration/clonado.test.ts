@@ -42,7 +42,7 @@ describe("Clonación de Pedidos Integration Tests", () => {
         slug: "felipe-xv-2026-08-20",
         urlPublica: "http://localhost:3000/i/felipe-xv-2026-08-20",
         qrUrl: "https://cloudinary.com/qr-source.png",
-        datosJson: {
+        datosInvitacion: {
           nombres: "Valeria Calderón",
           fecha: "2026-08-20T19:00:00Z",
           ubicacion: "Salón Real",
@@ -91,7 +91,7 @@ describe("Clonación de Pedidos Integration Tests", () => {
     expect(check?.qrUrl).toBeNull();
 
     // Check cleaned dynamic JSON data
-    const newDatos = check?.datosJson as any;
+    const newDatos = check?.datosInvitacion as any;
     expect(newDatos).toBeDefined();
     expect(newDatos.nombres).toBe("");
     expect(newDatos.fecha).toBe("");

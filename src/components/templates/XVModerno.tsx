@@ -45,16 +45,18 @@ export function XVModerno({ data }: XVModernoProps) {
 
   const heroImage = data.portadaUrl || "https://images.unsplash.com/photo-1549417229-aa67d3263c09?q=80&w=600&auto=format&fit=crop";
 
-  let dateText = data.fecha;
+  let dateText = data.fecha || "";
   try {
-    const d = new Date(data.fecha);
-    if (!isNaN(d.getTime())) {
-      dateText = d.toLocaleDateString("es-ES", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }) + " - " + d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+    if (data.fecha) {
+      const d = new Date(data.fecha);
+      if (!isNaN(d.getTime())) {
+        dateText = d.toLocaleDateString("es-ES", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }) + " - " + d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+      }
     }
   } catch {
     // fallback

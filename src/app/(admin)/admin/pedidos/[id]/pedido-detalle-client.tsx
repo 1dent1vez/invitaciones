@@ -408,7 +408,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
           <RSVPTable 
             rsvps={pedido.rsvps} 
             precio={Number(pedido.precio)} 
-            datosJson={pedido.datosJson} 
+            datosInvitacion={pedido.datosInvitacion} 
           />
         </div>
 

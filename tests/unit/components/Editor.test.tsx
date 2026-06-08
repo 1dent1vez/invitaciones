@@ -29,15 +29,16 @@ describe("EditorClient Component Tests", () => {
   const mockPedido = {
     id: "pedido-123",
     clienteId: "cliente-123",
-    tipoEvento: "boda",
+    tipoEvento: "cumpleanos",
+    paquete: "esencial",
     fechaEvento: new Date("2026-12-18T18:00:00Z"),
-    template: "boda-elegante",
-    precio: 2500.00,
+    template: "cumpleanos-esencial",
+    precio: 350.00,
     estado: "cotizado",
     slug: null,
     urlPublica: null,
     qrUrl: null,
-    datosJson: null,
+    datosInvitacion: null,
     notas: "Notas de prueba de ubicacion",
     cliente: {
       id: "cliente-123",
@@ -58,41 +59,39 @@ describe("EditorClient Component Tests", () => {
 
     // should render the title/header
     expect(screen.getByText("Editar Invitación")).toBeInTheDocument();
-    expect(screen.getByText("Boda Elegante")).toBeInTheDocument();
+    expect(screen.getByText("Cumpleaños Esencial")).toBeInTheDocument();
 
-    // boda-elegante template fields
-    // fields: nombres, fecha, ubicacion, mapaUrl, mensaje, colorPrincipal, colorSecundario, portadaUrl, dressCode, regalosDatos, musicaUrl
-    expect(screen.getByText(/Nombres de los Novios/i)).toBeInTheDocument();
-    expect(screen.getByText(/Fecha y Hora del Evento/i)).toBeInTheDocument();
-    expect(screen.getByText(/Lugar del Evento/i)).toBeInTheDocument();
+    // cumpleanos-esencial template fields
+    expect(screen.getByText(/Nombre del festejado/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fecha del cumpleaños/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nombre del lugar/i)).toBeInTheDocument();
   });
 
   it("debe actualizar el preview instantáneamente al escribir en un campo", async () => {
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
-    const nombresInput = container.querySelector('input[name="nombres"]') as HTMLInputElement;
+    const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
     expect(nombresInput).not.toBeNull();
     console.log("DIAGNOSTIC - nombresInput value:", nombresInput.value);
     
     // Change input value
-    fireEvent.change(nombresInput, { target: { value: "Juan & Maria" } });
+    fireEvent.change(nombresInput, { target: { value: "Santiago" } });
 
     // Check if the preview reflects the change instantly
-    expect(screen.getByText("Juan")).toBeInTheDocument();
-    expect(screen.getByText("Maria")).toBeInTheDocument();
+    expect(screen.getByText("Santiago")).toBeInTheDocument();
   });
 
   it("debe cambiar el color en el preview al seleccionar un color en el picker", async () => {
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
-    // Default primary color is #C5A880 for boda-elegante
+    // Default primary color is #F59E0B for cumpleanos-esencial
     const wrapper = container.querySelector('[style*="--primary"]');
     expect(wrapper).not.toBeNull();
     let styleAttr = wrapper?.getAttribute("style") || "";
-    expect(styleAttr).toContain("--primary: #C5A880");
+    expect(styleAttr).toContain("--primary: #F59E0B");
 
     // Get color principal text input (associated with default color value)
-    const colorInput = container.querySelector('input[name="colorPrincipal"]') as HTMLInputElement;
+    const colorInput = container.querySelector('input[name="colorPrimario"]') as HTMLInputElement;
     expect(colorInput).not.toBeNull();
     
     // Change color input value to #ff0000
@@ -109,13 +108,21 @@ describe("EditorClient Component Tests", () => {
     const { savePedidoDatosAction } = await import("@/app/(admin)/admin/pedidos/[id]/editar/actions");
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
-    const nombresInput = container.querySelector('input[name="nombres"]') as HTMLInputElement;
+    const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
     expect(nombresInput).not.toBeNull();
     fireEvent.change(nombresInput, { target: { value: "" } });
 
-    // Click "Guardar borrador"
-    const saveBtn = screen.getByRole("button", { name: /Guardar borrador/i });
-    fireEvent.click(saveBtn);
+    // Submit the form directly
+    const form = container.querySelector("form");
+    expect(form).not.toBeNull();
+    fireEvent.submit(form!);
+
+    // Log the page content or form state to see if there are validation errors
+    const errorElements = container.querySelectorAll(".text-rose-500");
+    if (errorElements.length > 0) {
+      console.log("VALIDATION ERRORS FOUND IN TEST:");
+      errorElements.forEach(el => console.log("-", el.textContent));
+    }
 
     await waitFor(() => {
       expect(savePedidoDatosAction).toHaveBeenCalled();
@@ -126,7 +133,7 @@ describe("EditorClient Component Tests", () => {
     const { publicarInvitacionAction } = await import("@/app/(admin)/admin/pedidos/[id]/editar/actions");
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
-    const nombresInput = container.querySelector('input[name="nombres"]') as HTMLInputElement;
+    const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
     expect(nombresInput).not.toBeNull();
     fireEvent.change(nombresInput, { target: { value: "" } });
 
@@ -136,7 +143,7 @@ describe("EditorClient Component Tests", () => {
 
     // Assert that validation error is displayed
     await waitFor(() => {
-      expect(screen.getByText("El nombre del evento debe tener al menos 2 caracteres")).toBeInTheDocument();
+      expect(screen.getByText(/El campo "Nombre del festejado" es requerido/i)).toBeInTheDocument();
     });
 
     // Assert that publicarInvitacionAction was not called

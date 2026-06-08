@@ -36,24 +36,26 @@ const quickClientSchema = z.object({
 
 interface EventFormValues {
   clienteId: string;
-  tipoEvento: "boda" | "xv" | "baby_shower" | "cumpleanos";
+  tipoEvento: "boda" | "xv" | "babyshower" | "cumpleanos";
+  paquete: "esencial" | "completa" | "premium";
   fechaPart: string;
   horaPart: string;
-  template: "boda-elegante" | "xv-moderno" | "baby-shower" | "cumpleanos-fiesta";
+  template: string;
   precio: number;
   notas: string;
 }
 
 const eventSchema = z.object({
   clienteId: z.string().optional(),
-  tipoEvento: z.enum(["boda", "xv", "baby_shower", "cumpleanos"], {
+  tipoEvento: z.enum(["boda", "xv", "babyshower", "cumpleanos"], {
     message: "Selecciona un tipo de evento",
+  }),
+  paquete: z.enum(["esencial", "completa", "premium"], {
+    message: "Selecciona un paquete",
   }),
   fechaPart: z.string().min(1, "La fecha del evento es requerida"),
   horaPart: z.string().min(1, "La hora del evento es requerida"),
-  template: z.enum(["boda-elegante", "xv-moderno", "baby-shower", "cumpleanos-fiesta"], {
-    message: "Selecciona una plantilla",
-  }),
+  template: z.string().optional(),
   precio: z.preprocess((val) => Number(val), z.number().positive("El precio debe ser un número positivo")),
   notas: z.string().optional().transform(val => val || ""),
 }).refine((data) => {
@@ -108,24 +110,25 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormValues>,
     defaultValues: {
       clienteId: "",
-      tipoEvento: "boda",
+      tipoEvento: "cumpleanos",
+      paquete: "esencial",
       fechaPart: "",
       horaPart: "18:00",
-      template: "boda-elegante",
-      precio: 1500,
+      template: "cumpleanos-esencial",
+      precio: 350,
       notas: "",
     } as EventFormValues,
   });
 
-  // Watch event type to automatically set template matching it
+  // Watch event type and package to automatically set price/template
   const watchTipoEvento = watchEvent("tipoEvento");
+  const watchPaquete = watchEvent("paquete");
+
   const handleTipoEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value as "boda" | "xv" | "baby_shower" | "cumpleanos";
+    const value = e.target.value as "boda" | "xv" | "babyshower" | "cumpleanos";
     setEventValue("tipoEvento", value);
-    if (value === "boda") setEventValue("template", "boda-elegante");
-    else if (value === "xv") setEventValue("template", "xv-moderno");
-    else if (value === "baby_shower") setEventValue("template", "baby-shower");
-    else if (value === "cumpleanos") setEventValue("template", "cumpleanos-fiesta");
+    const pkg = watchPaquete || "esencial";
+    setEventValue("template", `${value}-${pkg}`);
   };
 
   const handleNextStep1 = () => {
@@ -178,8 +181,9 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
       const payload: PedidoInput = {
         clienteId: selectedClienteId,
         tipoEvento: data.tipoEvento,
+        paquete: data.paquete,
         fechaEvento: combinedDate.toISOString(),
-        template: data.template,
+        template: `${data.tipoEvento}-${data.paquete}`,
         precio: data.precio,
         notas: data.notas,
       };
@@ -446,7 +450,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
           <Card className="border-slate-900 bg-slate-900/20 text-slate-100">
             <form onSubmit={handleEventSubmit(handleSavePedido)}>
               <CardContent className="space-y-5 pt-6">
-                {/* Event Type & Template */}
+                {/* Event Type & Package */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-slate-300">Tipo de Evento *</label>
@@ -456,27 +460,33 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                       {...registerEvent("tipoEvento")}
                       onChange={handleTipoEventoChange}
                     >
-                      <option value="boda">Boda</option>
-                      <option value="xv">XV Años</option>
-                      <option value="baby_shower">Baby Shower</option>
+                      <option value="boda" disabled>Boda (Próximamente)</option>
+                      <option value="xv" disabled>XV Años (Próximamente)</option>
+                      <option value="babyshower" disabled>Baby Shower (Próximamente)</option>
                       <option value="cumpleanos">Cumpleaños</option>
                     </select>
                     {eventErrors.tipoEvento && <p className="text-xs text-rose-500">{eventErrors.tipoEvento.message}</p>}
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Plantilla Visual *</label>
+                    <label className="text-sm font-medium text-slate-300">Paquete *</label>
                     <select
                       className="flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                       disabled={isLoading}
-                      {...registerEvent("template")}
+                      {...registerEvent("paquete")}
+                      onChange={(e) => {
+                        const val = e.target.value as "esencial" | "completa" | "premium";
+                        setEventValue("paquete", val);
+                        const prices = { esencial: 350, completa: 550, premium: 850 };
+                        setEventValue("precio", prices[val]);
+                        setEventValue("template", `${watchTipoEvento}-${val}`);
+                      }}
                     >
-                      {watchTipoEvento === "boda" && <option value="boda-elegante">Boda Elegante</option>}
-                      {watchTipoEvento === "xv" && <option value="xv-moderno">XV Años Moderno</option>}
-                      {watchTipoEvento === "baby_shower" && <option value="baby-shower">Baby Shower Clásico</option>}
-                      {watchTipoEvento === "cumpleanos" && <option value="cumpleanos-fiesta">Cumpleaños Fiesta</option>}
+                      <option value="esencial">Esencial ($350)</option>
+                      <option value="completa">Completa ($550)</option>
+                      <option value="premium">Premium ($850)</option>
                     </select>
-                    {eventErrors.template && <p className="text-xs text-rose-500">{eventErrors.template.message}</p>}
+                    {eventErrors.paquete && <p className="text-xs text-rose-500">{eventErrors.paquete.message}</p>}
                   </div>
                 </div>
 
@@ -519,9 +529,10 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                     <input
                       id="precio"
                       type="number"
-                      placeholder="Ej. 1500"
+                      placeholder="Ej. 350"
+                      readOnly
                       className={cn(
-                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
+                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50 bg-slate-950/30 text-slate-400 cursor-not-allowed",
                         eventErrors.precio && "border-rose-500 focus-visible:ring-rose-500"
                       )}
                       disabled={isLoading}

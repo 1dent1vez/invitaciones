@@ -79,7 +79,7 @@ export function LeadsClient({ initialLeads }: LeadsClientProps) {
         return <span className="inline-flex items-center rounded-full bg-violet-500/10 px-2.5 py-0.5 text-xs font-semibold text-violet-400 ring-1 ring-violet-500/20">Boda</span>;
       case "xv":
         return <span className="inline-flex items-center rounded-full bg-pink-500/10 px-2.5 py-0.5 text-xs font-semibold text-pink-400 ring-1 ring-pink-500/20">XV Años</span>;
-      case "baby_shower":
+      case "babyshower":
         return <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20">Baby Shower</span>;
       case "cumpleanos":
         return <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400 ring-1 ring-blue-500/20">Cumpleaños</span>;

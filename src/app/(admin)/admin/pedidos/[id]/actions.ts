@@ -101,7 +101,7 @@ export async function clonarPedidoAction(
       return { success: false, error: "El pedido a clonar no existe" };
     }
 
-    const oldDatos = (pedido.datosJson as Record<string, unknown>) || {};
+    const oldDatos = (pedido.datosInvitacion as Record<string, unknown>) || {};
     const newDatos = {
       ...oldDatos,
       nombres: "",
@@ -123,7 +123,7 @@ export async function clonarPedidoAction(
         slug: null,
         urlPublica: null,
         qrUrl: null,
-        datosJson: newDatos as unknown as Prisma.InputJsonValue,
+        datosInvitacion: newDatos as unknown as Prisma.InputJsonValue,
       },
     });
     newId = newPedido.id;

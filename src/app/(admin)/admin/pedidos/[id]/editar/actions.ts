@@ -41,7 +41,7 @@ export async function savePedidoDatosAction(
     }
 
     const updateData: Prisma.PedidoUpdateInput = {
-      datosJson: datos as unknown as Prisma.InputJsonValue,
+      datosInvitacion: datos as unknown as Prisma.InputJsonValue,
     };
 
     if (datos.fecha) {
@@ -60,7 +60,7 @@ export async function savePedidoDatosAction(
     revalidatePath(`/admin/pedidos/${pedidoId}`);
     revalidatePath(`/admin/pedidos/${pedidoId}/editar`);
 
-    return { success: true, data: updated.datosJson as unknown as InvitacionData };
+    return { success: true, data: updated.datosInvitacion as unknown as InvitacionData };
   } catch (error) {
     console.error("[savePedidoDatosAction] Failed to save invitation data:", error);
     return { 
@@ -83,7 +83,7 @@ export async function publicarInvitacionAction(
       return { success: false, error: "El pedido no existe" };
     }
 
-    const datos = (pedido.datosJson as unknown as InvitacionData) || {};
+    const datos = (pedido.datosInvitacion as unknown as InvitacionData) || {};
     const names = datos.nombres || pedido.cliente.nombre || "evento";
 
     let baseSlug = await slugify(names);

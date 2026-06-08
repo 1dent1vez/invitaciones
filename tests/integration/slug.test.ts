@@ -40,7 +40,7 @@ describe("Slug Integration Tests", () => {
         template: "boda-elegante",
         precio: 2500,
         estado: "cotizado",
-        datosJson: {
+        datosInvitacion: {
           nombres: "Ana y Carlos",
         },
       },
@@ -66,7 +66,7 @@ describe("Slug Integration Tests", () => {
         template: "boda-elegante",
         precio: 2500,
         estado: "cotizado",
-        datosJson: {
+        datosInvitacion: {
           nombres: "Ana y Carlos",
         },
       },
@@ -80,7 +80,7 @@ describe("Slug Integration Tests", () => {
         template: "boda-elegante",
         precio: 2500,
         estado: "cotizado",
-        datosJson: {
+        datosInvitacion: {
           nombres: "Ana y Carlos",
         },
       },

@@ -11,7 +11,7 @@ interface TemplateWrapperProps {
 
 export function TemplateWrapper({ children, data }: TemplateWrapperProps) {
   const safeData = data || {};
-  const primaryColor = safeData.colorPrincipal || "#8B5CF6";
+  const primaryColor = safeData.colorPrincipal || safeData.colorPrimario || "#8B5CF6";
   const secondaryColor = safeData.colorSecundario || "#EC4899";
 
   const themeStyles = {

@@ -31,11 +31,12 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
       data: {
         clienteId: testClienteId,
         tipoEvento: "boda",
+        paquete: "esencial",
         fechaEvento: new Date("2026-10-12T15:00:00Z"),
-        template: "boda-elegante",
+        template: "boda-esencial",
         precio: 2500,
         estado: "cotizado",
-        datosJson: {
+        datosInvitacion: {
           nombres: "María y Juan",
           fecha: "2026-10-12T15:00:00Z",
           ubicacion: "Hacienda del Sol",

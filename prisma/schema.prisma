@@ -23,16 +23,18 @@ model Pedido {
   id           String   @id @default(cuid())
   clienteId    String
   cliente      Cliente  @relation(fields: [clienteId], references: [id])
-  tipoEvento   String   // boda | xv | baby_shower | cumpleanos
+  tipoEvento   String   // boda | xv | babyshower | cumpleanos
+  paquete      String   @default("esencial") // esencial | completa | premium
   fechaEvento  DateTime
-  template     String   // boda-elegante | xv-moderno | baby-shower | cumpleanos-fiesta
+  template     String   // boda-esencial | boda-completa | boda-premium | ...
   precio       Decimal  @db.Decimal(10, 2)
   estado       String   @default("cotizado") // cotizado | pagado | en_produccion | entregado | completado
+  estadoInvitacion String @default("BORRADOR")
   notas        String?
   slug         String?  @unique
   urlPublica   String?
   qrUrl        String?
-  datosJson    Json?    // { nombres, fecha, ubicacion, fotos[], colores, mensaje, ... }
+  datosInvitacion Json?    @default("{}") // { nombres, fecha, ubicacion, fotos[], colores, mensaje, ... }
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   pagos        Pago[]
