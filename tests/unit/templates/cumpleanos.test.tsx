@@ -52,6 +52,8 @@ describe("Birthday Templates Rendering Tests", () => {
     expect(screen.getByText("Santiago")).toBeInTheDocument();
     expect(screen.getAllByText(/30/i).length).toBeGreaterThan(0);
     expect(screen.getByText("Terraza La Vista")).toBeInTheDocument();
+    expect(screen.getByTestId("tipo-celebracion-badge")).toHaveTextContent("🍷 Adultos");
+    expect(screen.getByTestId("whatsapp-confirmar")).toHaveAttribute("href", "https://wa.me/5512345678");
   });
 
   it("renderiza CumpleCompleta correctamente", () => {
@@ -61,6 +63,8 @@ describe("Birthday Templates Rendering Tests", () => {
     expect(screen.getByText("Terraza La Vista")).toBeInTheDocument();
     expect(screen.getByText("Código de Vestimenta")).toBeInTheDocument();
     expect(screen.getByText("Casual")).toBeInTheDocument();
+    expect(screen.getByTestId("tipo-celebracion-badge")).toHaveTextContent("🍷 Adultos");
+    expect(screen.getByTestId("whatsapp-confirmar")).toHaveAttribute("href", "https://wa.me/5512345678");
   });
 
   it("renderiza CumplePremium correctamente", () => {

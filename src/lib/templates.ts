@@ -50,6 +50,7 @@ export function getTemplateConfig(type: TemplateType): TemplateConfig {
       placeholder: c.placeholder,
       options: c.options,
       condicion: c.condicion,
+      maxItems: c.maxItems,
     })),
   };
 }

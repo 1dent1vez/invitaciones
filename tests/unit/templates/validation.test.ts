@@ -34,23 +34,24 @@ describe("validateTemplateData", () => {
     expect(result.errors.length).toBe(8);
   });
 
-  it("falla la validación si falta el nombre de la mamá en babyshower-esencial", () => {
-    const config = getTemplateConfig("babyshower-esencial");
+  it("falla la validación si falta el nombre en cumpleanos-esencial", () => {
+    const config = getTemplateConfig("cumpleanos-esencial");
     const data: Partial<InvitacionData> = {
+      edad: 30,
       fecha: "2026-08-08T16:00:00Z",
       hora: "16:00",
       lugar: "Jardín Los Tulipanes",
       direccion: "Calle Roble 45",
-      tipoBebe: "Niño",
+      tipoCelebracion: "Adultos",
       fotoPortada: "https://example.com/foto.jpg",
-      musica: "Dulce",
+      musica: "Fiesta",
       whatsapp: "5512345678",
-      // nombreMama faltante
+      // nombre faltante
     };
     const result = validateTemplateData(config, data);
     expect(result.success).toBe(false);
     expect(result.errors.length).toBe(1);
-    expect(result.errors[0]).toContain("mamá");
+    expect(result.errors[0]).toContain("festejado");
   });
 });
 

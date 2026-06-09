@@ -94,10 +94,14 @@ describe("Clonación de Pedidos Integration Tests", () => {
     const newDatos = check?.datosInvitacion as any;
     expect(newDatos).toBeDefined();
     expect(newDatos.nombres).toBe("");
+    expect(newDatos.nombre).toBe("");
+    expect(newDatos.edad).toBe("");
+    expect(newDatos.tipoCelebracion).toBe("");
     expect(newDatos.fecha).toBe("");
     expect(newDatos.portadaUrl).toBe("");
     expect(newDatos.mensaje).toBe("");
     expect(newDatos.fotos).toEqual([]);
+    expect(newDatos.fotosGaleria).toEqual([]);
     
     // Ensure template options are kept (e.g. template)
     expect(check?.template).toBe("xv-moderno");

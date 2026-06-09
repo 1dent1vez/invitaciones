@@ -19,21 +19,21 @@ test.describe("Responsive Design Tests", () => {
     await expect(page.locator("h1")).toBeVisible();
   });
 
-  test("debería cargar la demo de boda-elegante en desktop", async ({ page }) => {
+  test("debería cargar la demo de cumpleanos-esencial en desktop", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto("/demo/boda-elegante");
+    await page.goto("/demo/cumpleanos-esencial");
     
     // Check main title of the mock invitation is visible
-    await expect(page.locator("body")).toContainText("María Fernanda & Juan Carlos");
-    await expect(page.locator('button:has-text("Confirmar Lugar")')).toBeVisible();
+    await expect(page.locator("body")).toContainText("Santiago");
+    await expect(page.locator('a:has-text("Ver dirección en Maps")')).toBeVisible();
   });
 
-  test("debería cargar la demo de boda-elegante en móvil", async ({ page }) => {
+  test("debería cargar la demo de cumpleanos-esencial en móvil", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
-    await page.goto("/demo/boda-elegante");
+    await page.goto("/demo/cumpleanos-esencial");
     
     // Check elements in mobile viewport
-    await expect(page.locator("body")).toContainText("María Fernanda & Juan Carlos");
-    await expect(page.locator('button:has-text("Confirmar Lugar")')).toBeVisible();
+    await expect(page.locator("body")).toContainText("Santiago");
+    await expect(page.locator('a:has-text("Ver dirección en Maps")')).toBeVisible();
   });
 });

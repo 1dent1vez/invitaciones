@@ -150,4 +150,38 @@ describe("EditorClient Component Tests", () => {
     expect(publicarInvitacionAction).not.toHaveBeenCalled();
   });
 
+  it("debe mostrar skeleton loader durante la carga inicial", async () => {
+    render(<EditorClient pedido={mockPedido as any} initialIsLoading={true} />);
+    expect(screen.getByTestId("editor-skeleton")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByTestId("editor-skeleton")).not.toBeInTheDocument();
+    });
+  });
+
+  it("debe alternar el viewport entre móvil y escritorio", async () => {
+    render(<EditorClient pedido={mockPedido as any} />);
+    await waitFor(() => {
+      expect(screen.queryByTestId("editor-skeleton")).not.toBeInTheDocument();
+    });
+
+    const simulator = screen.getByTestId("device-simulator");
+    expect(simulator.className).toContain("max-w-[360px]");
+    
+    const desktopBtn = screen.getByText("🖥️ Escritorio");
+    fireEvent.click(desktopBtn);
+    expect(simulator.className).toContain("max-w-[768px]");
+  });
+
+  it("debe mostrar watermark si la invitación está en estado borrador", async () => {
+    const borradorPedido = {
+      ...mockPedido,
+      estadoInvitacion: "BORRADOR",
+    };
+    render(<EditorClient pedido={borradorPedido as any} />);
+    await waitFor(() => {
+      expect(screen.queryByTestId("editor-skeleton")).not.toBeInTheDocument();
+    });
+    expect(screen.getByTestId("watermark-borrador")).toBeInTheDocument();
+  });
+
 });

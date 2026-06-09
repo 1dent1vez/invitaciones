@@ -29,7 +29,10 @@ import { PedidoInput } from "@/types";
 
 const quickClientSchema = z.object({
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  telefono: z.string().optional().transform(val => val || ""),
+  telefono: z.string()
+    .regex(/^[0-9]{10}$/, "El teléfono debe tener exactamente 10 dígitos numéricos")
+    .min(10, "Mínimo 10 dígitos")
+    .max(10, "Máximo 10 dígitos"),
   email: z.string().email("El correo no es válido").optional().or(z.literal("")).transform(val => val || ""),
   fuente: z.enum(["tienda", "instagram", "whatsapp", "referido"]),
 });
@@ -313,13 +316,21 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                       <label className="text-sm font-medium text-slate-300">Teléfono</label>
                       <input
                         placeholder="Ej. 5512345678"
+                        type="tel"
+                        maxLength={10}
+                        inputMode="numeric"
                         className={cn(
                           "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
                           clientErrors.telefono && "border-rose-500 focus-visible:ring-rose-500"
                         )}
                         aria-invalid={!!clientErrors.telefono}
-                        {...registerClient("telefono")}
+                        {...registerClient("telefono", {
+                          onChange: (e) => {
+                            e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                          }
+                        })}
                       />
+                      {clientErrors.telefono && <p className="text-xs text-rose-500">{clientErrors.telefono.message}</p>}
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">

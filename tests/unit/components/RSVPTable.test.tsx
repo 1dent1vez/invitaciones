@@ -78,4 +78,40 @@ describe("RSVPTable Component Tests", () => {
     expect(screen.getByText("Juan Perez")).toBeInTheDocument();
     expect(screen.queryByText("Maria Gomez")).not.toBeInTheDocument();
   });
+
+  it("debe exportar a CSV incluyendo metadatos del evento en la cabecera", () => {
+    const createObjectURLMock = vi.fn(() => "blob:url");
+    global.URL.createObjectURL = createObjectURLMock;
+
+    // Prevent JSDOM navigation error on anchor click
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
+    let exportedContent = "";
+    const mockBlob = vi.spyOn(global, "Blob").mockImplementation(function (content) {
+      exportedContent = content[0];
+      return {} as any;
+    } as any);
+
+    render(
+      <RSVPTable
+        rsvps={mockRSVPs as any}
+        precio={2500}
+        datosInvitacion={{
+          nombre: "Mateo",
+          fecha: "2026-12-24T18:00:00Z",
+          lugar: "Terraza La Vista",
+        }}
+      />
+    );
+
+    const exportBtn = screen.getByRole("button", { name: /Exportar CSV/i });
+    fireEvent.click(exportBtn);
+
+    expect(exportedContent).toContain(`"Evento:","Mateo"`);
+    expect(exportedContent).toContain(`"Lugar:","Terraza La Vista"`);
+    expect(exportedContent).toContain("Nombre,¿Asiste?,Lugares/Pax,Teléfono,Mensaje,Fecha de registro");
+    
+    mockBlob.mockRestore();
+    clickSpy.mockRestore();
+  });
 });

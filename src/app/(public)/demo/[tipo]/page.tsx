@@ -64,7 +64,8 @@ const MOCK_CUMPLE: InvitacionData = {
   colorPrimario: "#F59E0B",
   colorSecundario: "#1f2937",
   musica: "Fiesta",
-  whatsapp: "5512345678"
+  whatsapp: "5512345678",
+  mapaUrl: "https://maps.google.com"
 };
 
 const MOCK_DATA: Record<TemplateType, InvitacionData> = {

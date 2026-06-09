@@ -100,6 +100,7 @@ export interface FieldConfig {
   placeholder?: string;
   options?: string[];
   condicion?: string;
+  maxItems?: number;
 }
 
 export interface TemplateConfig {

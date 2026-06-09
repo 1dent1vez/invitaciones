@@ -21,6 +21,13 @@ import { updatePedidoEstadoAction } from "./actions";
 
 type PedidoWithCliente = Pedido & { cliente: Cliente };
 
+const TIPO_EVENTO_MAP: Record<string, string> = {
+  cumpleanos: "Cumpleaños",
+  boda: "Boda",
+  xv: "XV Años",
+  babyshower: "Baby Shower",
+};
+
 interface PedidosClientProps {
   initialPedidos: PedidoWithCliente[];
 }
@@ -71,10 +78,21 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
     });
   };
 
-  // Filter logic
   const filteredPedidos = pedidos.filter(p => {
+    let datos: Record<string, unknown> = {};
+    if (p.datosInvitacion) {
+      try {
+        datos = typeof p.datosInvitacion === "string"
+          ? JSON.parse(p.datosInvitacion)
+          : (p.datosInvitacion as Record<string, unknown>);
+      } catch {
+        datos = {};
+      }
+    }
+    const nombreFestejado = (datos.nombre as string) || (datos.nombres as string) || "";
     const matchesSearch = p.cliente.nombre.toLowerCase().includes(search.toLowerCase()) || 
-                          (p.slug || "").toLowerCase().includes(search.toLowerCase());
+                          (p.slug || "").toLowerCase().includes(search.toLowerCase()) ||
+                          nombreFestejado.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = eventTypeFilter === "todos" || p.tipoEvento === eventTypeFilter;
     return matchesSearch && matchesFilter;
   });
@@ -171,7 +189,7 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
                         {/* Event type badge */}
                         <div className="flex items-center justify-between">
                           <span className="text-4xs font-bold uppercase tracking-wider text-violet-400">
-                            {pedido.tipoEvento}
+                            {TIPO_EVENTO_MAP[pedido.tipoEvento] || pedido.tipoEvento}
                           </span>
                           <span className="text-4xs text-slate-500 font-medium">
                             {pedido.template}

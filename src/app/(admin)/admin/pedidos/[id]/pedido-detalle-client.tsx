@@ -88,10 +88,28 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
   const [notifyText, setNotifyText] = useState("");
 
   const handleOpenNotify = () => {
+    let dataObj: Record<string, unknown> = {};
+    if (pedido.datosInvitacion) {
+      try {
+        dataObj = typeof pedido.datosInvitacion === "string"
+          ? JSON.parse(pedido.datosInvitacion)
+          : (pedido.datosInvitacion as Record<string, unknown>);
+      } catch {
+        dataObj = {};
+      }
+    }
+    const fecha = (dataObj.fecha as string) || "";
+    const hora = (dataObj.hora as string) || "";
+    const lugar = (dataObj.lugar as string) || (dataObj.ubicacion as string) || "";
+
     const text = generarTextoNotificacion(
       pedido.cliente.nombre,
       pedido.urlPublica || "",
-      pedido.qrUrl || ""
+      pedido.qrUrl || "",
+      pedido.tipoEvento,
+      fecha,
+      hora,
+      lugar
     );
     setNotifyText(text);
     setCopied(false);
@@ -323,7 +341,13 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
             <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
               <div className="space-y-1.5">
                 <p className="text-xs text-slate-500 font-medium uppercase">Tipo de Evento</p>
-                <p className="text-sm font-semibold text-white capitalize">{pedido.tipoEvento}</p>
+                <p className="text-sm font-semibold text-white capitalize">
+                  {pedido.tipoEvento === "cumpleanos" ? "Cumpleaños" :
+                   pedido.tipoEvento === "boda" ? "Boda" :
+                   pedido.tipoEvento === "xv" ? "XV Años" :
+                   pedido.tipoEvento === "babyshower" ? "Baby Shower" :
+                   pedido.tipoEvento}
+                </p>
               </div>
               <div className="space-y-1.5">
                 <p className="text-xs text-slate-500 font-medium uppercase">Fecha del Evento</p>
@@ -685,6 +709,17 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                 onClick={() => setIsNotifyOpen(false)}
               >
                 Cerrar
+              </Button>
+              <Button
+                onClick={() => {
+                  const phone = pedido.cliente.telefono ? pedido.cliente.telefono.replace(/\D/g, "") : "";
+                  const url = `https://wa.me/${phone}?text=${encodeURIComponent(notifyText)}`;
+                  window.open(url, "_blank");
+                }}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center justify-center gap-1.5"
+                data-testid="enviar-whatsapp-btn"
+              >
+                Enviar WhatsApp
               </Button>
               <Button
                 onClick={handleCopyText}

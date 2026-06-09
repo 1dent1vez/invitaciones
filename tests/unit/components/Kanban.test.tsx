@@ -97,4 +97,49 @@ describe("Kanban (PedidosClient) Component Tests", () => {
     // Verify update action called
     expect(updatePedidoEstadoAction).toHaveBeenCalledWith("pedido-1", "pagado");
   });
+
+  it("debe traducir el tipo de evento en el badge del Kanban a español", () => {
+    render(<PedidosClient initialPedidos={initialPedidos} />);
+    // "boda" is mapped to "Boda"
+    expect(screen.getByText("Boda")).toBeInTheDocument();
+  });
+
+  it("debe filtrar pedidos por nombre del festejado en datosInvitacion", () => {
+    const festejadoPedidos = [
+      ...initialPedidos,
+      {
+        id: "pedido-3",
+        clienteId: "cliente-3",
+        tipoEvento: "cumpleanos",
+        fechaEvento: new Date("2026-12-18T18:00:00Z").toISOString(),
+        template: "cumpleanos-esencial",
+        precio: 350.00,
+        estado: "cotizado",
+        slug: "cumple-festejado",
+        cliente: {
+          id: "cliente-3",
+          nombre: "Felipe Gomez",
+          fuente: "tienda",
+        },
+        datosInvitacion: {
+          nombre: "Mateo",
+        },
+        pagos: [],
+      },
+    ];
+
+    render(<PedidosClient initialPedidos={festejadoPedidos} />);
+
+    // Mateo card should render initially since search is empty
+    expect(screen.getByText("Felipe Gomez")).toBeInTheDocument();
+
+    // Type "Mateo" into search input
+    const searchInput = screen.getByPlaceholderText("Buscar por cliente o slug...");
+    fireEvent.change(searchInput, { target: { value: "Mateo" } });
+
+    // Felipe Gomez (which has Mateo as celebrant) should remain visible
+    expect(screen.getByText("Felipe Gomez")).toBeInTheDocument();
+    // Pedro & Ana (which doesn't match Mateo) should be hidden
+    expect(screen.queryByText("Pedro & Ana")).not.toBeInTheDocument();
+  });
 });

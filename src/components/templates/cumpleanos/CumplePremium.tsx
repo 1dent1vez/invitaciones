@@ -193,6 +193,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
         audio.pause();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.musicaUrl]);
 
   const toggleMusic = () => {
@@ -302,6 +303,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
       {/* Hero Portada */}
       <div className="relative h-[440px] w-full overflow-hidden flex items-end">
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/40 to-transparent z-10" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={fotoPortada}
           alt="Cumpleañero"
@@ -523,6 +525,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             <div className="grid grid-cols-3 gap-2">
               {allPhotos.map((photo, index) => (
                 <div key={index} className="aspect-square rounded-xl overflow-hidden border border-slate-900 shadow-md group relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo}
                     alt={`Galería ${index + 1}`}

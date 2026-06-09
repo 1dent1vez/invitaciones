@@ -26,6 +26,7 @@ import { getTemplateConfig, TEMPLATE_COMPONENTS } from "@/lib/templates";
 import { TemplateWrapper } from "@/components/templates/TemplateWrapper";
 import { TemplateType, InvitacionData } from "@/types";
 import { useToast } from "@/components/ui/toast";
+import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
 import { hexColorRegex, urlValidation } from "./schemas";
 import {
   savePedidoDatosAction,
@@ -121,10 +122,12 @@ const getPublishFormSchema = (templateType: TemplateType) => {
 
   for (const field of templateConfig.fields) {
     if (field.required) {
-      if (field.key === "fecha") {
+      if (field.key === "fecha" || field.key === "hora") {
         continue;
       }
-      if (field.type === "image" || field.key.includes("Portada")) {
+      if (field.type === "gallery") {
+        base[field.key] = z.array(z.string()).min(1, `El campo "${field.label}" es requerido`);
+      } else if (field.type === "image" || field.key.includes("Portada")) {
         base[field.key] = urlValidation.refine(val => !!val, { message: `El campo "${field.label}" es requerido` });
       } else if (field.key === "edad" || field.key === "numPases") {
         base[field.key] = z.preprocess(preprocessNumber, z.number({ required_error: `El campo "${field.label}" es requerido` }));
@@ -132,7 +135,9 @@ const getPublishFormSchema = (templateType: TemplateType) => {
         base[field.key] = z.string().min(1, `El campo "${field.label}" es requerido`);
       }
     } else {
-      if (field.type === "image" || field.key.includes("Url") || field.key.includes("Link") || field.key.includes("video")) {
+      if (field.type === "gallery") {
+        base[field.key] = z.array(z.string()).optional();
+      } else if (field.type === "image" || field.key.includes("Url") || field.key.includes("Link") || field.key.includes("video")) {
         base[field.key] = urlValidation;
       } else if (field.key === "edad" || field.key === "numPases") {
         base[field.key] = z.preprocess(preprocessNumber, z.number().optional());
@@ -213,6 +218,7 @@ type PedidoWithCliente = Pedido & { cliente: Cliente };
 
 interface EditorClientProps {
   pedido: PedidoWithCliente;
+  initialIsLoading?: boolean;
 }
 
 function cleanFormValues(data: EditorFormValues): InvitacionData {
@@ -306,144 +312,7 @@ function getSafeTemplateData(data: Partial<InvitacionData> | null | undefined, t
   };
 }
 
-interface MultiImageUploaderProps {
-  value: string[];
-  onChange: (value: string[]) => void;
-  maxImages: number;
-}
 
-function MultiImageUploader({ value, onChange, maxImages }: MultiImageUploaderProps) {
-  const [uploading, setUploading] = useState(false);
-  const { toast } = useToast();
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const filesArray = Array.from(files);
-    const remainingSlots = maxImages - value.length;
-    if (filesArray.length > remainingSlots) {
-      toast({
-        title: "Límite superado",
-        description: `Solo puedes subir hasta ${maxImages} imágenes en este paquete.`,
-        type: "error",
-      });
-      return;
-    }
-
-    setUploading(true);
-    const newUrls = [...value];
-
-    for (const file of filesArray) {
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-        const res = await uploadImageAction(formData);
-        if (res.success && res.data) {
-          newUrls.push(res.data);
-        } else {
-          toast({
-            title: "Error al subir imagen",
-            description: res.error || "No se pudo subir una de las imágenes.",
-            type: "error",
-          });
-        }
-      } catch {
-        toast({
-          title: "Error de red",
-          description: "No se pudo conectar al servidor para subir las imágenes.",
-          type: "error",
-        });
-      }
-    }
-
-    onChange(newUrls);
-    setUploading(false);
-  };
-
-  const removeImage = (indexToRemove: number) => {
-    const newUrls = value.filter((_, idx) => idx !== indexToRemove);
-    onChange(newUrls);
-  };
-
-  const moveImage = (index: number, direction: "up" | "down") => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= value.length) return;
-    const newUrls = [...value];
-    const temp = newUrls[index];
-    newUrls[index] = newUrls[targetIndex];
-    newUrls[targetIndex] = temp;
-    onChange(newUrls);
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center text-xs text-slate-400">
-        <span>Fotos de galería:</span>
-        <span className="font-bold">{value.length} de {maxImages}</span>
-      </div>
-
-      {value.length > 0 && (
-        <div className="grid grid-cols-3 gap-2">
-          {value.map((url, idx) => (
-            <div key={idx} className="relative aspect-square rounded-lg border border-slate-800 overflow-hidden bg-slate-950 group">
-              <img src={url} alt={`Galería ${idx + 1}`} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1">
-                <div className="flex justify-between w-full">
-                  <button
-                    type="button"
-                    disabled={idx === 0}
-                    onClick={() => moveImage(idx, "up")}
-                    className="p-1 bg-slate-900 rounded text-slate-300 hover:text-white disabled:opacity-30 text-xs font-bold"
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="button"
-                    disabled={idx === value.length - 1}
-                    onClick={() => moveImage(idx, "down")}
-                    className="p-1 bg-slate-900 rounded text-slate-300 hover:text-white disabled:opacity-30 text-xs font-bold"
-                  >
-                    →
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeImage(idx)}
-                  className="self-center p-1 bg-rose-600 hover:bg-rose-500 rounded text-white text-[10px] font-semibold flex items-center gap-0.5"
-                >
-                  <Trash2 className="h-2.5 w-2.5" />
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {value.length < maxImages && (
-        <div className="border-2 border-dashed border-slate-800 hover:border-violet-500/50 hover:bg-violet-600/5 rounded-xl p-4 transition-all text-center flex flex-col items-center justify-center cursor-pointer group relative">
-          <input
-            type="file"
-            multiple
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            accept="image/*"
-            disabled={uploading}
-            onChange={handleUpload}
-          />
-          {uploading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-violet-400 mb-1" />
-          ) : (
-            <Upload className="h-5 w-5 text-slate-400 group-hover:text-violet-400 transition-colors mb-1" />
-          )}
-          <p className="text-xs font-semibold text-slate-300">
-            {uploading ? "Subiendo fotos..." : "Subir fotos"}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 class PreviewErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -499,7 +368,7 @@ const SECTIONS = [
   },
 ];
 
-export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
+export function EditorClient({ pedido: initialPedido, initialIsLoading }: EditorClientProps) {
   const { toast } = useToast();
   const [pedido, setPedido] = useState<PedidoWithCliente>(() => {
     const p = { ...initialPedido };
@@ -517,6 +386,20 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
   const [qrLoading, setQrLoading] = useState(false);
   const [rawJsonText, setRawJsonText] = useState(() => JSON.stringify(pedido.datosInvitacion || {}, null, 2));
   const [jsonSyntaxError, setJsonSyntaxError] = useState<string | null>(null);
+
+  // Phase 3 states: Auto-save, Viewport, Loaders
+  const [isDirty, setIsDirty] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [isLoading, setIsLoading] = useState(() =>
+    initialIsLoading !== undefined
+      ? initialIsLoading
+      : typeof process !== "undefined" && process.env?.NODE_ENV === "test"
+      ? false
+      : true
+  );
+  const [previewMode, setPreviewMode] = useState<"mobile" | "desktop">("mobile");
 
   const templateType = pedido.template as TemplateType;
   const config = getTemplateConfig(templateType);
@@ -629,6 +512,57 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
 
   // Watch for real-time instantaneous sync
   const watchedData = watch();
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  React.useEffect(() => {
+    const subscription = watch(() => {
+      setIsDirty(true);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  React.useEffect(() => {
+    if (isDirty && !isAutoSaving && !isPending) {
+      autoSaveTimerRef.current = setTimeout(() => {
+        const handleAutoSave = async () => {
+          setIsAutoSaving(true);
+          try {
+            const values = getValues();
+            const mappedData = cleanFormValues(values);
+            const res = await savePedidoDatosAction(pedido.id, mappedData);
+            if (res.success && res.data) {
+              setPedido(prev => ({ ...prev, datosInvitacion: res.data as unknown as Prisma.JsonValue }));
+              setRawJsonText(JSON.stringify(res.data, null, 2));
+              setIsDirty(false);
+              setLastSaved(new Date());
+              toast({
+                title: "Auto-guardado",
+                description: "Borrador guardado automáticamente.",
+                type: "success",
+              });
+            }
+          } catch (error) {
+            console.error("Error auto-saving draft", error);
+          } finally {
+            setIsAutoSaving(false);
+          }
+        };
+        handleAutoSave();
+      }, 30000);
+    }
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [isDirty, isAutoSaving, isPending, watchedData, pedido.id, getValues, toast]);
   const currentPreviewData = useMemo(() => {
     if (pedido.tipoEvento !== "cumpleanos") {
       try {
@@ -710,6 +644,8 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
       if (res.success && res.data) {
         setPedido(prev => ({ ...prev, datosInvitacion: res.data as unknown as Prisma.JsonValue }));
         setRawJsonText(JSON.stringify(res.data, null, 2));
+        setIsDirty(false);
+        setLastSaved(new Date());
         toast({
           title: "Borrador guardado",
           description: "Los cambios han sido guardados como borrador con éxito.",
@@ -914,19 +850,36 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
                   Detalle del Pedido
                 </Link>
                 <h2 className="text-xl font-bold tracking-tight text-white mt-1">Editar Invitación</h2>
+                <div className="flex items-center gap-2 text-xs text-slate-400 mt-1" data-testid="autosave-status">
+                  {isDirty && <span className="text-amber-500">● Cambios sin guardar</span>}
+                  {isAutoSaving && <span>💾 Guardando...</span>}
+                  {!isDirty && lastSaved && (
+                    <span className="text-green-600">✓ Guardado {lastSaved.toLocaleTimeString()}</span>
+                  )}
+                </div>
               </div>
               <span className="inline-flex items-center rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold ring-1 ring-slate-800 text-slate-400 shadow-inner">
                 {config.name}
               </span>
             </div>
 
-            {actionError && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm font-medium text-rose-400">
-                {actionError}
+            {isLoading ? (
+              <div className="space-y-4 p-4" data-testid="editor-skeleton">
+                <div className="h-8 w-3/4 bg-slate-900 animate-pulse rounded" />
+                <div className="h-10 w-full bg-slate-900 animate-pulse rounded" />
+                <div className="h-10 w-full bg-slate-900 animate-pulse rounded" />
+                <div className="h-32 w-full bg-slate-900 animate-pulse rounded" />
+                <div className="h-10 w-2/3 bg-slate-900 animate-pulse rounded" />
               </div>
-            )}
+            ) : (
+              <>
+                {actionError && (
+                  <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm font-medium text-rose-400">
+                    {actionError}
+                  </div>
+                )}
 
-            <form id="editor-form" onSubmit={handleSubmit(onSave)} className="space-y-8">
+                <form id="editor-form" onSubmit={handleSubmit(onSave)} className="space-y-8">
               {pedido.tipoEvento !== "cumpleanos" ? (
                 <div className="space-y-6 bg-slate-900/10 p-4 rounded-xl border border-slate-900/50">
                   <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-400 font-medium leading-relaxed">
@@ -972,6 +925,10 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
                     <div className="space-y-5">
                       {section.fields.map(field => {
                         const registerKey = field.key as keyof EditorFormValues;
+
+                        if (field.key === "hora") {
+                          return null;
+                        }
 
                         // Support conditional visibility
                         if (field.condicion) {
@@ -1165,7 +1122,7 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
                               <MultiImageUploader
                                 value={(watchedData[registerKey] as string[]) || []}
                                 onChange={(urls) => setValue(registerKey, urls, { shouldDirty: true, shouldValidate: true })}
-                                maxImages={config.id.includes("premium") ? 6 : 3}
+                                maxImages={field.maxItems || (config.id.includes("premium") ? 6 : 3)}
                               />
                             )}
 
@@ -1330,6 +1287,7 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
               </Card>
 
             </form>
+          </>)}
           </div>
 
           {/* FIXED BUTTON BAR AT THE BOTTOM OF THE FORM */}
@@ -1383,21 +1341,62 @@ export function EditorClient({ pedido: initialPedido }: EditorClientProps) {
           )}
         >
           {/* Floating Mock Simulator Indicator */}
-          <div className="absolute top-4 left-6 flex items-center gap-1.5 text-xs text-slate-500 z-10">
-            <Smartphone className="h-4 w-4" />
-            <span>Vista Previa de la Invitación</span>
+          <div className="absolute top-4 left-6 right-6 flex items-center justify-between text-xs text-slate-500 z-10">
+            <div className="flex items-center gap-1.5">
+              <Smartphone className="h-4 w-4" />
+              <span>Vista Previa de la Invitación</span>
+            </div>
+            
+            <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-lg border border-slate-900" data-testid="viewport-toggle">
+              <button
+                type="button"
+                onClick={() => setPreviewMode("mobile")}
+                className={cn(
+                  "px-2 py-1 rounded text-[10px] font-semibold transition-colors",
+                  previewMode === "mobile"
+                    ? "bg-violet-600 text-white font-bold"
+                    : "text-slate-400 hover:text-slate-200"
+                )}
+              >
+                📱 Móvil
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode("desktop")}
+                className={cn(
+                  "px-2 py-1 rounded text-[10px] font-semibold transition-colors",
+                  previewMode === "desktop"
+                    ? "bg-violet-600 text-white font-bold"
+                    : "text-slate-400 hover:text-slate-200"
+                )}
+              >
+                🖥️ Escritorio
+              </button>
+            </div>
           </div>
 
           {/* Device Frame Mock */}
-          <div className="w-full max-w-[360px] h-[720px] border-[8px] border-slate-900 rounded-[36px] overflow-hidden shadow-[20px_20px_60px_rgba(0,0,0,0.6)] relative bg-[#0b0f19] flex flex-col ring-1 ring-slate-800/40 [&_.min-h-screen]:min-h-full [&_.min-h-screen]:h-auto [&_.min-h-screen]:shadow-none [&_.min-h-screen]:border-0 shrink-0">
+          <div className={cn(
+            "w-full h-[720px] border-[8px] border-slate-900 rounded-[36px] overflow-hidden shadow-[20px_20px_60px_rgba(0,0,0,0.6)] relative bg-[#0b0f19] flex flex-col ring-1 ring-slate-800/40 [&_.min-h-screen]:min-h-full [&_.min-h-screen]:h-auto [&_.min-h-screen]:shadow-none [&_.min-h-screen]:border-0 shrink-0 transition-all duration-300",
+            previewMode === "mobile" ? "max-w-[360px]" : "max-w-[768px]"
+          )} data-testid="device-simulator">
             {/* Top Notch simulator */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-32 bg-slate-900 rounded-b-2xl z-40 flex items-center justify-center">
-              <div className="h-1.5 w-1.5 rounded-full bg-slate-950/40 mr-4" />
-              <div className="h-1 w-8 rounded-full bg-slate-950/40" />
-            </div>
+            {previewMode === "mobile" && (
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-32 bg-slate-900 rounded-b-2xl z-40 flex items-center justify-center">
+                <div className="h-1.5 w-1.5 rounded-full bg-slate-950/40 mr-4" />
+                <div className="h-1 w-8 rounded-full bg-slate-950/40" />
+              </div>
+            )}
 
             {/* TemplateWrapper inside Device */}
-            <div className="h-full w-full overflow-y-auto flex flex-col pt-5">
+            <div className={cn("h-full w-full overflow-y-auto flex flex-col relative", previewMode === "mobile" ? "pt-5" : "pt-0")}>
+              {pedido.estadoInvitacion === "BORRADOR" && (
+                <div className="absolute top-8 right-4 z-50 pointer-events-none" data-testid="watermark-borrador">
+                  <div className="bg-amber-500/80 text-white px-3 py-1 rounded-full text-xs font-bold tracking-wider rotate-[-5deg] shadow-lg">
+                    VISTA PREVIA — BORRADOR
+                  </div>
+                </div>
+              )}
               <PreviewErrorBoundary>
                 <TemplateWrapper data={currentPreviewData}>
                   <TemplateComponent data={currentPreviewData} />

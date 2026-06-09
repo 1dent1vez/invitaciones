@@ -81,6 +81,10 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
       mensaje: "¡Estás invitado a nuestro evento especial!",
     };
 
+    const slug = await getUniqueSlug(client.nombre, eventDate);
+    const host = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+    const urlPublica = `${host}/i/${slug}`;
+
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: parsed.data.clienteId,
@@ -91,8 +95,8 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
         precio: new Prisma.Decimal(parsed.data.precio),
         notas: parsed.data.notas || null,
         estado: "cotizado",
-        slug: null,
-        urlPublica: null,
+        slug,
+        urlPublica,
         datosInvitacion: defaultDatosJson as Prisma.InputJsonValue,
       },
     });

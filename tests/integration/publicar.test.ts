@@ -112,8 +112,8 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
 
     // Recuperar el pedido
     const pedido = await prisma.pedido.findUnique({ where: { id } });
-    expect(pedido?.slug).toBeNull();
-    expect(pedido?.urlPublica).toBeNull();
+    expect(pedido?.slug).not.toBeNull();
+    expect(pedido?.urlPublica).not.toBeNull();
     expect(pedido?.estadoInvitacion).toBe("BORRADOR");
 
     // Publicar

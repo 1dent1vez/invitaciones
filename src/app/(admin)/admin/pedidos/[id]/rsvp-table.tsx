@@ -27,6 +27,44 @@ export function RSVPTable({ rsvps, precio, datosInvitacion }: RSVPTableProps) {
   const noAsistenCount = rsvps.filter((r) => !r.asiste).length;
 
   const exportToCSV = () => {
+    let dataObj: Record<string, unknown> = {};
+    if (datosInvitacion) {
+      try {
+        dataObj = typeof datosInvitacion === "string"
+          ? JSON.parse(datosInvitacion)
+          : (datosInvitacion as Record<string, unknown>);
+      } catch {
+        dataObj = {};
+      }
+    }
+    const nombreFestejado = (dataObj.nombre as string) || (dataObj.nombres as string) || "Festejado";
+    const fechaEvento = (dataObj.fecha as string) || "";
+    const lugarEvento = (dataObj.lugar as string) || (dataObj.ubicacion as string) || "";
+
+    let dateText = fechaEvento;
+    try {
+      if (fechaEvento) {
+        const d = new Date(fechaEvento);
+        if (!isNaN(d.getTime())) {
+          dateText = d.toLocaleDateString("es-ES", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    const metadata = [
+      `"Evento:","${nombreFestejado.replace(/"/g, '""')}"`,
+      `"Fecha:","${dateText.replace(/"/g, '""')}"`,
+      `"Lugar:","${lugarEvento.replace(/"/g, '""')}"`,
+      `""`,
+    ];
+
     const headers = ["Nombre", "¿Asiste?", "Lugares/Pax", "Teléfono", "Mensaje", "Fecha de registro"];
     const rows = rsvps.map((r) => [
       r.nombre,
@@ -38,6 +76,7 @@ export function RSVPTable({ rsvps, precio, datosInvitacion }: RSVPTableProps) {
     ]);
 
     const csvContent = [
+      ...metadata,
       headers.join(","),
       ...rows.map((row) => row.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(",")),
     ].join("\n");
