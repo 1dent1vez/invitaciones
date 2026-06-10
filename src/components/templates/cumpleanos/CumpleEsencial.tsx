@@ -102,7 +102,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
           </div>
           <p className="text-2xs uppercase tracking-[0.3em] text-[var(--primary)] font-bold">¡Estás Invitado!</p>
           <h1 className="text-3xl font-extrabold text-white uppercase tracking-tight font-sans">
-            Mis {edadFestejado} Años
+            ¡{edadFestejado} años!
           </h1>
           <h2 className="text-xl font-bold text-white font-mono tracking-wide">
             {nombreFestejado}
@@ -202,6 +202,22 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
       <div className="text-center pt-8 text-[10px] text-slate-700 uppercase tracking-[0.3em]">
         ¡No faltes a esta gran noche!
       </div>
+
+      <footer className="mt-12 mb-4 text-center text-[10px] text-slate-500 space-y-1.5 font-sans tracking-normal">
+        <p className="opacity-80">
+          Invitación creada por TusInvitaciones.mx &copy; {new Date().getFullYear()}
+        </p>
+        <p>
+          <a
+            href="https://tusinvitaciones.mx"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-slate-400 hover:text-[var(--primary)] underline transition-colors"
+          >
+            ¿Quieres una invitación como esta?
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
