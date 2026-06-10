@@ -204,7 +204,7 @@ export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteCo
 
 // Helper para obtener config
 export function getPaqueteConfig(tipoEvento: TipoEvento, paquete: Paquete): PaqueteConfig {
-  return CONFIGURACION_EVENTOS[tipoEvento][paquete];
+  return CONFIGURACION_EVENTOS[tipoEvento]?.[paquete];
 }
 
 export function getTemplateName(tipoEvento: TipoEvento, paquete: Paquete): string {
@@ -212,5 +212,5 @@ export function getTemplateName(tipoEvento: TipoEvento, paquete: Paquete): strin
 }
 
 export function getPrecio(tipoEvento: TipoEvento, paquete: Paquete): number {
-  return CONFIGURACION_EVENTOS[tipoEvento][paquete].precio;
+  return CONFIGURACION_EVENTOS[tipoEvento]?.[paquete]?.precio ?? 0;
 }
