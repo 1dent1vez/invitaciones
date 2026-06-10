@@ -12,6 +12,18 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/contacto",
+        destination: "/",
+      },
+      {
+        source: "/precios",
+        destination: "/",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
