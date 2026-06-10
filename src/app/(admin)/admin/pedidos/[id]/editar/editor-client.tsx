@@ -863,6 +863,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
                               <Input
                                 type="text"
                                 placeholder={field.placeholder}
+                                maxLength={field.maxLength}
                                 className={cn(
                                   "border bg-slate-950 text-sm focus-visible:ring-violet-500 text-slate-100 placeholder:text-slate-700 h-10 rounded-lg",
                                   errors[registerKey] ? "border-rose-500 focus-visible:ring-rose-500" : "border-slate-800"

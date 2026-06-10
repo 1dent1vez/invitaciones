@@ -21,6 +21,7 @@ export interface CampoConfig {
   options?: string[];     // Para select
   default?: string | number | boolean;
   condicion?: string;     // ID del campo boolean que debe ser true para mostrar este
+  maxLength?: number;     // Límite máximo de longitud de caracteres
 }
 
 export interface PaqueteConfig {
@@ -39,7 +40,7 @@ export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteCo
       tipoEvento: "cumpleanos",
       secciones: ["portada", "ubicacion", "rsvp", "musica"],
       campos: [
-        { id: "nombre", tipo: "text", label: "Nombre del festejado", required: true, placeholder: "Sofía Hernández" },
+        { id: "nombre", tipo: "text", label: "Nombre del festejado", required: true, placeholder: "Sofía Hernández", maxLength: 40 },
         { id: "edad", tipo: "number", label: "Edad que cumple", required: true, placeholder: "30" },
         { id: "fecha", tipo: "date", label: "Fecha del cumpleaños", required: true },
         { id: "hora", tipo: "time", label: "Hora", required: true },

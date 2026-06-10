@@ -98,6 +98,7 @@ export interface FieldConfig {
   options?: string[];
   condicion?: string;
   maxItems?: number;
+  maxLength?: number;
 }
 
 export interface TemplateConfig {

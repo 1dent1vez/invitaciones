@@ -92,7 +92,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
       <div className="absolute inset-4 border border-[var(--primary)]/10 pointer-events-none rounded-2xl" />
 
       {/* Hero Portada */}
-      <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden flex items-end">
+      <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden flex items-end animate-fade-in">
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/40 to-transparent z-10" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -111,7 +111,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
           <h1 className="text-3xl font-extrabold text-white uppercase tracking-tight font-sans">
             ¡{edadFestejado} años!
           </h1>
-          <h2 className="text-xl font-bold text-white font-mono tracking-wide">
+          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-bold text-white font-sans tracking-tight">
             {nombreFestejado}
           </h2>
           {fraseMensaje && (

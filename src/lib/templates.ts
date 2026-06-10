@@ -43,6 +43,7 @@ export function getTemplateConfig(type: TemplateType): TemplateConfig {
         options: c.options,
         condicion: c.condicion,
         maxItems: c.maxItems,
+        maxLength: c.maxLength,
       })),
     };
   }
@@ -59,6 +60,7 @@ export function getTemplateConfig(type: TemplateType): TemplateConfig {
       options: c.options,
       condicion: c.condicion,
       maxItems: c.maxItems,
+      maxLength: c.maxLength,
     })),
   };
 }
