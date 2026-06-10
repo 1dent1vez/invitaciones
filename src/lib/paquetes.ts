@@ -45,6 +45,7 @@ export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteCo
         { id: "hora", tipo: "time", label: "Hora", required: true },
         { id: "lugar", tipo: "text", label: "Nombre del lugar", required: true, placeholder: "Terraza La Vista" },
         { id: "direccion", tipo: "textarea", label: "Dirección", required: true, placeholder: "Av. Insurgentes 123, Condesa, CDMX" },
+        { id: "mapsLink", tipo: "url", label: "Enlace de Google Maps", required: false, placeholder: "https://maps.google.com/..." },
         { id: "tipoCelebracion", tipo: "select", label: "Tipo de celebración", required: true, options: ["Adultos", "Infantil", "Sorpresa"] },
         { id: "fotoPortada", tipo: "upload", label: "Foto del festejado", required: true, max: 1 },
         { id: "mensaje", tipo: "textarea", label: "Frase o mensaje", required: false, placeholder: "¡Vamos a celebrar 30 años de risas!" },

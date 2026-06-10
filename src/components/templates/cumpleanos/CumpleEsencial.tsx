@@ -122,6 +122,11 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
           <h2 className="text-xl font-bold text-white font-mono tracking-wide">
             {nombreFestejado}
           </h2>
+          {fraseMensaje && (
+            <p className="text-xs italic text-slate-300 max-w-xs mx-auto mt-2 opacity-90">
+              {fraseMensaje}
+            </p>
+          )}
           {data.tipoCelebracion && data.tipoCelebracion !== "general" && (
             <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-violet-600/30 px-3 py-1 text-xs font-semibold ring-1 ring-violet-500/50 text-violet-300" data-testid="tipo-celebracion-badge">
               {(data.tipoCelebracion.toLowerCase() === "infantil") && "🎈 Infantil"}
@@ -138,11 +143,13 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
       <div className="px-6 space-y-8 mt-4 relative">
         
         {/* Frase Festejo */}
-        <div className="text-center py-2">
-          <p className="text-sm italic font-light text-slate-400 max-w-xs mx-auto leading-relaxed">
-            &ldquo;{fraseMensaje}&rdquo;
-          </p>
-        </div>
+        {data.mensaje && (
+          <div className="text-center py-2">
+            <p className="text-sm italic font-light text-slate-400 max-w-xs mx-auto leading-relaxed">
+              &ldquo;{data.mensaje}&rdquo;
+            </p>
+          </div>
+        )}
 
         {/* Date and Location Card */}
         <div className="bg-slate-900/60 border border-[var(--primary)]/10 rounded-2xl p-5 space-y-5 shadow-xl backdrop-blur-md">
