@@ -12,10 +12,10 @@ describe("Date Validation Tests", () => {
     const today = new Date().toISOString();
     const data = {
       clienteId: "client-id",
-      tipoEvento: "boda",
+      tipoEvento: "cumpleanos",
       paquete: "esencial",
       fechaEvento: today,
-      template: "boda-esencial",
+      template: "cumpleanos-esencial",
       precio: 1000,
     };
 
@@ -30,10 +30,10 @@ describe("Date Validation Tests", () => {
 
     const data = {
       clienteId: "client-id",
-      tipoEvento: "boda",
+      tipoEvento: "cumpleanos",
       paquete: "esencial",
       fechaEvento: dateStr,
-      template: "boda-esencial",
+      template: "cumpleanos-esencial",
       precio: 1000,
     };
 
@@ -48,10 +48,10 @@ describe("Date Validation Tests", () => {
 
     const data = {
       clienteId: "client-id",
-      tipoEvento: "boda",
+      tipoEvento: "cumpleanos",
       paquete: "esencial",
       fechaEvento: dateStr,
-      template: "boda-esencial",
+      template: "cumpleanos-esencial",
       precio: 1000,
     };
 

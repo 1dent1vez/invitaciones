@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const pedidoSchema = z.object({
   clienteId: z.string().min(1, "El cliente es requerido"),
-  tipoEvento: z.enum(["boda", "xv", "babyshower", "cumpleanos"], {
+  tipoEvento: z.enum(["cumpleanos"], {
     message: "El tipo de evento no es válido",
   }),
   paquete: z.enum(["esencial", "completa", "premium"], {

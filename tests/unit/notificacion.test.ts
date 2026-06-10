@@ -10,7 +10,7 @@ describe("Generación de Texto de Notificación para WhatsApp", () => {
     const text = generarTextoNotificacion(nombre, url, qr);
 
     expect(text).toBe(
-      "¡Hola Carlos Slim! Tu invitación está lista 🎉\n\n" +
+      "¡Hola Carlos Slim! Tu invitación de cumpleaños está lista 🎉\n\n" +
       "Link: https://invitaciones.com/i/carlos-y-soumaya\n" +
       "QR: https://cloudinary.com/qr.png"
     );
@@ -20,15 +20,15 @@ describe("Generación de Texto de Notificación para WhatsApp", () => {
     const text = generarTextoNotificacion("", "", "");
 
     expect(text).toBe(
-      "¡Hola cliente! Tu invitación está lista 🎉\n\n" +
+      "¡Hola cliente! Tu invitación de cumpleaños está lista 🎉\n\n" +
       "Link: \n" +
       "QR: "
     );
   });
 
-  it("debe retornar texto adaptado según el tipo de evento", () => {
-    const text = generarTextoNotificacion("Juan", "http://link", "http://qr", "boda");
-    expect(text).toContain("invitación de boda");
-    expect(text).toContain("💍");
+  it("debe retornar texto adaptado para cumpleaños", () => {
+    const text = generarTextoNotificacion("Juan", "http://link", "http://qr", "cumpleanos");
+    expect(text).toContain("invitación de cumpleaños");
+    expect(text).toContain("🎉");
   });
 });

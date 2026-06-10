@@ -58,28 +58,4 @@ describe("generateMetadata Dynamic OG & SEO Meta Tags Tests", () => {
     }));
     expect(metadata.twitter?.images).toContain("https://example.com/cumple.jpg");
   });
-
-  it("debe mapear correctamente para bodas (nombres y portadaUrl)", async () => {
-    vi.mocked(prisma.pedido.findUnique).mockResolvedValueOnce({
-      id: "3",
-      slug: "boda-ana-pedro",
-      tipoEvento: "boda",
-      estadoInvitacion: "PUBLICADA",
-      fechaEvento: new Date("2026-10-15T18:00:00Z"),
-      datosInvitacion: {
-        nombres: "Ana & Pedro",
-        portadaUrl: "https://example.com/boda.jpg",
-      },
-    } as any);
-
-    const metadata = await generateMetadata({ params: { slug: "boda-ana-pedro" } });
-
-    expect(metadata.title).toBe("Ana & Pedro | Invitación Digital");
-    expect(metadata.description).toContain("nuestra Boda");
-    expect(metadata.description).toContain("15 de octubre de 2026");
-    expect(metadata.openGraph?.images?.[0]).toEqual(expect.objectContaining({
-      url: "https://example.com/boda.jpg"
-    }));
-    expect(metadata.twitter?.images).toContain("https://example.com/boda.jpg");
-  });
 });

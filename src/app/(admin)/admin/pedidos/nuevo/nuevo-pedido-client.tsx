@@ -39,7 +39,7 @@ const quickClientSchema = z.object({
 
 interface EventFormValues {
   clienteId: string;
-  tipoEvento: "boda" | "xv" | "babyshower" | "cumpleanos";
+  tipoEvento: "cumpleanos";
   paquete: "esencial" | "completa" | "premium";
   fechaPart: string;
   horaPart: string;
@@ -50,9 +50,7 @@ interface EventFormValues {
 
 const eventSchema = z.object({
   clienteId: z.string().optional(),
-  tipoEvento: z.enum(["boda", "xv", "babyshower", "cumpleanos"], {
-    message: "Selecciona un tipo de evento",
-  }),
+  tipoEvento: z.literal("cumpleanos").default("cumpleanos"),
   paquete: z.enum(["esencial", "completa", "premium"], {
     message: "Selecciona un paquete",
   }),
@@ -108,7 +106,6 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
     handleSubmit: handleEventSubmit,
     formState: { errors: eventErrors },
     setValue: setEventValue,
-    watch: watchEvent,
   } = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormValues>,
     defaultValues: {
@@ -122,17 +119,6 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
       notas: "",
     } as EventFormValues,
   });
-
-  // Watch event type and package to automatically set price/template
-  const watchTipoEvento = watchEvent("tipoEvento");
-  const watchPaquete = watchEvent("paquete");
-
-  const handleTipoEventoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value as "boda" | "xv" | "babyshower" | "cumpleanos";
-    setEventValue("tipoEvento", value);
-    const pkg = watchPaquete || "esencial";
-    setEventValue("template", `${value}-${pkg}`);
-  };
 
   const handleNextStep1 = () => {
     if (!selectedClienteId) {
@@ -464,19 +450,10 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                 {/* Event Type & Package */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Tipo de Evento *</label>
-                    <select
-                      className="flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-                      disabled={isLoading}
-                      {...registerEvent("tipoEvento")}
-                      onChange={handleTipoEventoChange}
-                    >
-                      <option value="boda" disabled>Boda (Próximamente)</option>
-                      <option value="xv" disabled>XV Años (Próximamente)</option>
-                      <option value="babyshower" disabled>Baby Shower (Próximamente)</option>
-                      <option value="cumpleanos">Cumpleaños</option>
-                    </select>
-                    {eventErrors.tipoEvento && <p className="text-xs text-rose-500">{eventErrors.tipoEvento.message}</p>}
+                    <label className="text-sm font-medium text-slate-300">Tipo de Evento</label>
+                    <div className="flex h-10 w-full items-center rounded-md border border-slate-850 bg-slate-950/30 px-3 text-sm text-slate-400">
+                      Cumpleaños
+                    </div>
                   </div>
 
                   <div className="space-y-1.5">
@@ -490,7 +467,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                         setEventValue("paquete", val);
                         const prices = { esencial: 350, completa: 550, premium: 850 };
                         setEventValue("precio", prices[val]);
-                        setEventValue("template", `${watchTipoEvento}-${val}`);
+                        setEventValue("template", `cumpleanos-${val}`);
                       }}
                     >
                       <option value="esencial">Esencial ($350)</option>

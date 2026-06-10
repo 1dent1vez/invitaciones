@@ -35,13 +35,13 @@ describe("Slug Integration Tests", () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "boda",
+        tipoEvento: "cumpleanos",
         fechaEvento: new Date("2026-08-15T18:00:00Z"),
-        template: "boda-elegante",
+        template: "cumpleanos-esencial",
         precio: 2500,
         estado: "cotizado",
         datosInvitacion: {
-          nombres: "Ana y Carlos",
+          nombre: "Ana y Carlos",
         },
       },
     });
@@ -61,13 +61,13 @@ describe("Slug Integration Tests", () => {
     const pedido1 = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "boda",
+        tipoEvento: "cumpleanos",
         fechaEvento: new Date("2026-08-15T18:00:00Z"),
-        template: "boda-elegante",
+        template: "cumpleanos-esencial",
         precio: 2500,
         estado: "cotizado",
         datosInvitacion: {
-          nombres: "Ana y Carlos",
+          nombre: "Ana y Carlos",
         },
       },
     });
@@ -75,13 +75,13 @@ describe("Slug Integration Tests", () => {
     const pedido2 = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "boda",
+        tipoEvento: "cumpleanos",
         fechaEvento: new Date("2026-08-15T18:00:00Z"),
-        template: "boda-elegante",
+        template: "cumpleanos-esencial",
         precio: 2500,
         estado: "cotizado",
         datosInvitacion: {
-          nombres: "Ana y Carlos",
+          nombre: "Ana y Carlos",
         },
       },
     });

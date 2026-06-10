@@ -30,14 +30,14 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "boda",
+        tipoEvento: "cumpleanos",
         paquete: "esencial",
         fechaEvento: new Date("2026-10-12T15:00:00Z"),
-        template: "boda-esencial",
+        template: "cumpleanos-esencial",
         precio: 2500,
         estado: "cotizado",
         datosInvitacion: {
-          nombres: "María y Juan",
+          nombre: "María y Juan",
           fecha: "2026-10-12T15:00:00Z",
           ubicacion: "Hacienda del Sol",
         },
@@ -52,7 +52,7 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
     // Generar metadata
     const metadata = await generateMetadata({ params: { slug } });
     expect(metadata.title).toContain("María y Juan");
-    expect(metadata.description).toContain("celebrar nuestra Boda");
+    expect(metadata.description).toContain("celebrar mi Cumpleaños");
 
     // Renderizar página pública
     const result = await PublicInvitationPage({ params: { slug } });
@@ -70,16 +70,16 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "boda",
+        tipoEvento: "cumpleanos",
         paquete: "esencial",
         fechaEvento: new Date("2026-10-12T15:00:00Z"),
-        template: "boda-esencial",
+        template: "cumpleanos-esencial",
         precio: 2500,
         estado: "cotizado",
         estadoInvitacion: "BORRADOR",
         slug: "draft-slug",
         datosInvitacion: {
-          nombres: "María y Juan",
+          nombre: "María y Juan",
         },
       },
     });

@@ -342,11 +342,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
               <div className="space-y-1.5">
                 <p className="text-xs text-slate-500 font-medium uppercase">Tipo de Evento</p>
                 <p className="text-sm font-semibold text-white capitalize">
-                  {pedido.tipoEvento === "cumpleanos" ? "Cumpleaños" :
-                   pedido.tipoEvento === "boda" ? "Boda" :
-                   pedido.tipoEvento === "xv" ? "XV Años" :
-                   pedido.tipoEvento === "babyshower" ? "Baby Shower" :
-                   pedido.tipoEvento}
+                  {pedido.tipoEvento === "cumpleanos" ? "Cumpleaños" : pedido.tipoEvento}
                 </p>
               </div>
               <div className="space-y-1.5">

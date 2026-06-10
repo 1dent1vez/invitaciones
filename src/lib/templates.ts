@@ -1,5 +1,4 @@
 import React from "react";
-import { Proximamente } from "@/components/templates/Proximamente";
 import { CumpleEsencial } from "@/components/templates/cumpleanos/CumpleEsencial";
 import { CumpleCompleta } from "@/components/templates/cumpleanos/CumpleCompleta";
 import { CumplePremium } from "@/components/templates/cumpleanos/CumplePremium";
@@ -7,15 +6,6 @@ import { TemplateType, TemplateConfig, InvitacionData, FieldType } from "@/types
 import { getPaqueteConfig, TipoEvento, Paquete, CONFIGURACION_EVENTOS } from "@/lib/paquetes";
 
 export const TEMPLATE_COMPONENTS: Record<TemplateType, React.ComponentType<{ data: InvitacionData }>> = {
-  "boda-esencial": Proximamente,
-  "boda-completa": Proximamente,
-  "boda-premium": Proximamente,
-  "xv-esencial": Proximamente,
-  "xv-completa": Proximamente,
-  "xv-premium": Proximamente,
-  "babyshower-esencial": Proximamente,
-  "babyshower-completa": Proximamente,
-  "babyshower-premium": Proximamente,
   "cumpleanos-esencial": CumpleEsencial,
   "cumpleanos-completa": CumpleCompleta,
   "cumpleanos-premium": CumplePremium,
@@ -29,13 +19,8 @@ export function getTemplateConfig(type: TemplateType): TemplateConfig {
 
   console.log({ tipoEvento, paquete, pkgConfig });
 
-  const formatName = (text: string) => {
-    if (!text) return "Cumpleaños";
-    if (text === "cumpleanos") return "Cumpleaños";
-    if (text === "babyshower") return "Baby Shower";
-    if (text === "boda") return "Boda";
-    if (text === "xv") return "XV Años";
-    return text.charAt(0).toUpperCase() + text.slice(1);
+  const formatName = () => {
+    return "Cumpleaños";
   };
 
   const formatPaquete = (text: string) => {
@@ -48,7 +33,7 @@ export function getTemplateConfig(type: TemplateType): TemplateConfig {
     const fallbackConfig = CONFIGURACION_EVENTOS["cumpleanos"]["esencial"];
     return {
       id: type,
-      name: `${formatName(tipoEvento)} ${formatPaquete(paquete)}`,
+      name: `${formatName()} ${formatPaquete(paquete)}`,
       fields: fallbackConfig.campos.map((c) => ({
         key: c.id,
         label: c.label,
@@ -64,7 +49,7 @@ export function getTemplateConfig(type: TemplateType): TemplateConfig {
 
   return {
     id: type,
-    name: `${formatName(tipoEvento)} ${formatPaquete(paquete)}`,
+    name: `${formatName()} ${formatPaquete(paquete)}`,
     fields: pkgConfig.campos.map((c) => ({
       key: c.id,
       label: c.label,

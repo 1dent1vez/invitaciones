@@ -15,10 +15,10 @@ describe("Leads Integration Tests", () => {
   it("debe crear un lead de forma exitosa con todos los campos", async () => {
     const res = await createLeadAction({
       nombre: "Roberto Sánchez",
-      evento: "boda",
+      evento: "cumpleanos",
       fecha: "2026-09-12",
       telefono: "5566778899",
-      mensaje: "Me interesa el paquete Premium para mi boda en Cuernavaca.",
+      mensaje: "Me interesa el paquete Premium para mi cumpleaños en Cuernavaca.",
     });
 
     expect(res.success).toBe(true);
@@ -26,9 +26,9 @@ describe("Leads Integration Tests", () => {
     const leads = await prisma.lead.findMany();
     expect(leads.length).toBe(1);
     expect(leads[0].nombre).toBe("Roberto Sánchez");
-    expect(leads[0].evento).toBe("boda");
+    expect(leads[0].evento).toBe("cumpleanos");
     expect(leads[0].telefono).toBe("5566778899");
-    expect(leads[0].mensaje).toBe("Me interesa el paquete Premium para mi boda en Cuernavaca.");
+    expect(leads[0].mensaje).toBe("Me interesa el paquete Premium para mi cumpleaños en Cuernavaca.");
     expect(leads[0].fecha).not.toBeNull();
   });
 
@@ -54,10 +54,10 @@ describe("Leads Integration Tests", () => {
   it("debe rechazar nombres de menos de 2 caracteres", async () => {
     const res = await createLeadAction({
       nombre: "R",
-      evento: "boda",
+      evento: "cumpleanos",
       fecha: "",
       telefono: "",
-      mensaje: "Hola me interesa cotizar una boda",
+      mensaje: "Hola me interesa cotizar un cumpleaños",
     });
 
     expect(res.success).toBe(false);
@@ -67,7 +67,7 @@ describe("Leads Integration Tests", () => {
   it("debe rechazar mensajes de menos de 5 caracteres", async () => {
     const res = await createLeadAction({
       nombre: "Carlos Slim",
-      evento: "xv",
+      evento: "cumpleanos",
       fecha: "",
       telefono: "",
       mensaje: "X",

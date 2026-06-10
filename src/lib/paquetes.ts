@@ -4,7 +4,7 @@ export const PRECIOS_PAQUETE = {
   premium: 850,
 } as const;
 
-export const TIPOS_EVENTO = ["boda", "xv", "babyshower", "cumpleanos"] as const;
+export const TIPOS_EVENTO = ["cumpleanos"] as const;
 export const PAQUETES = ["esencial", "completa", "premium"] as const;
 
 export type TipoEvento = typeof TIPOS_EVENTO[number];
@@ -32,79 +32,6 @@ export interface PaqueteConfig {
 }
 
 export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteConfig>> = {
-  boda: {
-    esencial: {
-      precio: 350,
-      implementado: false,
-      tipoEvento: "boda",
-      secciones: [],
-      campos: [],
-    },
-    completa: {
-      precio: 550,
-      implementado: false,
-      tipoEvento: "boda",
-      secciones: [],
-      campos: [],
-    },
-    premium: {
-      precio: 850,
-      implementado: false,
-      tipoEvento: "boda",
-      secciones: [],
-      campos: [],
-    },
-  },
-
-  xv: {
-    esencial: {
-      precio: 350,
-      implementado: false,
-      tipoEvento: "xv",
-      secciones: [],
-      campos: [],
-    },
-    completa: {
-      precio: 550,
-      implementado: false,
-      tipoEvento: "xv",
-      secciones: [],
-      campos: [],
-    },
-    premium: {
-      precio: 850,
-      implementado: false,
-      tipoEvento: "xv",
-      secciones: [],
-      campos: [],
-    },
-  },
-
-  babyshower: {
-    esencial: {
-      precio: 350,
-      implementado: false,
-      tipoEvento: "babyshower",
-      secciones: [],
-      campos: [],
-    },
-    completa: {
-      precio: 550,
-      implementado: false,
-      tipoEvento: "babyshower",
-      secciones: [],
-      campos: [],
-    },
-    premium: {
-      precio: 850,
-      implementado: false,
-      tipoEvento: "babyshower",
-      secciones: [],
-      campos: [],
-    },
-  },
-
-
   cumpleanos: {
     esencial: {
       precio: 350,

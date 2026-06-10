@@ -124,9 +124,9 @@ describe("Clientes CRUD Integration Tests", () => {
     await prisma.pedido.create({
       data: {
         clienteId: client.id,
-        tipoEvento: "boda",
+        tipoEvento: "cumpleanos",
         fechaEvento: new Date(),
-        template: "boda-elegante",
+        template: "cumpleanos-esencial",
         precio: 1000,
         estado: "cotizado",
         slug: "test-has-orders-slug",

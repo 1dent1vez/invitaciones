@@ -14,19 +14,8 @@ export function generarTextoNotificacion(
   let emoji = "🎉";
   let tipoText = "invitación";
 
-  if (tipoEvento === "cumpleanos") {
-    emoji = "🎉";
-    tipoText = "invitación de cumpleaños";
-  } else if (tipoEvento === "boda") {
-    emoji = "💍";
-    tipoText = "invitación de boda";
-  } else if (tipoEvento === "xv") {
-    emoji = "👑";
-    tipoText = "invitación de XV Años";
-  } else if (tipoEvento === "babyshower") {
-    emoji = "👶";
-    tipoText = "invitación de Baby Shower";
-  }
+  emoji = "🎉";
+  tipoText = "invitación de cumpleaños";
 
   let detallesText = "";
   if (fecha) {

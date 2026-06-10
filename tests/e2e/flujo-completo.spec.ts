@@ -34,8 +34,6 @@ test.describe("Flujo End-to-End Completo", () => {
     await page.click(`text="${clientName}"`);
     await page.click('button:has-text("Continuar")');
 
-    // Fill event details
-    await page.selectOption('select[name="tipoEvento"]', 'cumpleanos');
     await page.selectOption('select[name="paquete"]', 'completa');
     
     // Choose a future date: 2027-12-31

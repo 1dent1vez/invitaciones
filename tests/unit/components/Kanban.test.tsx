@@ -20,15 +20,16 @@ describe("Kanban (PedidosClient) Component Tests", () => {
     {
       id: "pedido-1",
       clienteId: "cliente-1",
-      tipoEvento: "boda",
+      tipoEvento: "cumpleanos",
       fechaEvento: new Date("2026-12-18T18:00:00Z").toISOString(),
-      template: "boda-elegante",
-      precio: 1500.00,
+      template: "cumpleanos-esencial",
+      paquete: "esencial",
+      precio: 350.00,
       estado: "cotizado",
-      slug: "boda-pedro-y-ana",
+      slug: "cumple-pedro",
       cliente: {
         id: "cliente-1",
-        nombre: "Pedro & Ana",
+        nombre: "Pedro Perez",
         fuente: "instagram",
       },
       pagos: [],
@@ -44,43 +45,7 @@ describe("Kanban (PedidosClient) Component Tests", () => {
     expect(screen.getByText("En Producción")).toBeInTheDocument();
 
     // Check card details
-    expect(screen.getByText("Pedro & Ana")).toBeInTheDocument();
-    expect(screen.getByText("boda-elegante")).toBeInTheDocument();
-  });
-
-  it("debe filtrar pedidos por tipo de evento al seleccionar un tab", async () => {
-    const multiPedidos = [
-      ...initialPedidos,
-      {
-        id: "pedido-2",
-        clienteId: "cliente-2",
-        tipoEvento: "xv",
-        fechaEvento: new Date("2026-12-18T18:00:00Z").toISOString(),
-        template: "xv-moderno",
-        precio: 2000.00,
-        estado: "cotizado",
-        slug: "xv-valeria",
-        cliente: {
-          id: "cliente-2",
-          nombre: "Valeria Gomez",
-          fuente: "tienda",
-        },
-        pagos: [],
-      },
-    ];
-
-    render(<PedidosClient initialPedidos={multiPedidos} />);
-
-    // Initially both should render
-    expect(screen.getByText("Pedro & Ana")).toBeInTheDocument();
-    expect(screen.getByText("Valeria Gomez")).toBeInTheDocument();
-
-    // Click on XV Años tab
-    fireEvent.click(screen.getByRole("button", { name: "XV Años" }));
-
-    // Valeria Gomez (XV Años) should be visible, Pedro & Ana (Boda) should not
-    expect(screen.getByText("Valeria Gomez")).toBeInTheDocument();
-    expect(screen.queryByText("Pedro & Ana")).not.toBeInTheDocument();
+    expect(screen.getByText("Pedro Perez")).toBeInTheDocument();
   });
 
   it("debe invocar la acción de actualizar estado al mover de columna", async () => {
@@ -88,8 +53,8 @@ describe("Kanban (PedidosClient) Component Tests", () => {
 
     render(<PedidosClient initialPedidos={initialPedidos} />);
 
-    // Pedro & Ana starts in "Cotizado" column
-    // Find right arrow button on Pedro & Ana card
+    // Pedro Perez starts in "Cotizado" column
+    // Find right arrow button on Pedro Perez card
     const rightArrow = screen.getByTitle("Mover al siguiente estado");
 
     fireEvent.click(rightArrow);
@@ -98,10 +63,10 @@ describe("Kanban (PedidosClient) Component Tests", () => {
     expect(updatePedidoEstadoAction).toHaveBeenCalledWith("pedido-1", "pagado");
   });
 
-  it("debe traducir el tipo de evento en el badge del Kanban a español", () => {
+  it("debe renderizar el badge de cumpleaños y el paquete", () => {
     render(<PedidosClient initialPedidos={initialPedidos} />);
-    // "boda" is mapped to "Boda"
-    expect(screen.getByText("Boda")).toBeInTheDocument();
+    expect(screen.getAllByText("Cumpleaños").length).toBeGreaterThan(0);
+    expect(screen.getByText("ESENCIAL")).toBeInTheDocument();
   });
 
   it("debe filtrar pedidos por nombre del festejado en datosInvitacion", () => {
@@ -113,6 +78,7 @@ describe("Kanban (PedidosClient) Component Tests", () => {
         tipoEvento: "cumpleanos",
         fechaEvento: new Date("2026-12-18T18:00:00Z").toISOString(),
         template: "cumpleanos-esencial",
+        paquete: "esencial",
         precio: 350.00,
         estado: "cotizado",
         slug: "cumple-festejado",
@@ -139,7 +105,7 @@ describe("Kanban (PedidosClient) Component Tests", () => {
 
     // Felipe Gomez (which has Mateo as celebrant) should remain visible
     expect(screen.getByText("Felipe Gomez")).toBeInTheDocument();
-    // Pedro & Ana (which doesn't match Mateo) should be hidden
-    expect(screen.queryByText("Pedro & Ana")).not.toBeInTheDocument();
+    // Pedro Perez (which doesn't match Mateo) should be hidden
+    expect(screen.queryByText("Pedro Perez")).not.toBeInTheDocument();
   });
 });

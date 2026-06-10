@@ -28,16 +28,16 @@ describe("API Routes Integration Tests", () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "boda",
+        tipoEvento: "cumpleanos",
         paquete: "esencial",
         fechaEvento: new Date("2026-10-12T15:00:00Z"),
-        template: "boda-esencial",
+        template: "cumpleanos-esencial",
         precio: 2500,
         estado: "cotizado",
         slug: testSlug,
         urlPublica: `http://localhost:3000/i/${testSlug}`,
         datosInvitacion: {
-          nombres: "API test event",
+          nombre: "API test event",
         },
       },
     });

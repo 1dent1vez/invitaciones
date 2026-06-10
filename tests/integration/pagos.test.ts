@@ -25,10 +25,10 @@ describe("Pagos Integration Tests", () => {
     const order = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "xv",
+        tipoEvento: "cumpleanos",
         fechaEvento: new Date(),
-        template: "xv-moderno",
-        precio: 3000,
+        template: "cumpleanos-esencial",
+        precio: 2000,
         estado: "cotizado",
         slug: "test-pagos-slug",
       },
@@ -73,9 +73,9 @@ describe("Pagos Integration Tests", () => {
   });
 
   it("debe rechazar un pago que excede el saldo pendiente", async () => {
-    // Attempt to pay 3500 on a 3000 order
+    // Attempt to pay 2500 on a 2000 order
     const input = {
-      monto: 3500,
+      monto: 2500,
       metodo: "transferencia" as const,
       comprobante: "",
       notas: "Pago excedido",
@@ -91,7 +91,7 @@ describe("Pagos Integration Tests", () => {
 
   it("debe cambiar automáticamente el estado del pedido a 'pagado' cuando el saldo llega a 0", async () => {
     const input = {
-      monto: 3000,
+      monto: 2000,
       metodo: "transferencia" as const,
       comprobante: "",
       notas: "Liquidación",

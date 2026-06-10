@@ -248,25 +248,11 @@ function cleanFormValues(data: EditorFormValues): InvitacionData {
   } as unknown as InvitacionData;
 }
 
-function getSafeTemplateData(data: Partial<InvitacionData> | null | undefined, templateType: string): InvitacionData {
+function getSafeTemplateData(data: Partial<InvitacionData> | null | undefined): InvitacionData {
   const safe = data || {};
   
-  // Template specific defaults
-  let defaultPrimary = "#8B5CF6";
-  let defaultSecondary = "#EC4899";
-  if (templateType.includes("boda")) {
-    defaultPrimary = "#C5A880";
-    defaultSecondary = "#1e293b";
-  } else if (templateType.includes("xv")) {
-    defaultPrimary = "#EC4899";
-    defaultSecondary = "#4C1D95";
-  } else if (templateType.includes("babyshower")) {
-    defaultPrimary = "#a8d8ea";
-    defaultSecondary = "#f7f4eb";
-  } else if (templateType.includes("cumpleanos")) {
-    defaultPrimary = "#f59e0b";
-    defaultSecondary = "#1f2937";
-  }
+  const defaultPrimary = "#f59e0b";
+  const defaultSecondary = "#1f2937";
 
   return {
     nombres: safe.nombres || "",
@@ -384,8 +370,6 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
   const [isPending, startTransition] = useTransition();
   const [actionError, setActionError] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
-  const [rawJsonText, setRawJsonText] = useState(() => JSON.stringify(pedido.datosInvitacion || {}, null, 2));
-  const [jsonSyntaxError, setJsonSyntaxError] = useState<string | null>(null);
 
   // Phase 3 states: Auto-save, Viewport, Loaders
   const [isDirty, setIsDirty] = useState(false);
@@ -445,9 +429,9 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
     mapaUrl: dbDatos.mapaUrl || "",
     mapsLink: dbDatos.mapsLink || "",
     mensaje: dbDatos.mensaje || "",
-    colorPrimario: dbDatos.colorPrimario || (templateType.startsWith("cumpleanos") ? "#f59e0b" : ""),
-    colorSecundario: dbDatos.colorSecundario || (templateType.startsWith("xv") ? "#4C1D95" : "#1e293b"),
-    colorPrincipal: dbDatos.colorPrincipal || (templateType.startsWith("boda") ? "#C5A880" : templateType.startsWith("xv") ? "#EC4899" : templateType.startsWith("babyshower") ? "#a8d8ea" : "#F59E0B"),
+    colorPrimario: dbDatos.colorPrimario || "#f59e0b",
+    colorSecundario: dbDatos.colorSecundario || "#1f2937",
+    colorPrincipal: dbDatos.colorPrincipal || "#f59e0b",
     portadaUrl: dbDatos.portadaUrl || "",
     fotoPortada: dbDatos.fotoPortada || "",
     dressCode: dbDatos.dressCode || "",
@@ -538,7 +522,6 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
             const res = await savePedidoDatosAction(pedido.id, mappedData);
             if (res.success && res.data) {
               setPedido(prev => ({ ...prev, datosInvitacion: res.data as unknown as Prisma.JsonValue }));
-              setRawJsonText(JSON.stringify(res.data, null, 2));
               setIsDirty(false);
               setLastSaved(new Date());
               toast({
@@ -564,16 +547,9 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
     };
   }, [isDirty, isAutoSaving, isPending, watchedData, pedido.id, getValues, toast]);
   const currentPreviewData = useMemo(() => {
-    if (pedido.tipoEvento !== "cumpleanos") {
-      try {
-        return getSafeTemplateData(JSON.parse(rawJsonText), templateType);
-      } catch {
-        return getSafeTemplateData(pedido.datosInvitacion as unknown as InvitacionData, templateType);
-      }
-    }
     const cleaned = cleanFormValues(watchedData);
-    return getSafeTemplateData(cleaned, templateType);
-  }, [watchedData, rawJsonText, pedido.tipoEvento, templateType, pedido.datosInvitacion]);
+    return getSafeTemplateData(cleaned);
+  }, [watchedData]);
 
   // Image Upload File Handler
   const handleImageUploadFile = async (file: File, fieldKey: keyof EditorFormValues) => {
@@ -625,25 +601,11 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
     setActionError(null);
 
     startTransition(async () => {
-      let mappedData: InvitacionData;
-      if (pedido.tipoEvento !== "cumpleanos") {
-        try {
-          mappedData = JSON.parse(rawJsonText);
-          setJsonSyntaxError(null);
-        } catch (e: unknown) {
-          const errorMsg = e instanceof Error ? e.message : String(e);
-          setActionError("Error de sintaxis JSON: " + errorMsg);
-          setJsonSyntaxError(errorMsg);
-          return;
-        }
-      } else {
-        mappedData = cleanFormValues(data);
-      }
+      const mappedData = cleanFormValues(data);
 
       const res = await savePedidoDatosAction(pedido.id, mappedData);
       if (res.success && res.data) {
         setPedido(prev => ({ ...prev, datosInvitacion: res.data as unknown as Prisma.JsonValue }));
-        setRawJsonText(JSON.stringify(res.data, null, 2));
         setIsDirty(false);
         setLastSaved(new Date());
         toast({
@@ -667,39 +629,26 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
     setActionError(null);
     clearErrors();
 
-    let mappedData: InvitacionData;
-    if (pedido.tipoEvento !== "cumpleanos") {
-      try {
-        mappedData = JSON.parse(rawJsonText);
-        setJsonSyntaxError(null);
-      } catch (e: unknown) {
-        const errorMsg = e instanceof Error ? e.message : String(e);
-        setActionError("Error de sintaxis JSON: " + errorMsg);
-        setJsonSyntaxError(errorMsg);
-        return;
-      }
-    } else {
-      const currentValues = getValues();
-      const publishSchema = getPublishFormSchema(templateType);
-      const parsed = publishSchema.safeParse(currentValues);
-      if (!parsed.success) {
-        // Set RHF errors to show up in red on UI
-        parsed.error.issues.forEach((issue) => {
-          const fieldKey = issue.path[0] as keyof EditorFormValues;
-          setError(fieldKey, {
-            type: "required",
-            message: issue.message,
-          });
+    const currentValues = getValues();
+    const publishSchema = getPublishFormSchema(templateType);
+    const parsed = publishSchema.safeParse(currentValues);
+    if (!parsed.success) {
+      // Set RHF errors to show up in red on UI
+      parsed.error.issues.forEach((issue) => {
+        const fieldKey = issue.path[0] as keyof EditorFormValues;
+        setError(fieldKey, {
+          type: "required",
+          message: issue.message,
         });
-        toast({
-          title: "Campos requeridos",
-          description: "Por favor, completa correctamente los campos obligatorios del formulario.",
-          type: "error",
-        });
-        return;
-      }
-      mappedData = cleanFormValues(currentValues);
+      });
+      toast({
+        title: "Campos requeridos",
+        description: "Por favor, completa correctamente los campos obligatorios del formulario.",
+        type: "error",
+      });
+      return;
     }
+    const mappedData = cleanFormValues(currentValues);
 
     startTransition(async () => {
       const saveRes = await savePedidoDatosAction(pedido.id, mappedData);
@@ -723,7 +672,6 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
           estado: "entregado",
           datosInvitacion: saveRes.data as unknown as Prisma.JsonValue
         }));
-        setRawJsonText(JSON.stringify(saveRes.data, null, 2));
         toast({
           title: "Invitación publicada",
           description: "La invitación se ha publicado con éxito.",
@@ -880,42 +828,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
                 )}
 
                 <form id="editor-form" onSubmit={handleSubmit(onSave)} className="space-y-8">
-              {pedido.tipoEvento !== "cumpleanos" ? (
-                <div className="space-y-6 bg-slate-900/10 p-4 rounded-xl border border-slate-900/50">
-                  <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-400 font-medium leading-relaxed">
-                    ⚠️ Editor en desarrollo para este tipo de evento.
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-wider font-bold text-slate-400 block">
-                      Editar datos JSON manualmente
-                    </label>
-                    <textarea
-                      rows={15}
-                      value={rawJsonText}
-                      onChange={(e) => {
-                        setRawJsonText(e.target.value);
-                        try {
-                          JSON.parse(e.target.value);
-                          setJsonSyntaxError(null);
-                        } catch (err: unknown) {
-                          const errorMsg = err instanceof Error ? err.message : String(err);
-                          setJsonSyntaxError(errorMsg);
-                        }
-                      }}
-                      className={cn(
-                        "w-full font-mono text-xs rounded-lg border bg-slate-950 px-3 py-2 text-slate-100 focus:outline-none focus:ring-1 transition-all",
-                        jsonSyntaxError ? "border-rose-500 focus:ring-rose-500" : "border-slate-800 focus:ring-violet-500"
-                      )}
-                    />
-                    {jsonSyntaxError && (
-                      <p className="text-xs font-semibold text-rose-500 mt-1">
-                        {jsonSyntaxError}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                groupedFields.map(section => (
+              {groupedFields.map(section => (
                   <div key={section.id} className="space-y-4 bg-slate-900/10 p-4 rounded-xl border border-slate-900/50">
                     <h3 className="text-sm font-bold text-slate-200 border-b border-slate-900 pb-2 mb-2 tracking-wide flex items-center gap-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
@@ -1212,8 +1125,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
                       })}
                     </div>
                   </div>
-                ))
-              )}
+              ))}
 
               {/* PUBLICATION FLOW CARD INSIDE THE SCROLL CONTAINER */}
               <Card className="border-slate-900 bg-slate-900/10 rounded-xl">

@@ -11,7 +11,7 @@ export function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     nombre: "",
-    evento: "boda",
+    evento: "cumpleanos",
     fecha: "",
     telefono: "",
     mensaje: "",
@@ -56,7 +56,7 @@ export function ContactForm() {
         });
         setForm({
           nombre: "",
-          evento: "boda",
+          evento: "cumpleanos",
           fecha: "",
           telefono: "",
           mensaje: "",
@@ -128,9 +128,6 @@ export function ContactForm() {
             disabled={loading}
             className="flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <option value="boda">Boda</option>
-            <option value="xv">XV Años</option>
-            <option value="babyshower">Baby Shower</option>
             <option value="cumpleanos">Cumpleaños</option>
             <option value="otro">Otro</option>
           </select>

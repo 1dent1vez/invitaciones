@@ -21,13 +21,6 @@ import { updatePedidoEstadoAction } from "./actions";
 
 type PedidoWithCliente = Pedido & { cliente: Cliente };
 
-const TIPO_EVENTO_MAP: Record<string, string> = {
-  cumpleanos: "Cumpleaños",
-  boda: "Boda",
-  xv: "XV Años",
-  babyshower: "Baby Shower",
-};
-
 interface PedidosClientProps {
   initialPedidos: PedidoWithCliente[];
 }
@@ -44,7 +37,6 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
   const router = useRouter();
   const [pedidos, setPedidos] = useState(initialPedidos);
   const [search, setSearch] = useState("");
-  const [eventTypeFilter, setEventTypeFilter] = useState("todos");
   const [isPending, startTransition] = useTransition();
 
   const handleMoveState = (pedidoId: string, currentState: string, direction: "prev" | "next") => {
@@ -90,11 +82,9 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
       }
     }
     const nombreFestejado = (datos.nombre as string) || (datos.nombres as string) || "";
-    const matchesSearch = p.cliente.nombre.toLowerCase().includes(search.toLowerCase()) || 
-                          (p.slug || "").toLowerCase().includes(search.toLowerCase()) ||
-                          nombreFestejado.toLowerCase().includes(search.toLowerCase());
-    const matchesFilter = eventTypeFilter === "todos" || p.tipoEvento === eventTypeFilter;
-    return matchesSearch && matchesFilter;
+    return p.cliente.nombre.toLowerCase().includes(search.toLowerCase()) || 
+           (p.slug || "").toLowerCase().includes(search.toLowerCase()) ||
+           nombreFestejado.toLowerCase().includes(search.toLowerCase());
   });
 
   return (
@@ -127,30 +117,6 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 border-slate-900 bg-slate-900/40 text-slate-100 placeholder:text-slate-500"
           />
-        </div>
-
-        {/* Tab filters styled with Tailwind */}
-        <div className="flex gap-1.5 p-1 rounded-xl bg-slate-900/40 border border-slate-900 self-stretch sm:self-auto overflow-x-auto">
-          {[
-            { key: "todos", label: "Todos" },
-            { key: "boda", label: "Bodas" },
-            { key: "xv", label: "XV Años" },
-            { key: "babyshower", label: "Baby Shower" },
-            { key: "cumpleanos", label: "Cumpleaños" }
-          ].map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setEventTypeFilter(tab.key)}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0",
-                eventTypeFilter === tab.key 
-                  ? "bg-violet-600 text-white" 
-                  : "text-slate-400 hover:text-slate-200"
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -189,10 +155,10 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
                         {/* Event type badge */}
                         <div className="flex items-center justify-between">
                           <span className="text-4xs font-bold uppercase tracking-wider text-violet-400">
-                            {TIPO_EVENTO_MAP[pedido.tipoEvento] || pedido.tipoEvento}
+                            Cumpleaños
                           </span>
-                          <span className="text-4xs text-slate-500 font-medium">
-                            {pedido.template}
+                          <span className="text-4xs text-slate-500 font-medium uppercase">
+                            {pedido.paquete.toUpperCase()}
                           </span>
                         </div>
 

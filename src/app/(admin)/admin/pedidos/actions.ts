@@ -59,8 +59,7 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
     }
 
     // Initial default variables for the invitation template
-    const isCumple = parsed.data.tipoEvento === "cumpleanos";
-    const defaultDatosJson = isCumple ? {
+    const defaultDatosJson = {
       nombre: client.nombre,
       fecha: parsed.data.fechaEvento,
       lugar: "",
@@ -69,16 +68,6 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
       colorSecundario: "#1f2937",
       fotoPortada: "",
       mensaje: "¡Estás invitado a celebrar conmigo!",
-    } : {
-      nombres: client.nombre,
-      fecha: parsed.data.fechaEvento,
-      ubicacion: "",
-      colores: {
-        primary: "#8B5CF6",
-        secondary: "#EC4899",
-      },
-      fotos: [],
-      mensaje: "¡Estás invitado a nuestro evento especial!",
     };
 
     const slug = await getUniqueSlug(client.nombre, eventDate);

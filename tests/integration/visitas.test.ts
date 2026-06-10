@@ -24,15 +24,15 @@ describe("Visitas Integration Tests", () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: client.id,
-        tipoEvento: "xv",
+        tipoEvento: "cumpleanos",
         fechaEvento: new Date("2026-10-18T18:00:00Z"),
-        template: "xv-moderno",
-        precio: 1500,
+        template: "cumpleanos-esencial",
+        precio: 350,
         estado: "cotizado",
         slug: testSlug,
         urlPublica: `http://localhost:3000/i/${testSlug}`,
         datosInvitacion: {
-          nombres: "María Fernanda",
+          nombre: "María Fernanda",
         },
       },
     });

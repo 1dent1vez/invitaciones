@@ -34,18 +34,18 @@ describe("Clonación de Pedidos Integration Tests", () => {
     const sourcePedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "xv",
+        tipoEvento: "cumpleanos",
         fechaEvento: new Date("2026-08-20T19:00:00Z"),
-        template: "xv-moderno",
-        precio: 3500.00,
+        template: "cumpleanos-esencial",
+        precio: 350.00,
         estado: "completado",
-        slug: "felipe-xv-2026-08-20",
-        urlPublica: "http://localhost:3000/i/felipe-xv-2026-08-20",
+        slug: "felipe-cumple-2026-08-20",
+        urlPublica: "http://localhost:3000/i/felipe-cumple-2026-08-20",
         qrUrl: "https://cloudinary.com/qr-source.png",
         datosInvitacion: {
-          nombres: "Valeria Calderón",
+          nombre: "Valeria Calderón",
           fecha: "2026-08-20T19:00:00Z",
-          ubicacion: "Salón Real",
+          lugar: "Salón Real",
           mensaje: "Mis Quince Años",
           portadaUrl: "https://cloudinary.com/valeria.jpg",
           fotos: ["https://cloudinary.com/valeria-1.jpg"],
@@ -78,9 +78,9 @@ describe("Clonación de Pedidos Integration Tests", () => {
 
     expect(check).toBeDefined();
     expect(check?.clienteId).toBe(testClienteId);
-    expect(check?.tipoEvento).toBe("xv");
-    expect(check?.template).toBe("xv-moderno");
-    expect(Number(check?.precio)).toBe(3500);
+    expect(check?.tipoEvento).toBe("cumpleanos");
+    expect(check?.template).toBe("cumpleanos-esencial");
+    expect(Number(check?.precio)).toBe(350);
     
     // Check initial state
     expect(check?.estado).toBe("cotizado");
@@ -104,6 +104,6 @@ describe("Clonación de Pedidos Integration Tests", () => {
     expect(newDatos.fotosGaleria).toEqual([]);
     
     // Ensure template options are kept (e.g. template)
-    expect(check?.template).toBe("xv-moderno");
+    expect(check?.template).toBe("cumpleanos-esencial");
   });
 });

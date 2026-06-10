@@ -45,10 +45,10 @@ describe("Pedidos Integration Tests", () => {
   it("debe crear un pedido válido y verificar su estado inicial como cotizado", async () => {
     const input = {
       clienteId: testClienteId,
-      tipoEvento: "boda" as const,
+      tipoEvento: "cumpleanos" as const,
       paquete: "esencial" as const,
       fechaEvento: "2026-09-20",
-      template: "boda-esencial" as const,
+      template: "cumpleanos-esencial" as const,
       precio: 350,
       notas: "Notas de pedido de prueba",
     };
@@ -70,10 +70,10 @@ describe("Pedidos Integration Tests", () => {
   it("debe generar slugs únicos incrementando sufijos numéricos si hay colisión", async () => {
     const input1 = {
       clienteId: testClienteId,
-      tipoEvento: "boda" as const,
+      tipoEvento: "cumpleanos" as const,
       paquete: "esencial" as const,
       fechaEvento: "2026-09-20",
-      template: "boda-esencial" as const,
+      template: "cumpleanos-esencial" as const,
       precio: 350,
       notas: "",
     };
@@ -83,10 +83,10 @@ describe("Pedidos Integration Tests", () => {
 
     const res2 = await createPedidoAction({
       clienteId: testClienteId,
-      tipoEvento: "xv" as const,
+      tipoEvento: "cumpleanos" as const,
       paquete: "esencial" as const,
       fechaEvento: "2026-09-20",
-      template: "xv-esencial" as const,
+      template: "cumpleanos-esencial" as const,
       precio: 350,
       notas: "",
     });
@@ -145,10 +145,10 @@ describe("Pedidos Integration Tests", () => {
   it("debe rechazar la creación de un pedido si el precio es negativo o cero", async () => {
     const inputNegative = {
       clienteId: testClienteId,
-      tipoEvento: "boda" as const,
+      tipoEvento: "cumpleanos" as const,
       paquete: "esencial" as const,
       fechaEvento: "2026-09-20T18:00:00.000Z",
-      template: "boda-esencial" as const,
+      template: "cumpleanos-esencial" as const,
       precio: -100,
       notas: "",
     };
@@ -172,10 +172,10 @@ describe("Pedidos Integration Tests", () => {
 
     const input = {
       clienteId: testClienteId,
-      tipoEvento: "boda" as const,
+      tipoEvento: "cumpleanos" as const,
       paquete: "esencial" as const,
       fechaEvento: pastDate.toISOString(),
-      template: "boda-esencial" as const,
+      template: "cumpleanos-esencial" as const,
       precio: 350,
       notas: "",
     };

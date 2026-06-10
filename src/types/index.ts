@@ -5,9 +5,6 @@ import { savePedidoSchema } from "@/app/(admin)/admin/pedidos/[id]/editar/schema
 import { clienteSchema } from "@/app/(admin)/admin/clientes/schemas";
 
 export type TemplateType =
-  | 'boda-esencial' | 'boda-completa' | 'boda-premium'
-  | 'xv-esencial' | 'xv-completa' | 'xv-premium'
-  | 'babyshower-esencial' | 'babyshower-completa' | 'babyshower-premium'
   | 'cumpleanos-esencial' | 'cumpleanos-completa' | 'cumpleanos-premium';
 
 export interface TimelineEvent {

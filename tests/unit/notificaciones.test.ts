@@ -2,18 +2,10 @@ import { describe, it, expect } from "vitest";
 import { generarTextoNotificacion } from "@/lib/notificaciones";
 
 describe("generarTextoNotificacion", () => {
-  it("genera mensajes correctos para cumpleaños, bodas, y XV años", () => {
+  it("genera mensajes correctos para cumpleaños", () => {
     const cumple = generarTextoNotificacion("Ana", "http://invitacion.com", "http://qr.com", "cumpleanos");
     expect(cumple).toContain("invitación de cumpleaños");
     expect(cumple).toContain("🎉");
-
-    const boda = generarTextoNotificacion("Pedro", "http://invitacion.com", "http://qr.com", "boda");
-    expect(boda).toContain("invitación de boda");
-    expect(boda).toContain("💍");
-
-    const xv = generarTextoNotificacion("Sofia", "http://invitacion.com", "http://qr.com", "xv");
-    expect(xv).toContain("invitación de XV Años");
-    expect(xv).toContain("👑");
   });
 
   it("incluye fecha, hora y lugar en el mensaje si son proveídos", () => {

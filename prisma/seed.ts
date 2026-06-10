@@ -163,55 +163,22 @@ async function main() {
     ]
   });
 
-  // Create placeholders for the other 9 packages (boda, xv, babyshower)
-  const nonImplementedTypes = [
-    { tipo: "boda", paquetes: ["esencial", "completa", "premium"] },
-    { tipo: "xv", paquetes: ["esencial", "completa", "premium"] },
-    { tipo: "babyshower", paquetes: ["esencial", "completa", "premium"] }
-  ];
-
-  for (const item of nonImplementedTypes) {
-    for (const pkg of item.paquetes) {
-      const templateName = `${item.tipo}-${pkg}`;
-      const slug = `demo-${templateName}`;
-      await prisma.pedido.create({
-        data: {
-          clienteId: client.id,
-          tipoEvento: item.tipo,
-          paquete: pkg,
-          template: templateName,
-          fechaEvento: new Date("2026-12-01T18:00:00.000Z"),
-          precio: pkg === "esencial" ? 350 : pkg === "completa" ? 550 : 850,
-          estado: "cotizado",
-          notas: `Demo Placeholder para ${templateName}`,
-          slug,
-          urlPublica: `http://localhost:3000/i/${slug}`,
-          datosInvitacion: {
-            nombres: item.tipo === "boda" ? "Novios Demo" : "Festejado Demo",
-            fecha: "2026-12-01T18:00:00.000Z",
-            ubicacion: "Lugar de Evento Demo",
-          },
-        },
-      });
-    }
-  }
-
   // Create 2 contact leads as a demo too
   await prisma.lead.createMany({
     data: [
       {
         nombre: "Roberto Sánchez",
-        evento: "boda",
+        evento: "cumpleanos",
         fecha: new Date("2026-09-12T00:00:00Z"),
         telefono: "5566778899",
-        mensaje: "Me interesa el paquete Premium para mi boda en Cuernavaca."
+        mensaje: "Me interesa el paquete Premium para mi cumpleaños número 40."
       },
       {
         nombre: "Gabriela Montes",
-        evento: "xv",
+        evento: "cumpleanos",
         fecha: new Date("2026-11-20T00:00:00Z"),
         telefono: "5577889900",
-        mensaje: "Quisiera información sobre el diseño de XV Años Deluxe."
+        mensaje: "Quisiera información sobre el diseño de Cumpleaños Completa."
       }
     ]
   });

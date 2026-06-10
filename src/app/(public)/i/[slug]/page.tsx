@@ -31,10 +31,7 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
     }
 
     const datos = order.datosInvitacion as unknown as InvitacionData;
-    const isCumple = order.tipoEvento === "cumpleanos";
-    const title = isCumple
-      ? (datos.nombre || datos.nombres || "Mi Cumpleaños")
-      : (datos.nombres || datos.nombre || "Invitación Especial");
+    const title = datos.nombre || datos.nombres || "Mi Cumpleaños";
     
     let dateText = "";
     try {
@@ -50,11 +47,8 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
       // fallback
     }
 
-    const eventName = order.tipoEvento === "boda" ? "nuestra Boda" : order.tipoEvento === "xv" ? "mis XV Años" : order.tipoEvento === "baby_shower" ? "nuestro Baby Shower" : "mi Cumpleaños";
-    const description = `Te invitamos a celebrar ${eventName} el día ${dateText}. Haz clic para ver los detalles del evento y confirmar tu asistencia.`;
-    const ogImage = isCumple
-      ? (datos.fotoPortada || datos.portadaUrl || (datos.fotos && datos.fotos[0]) || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop")
-      : (datos.portadaUrl || datos.fotoPortada || (datos.fotos && datos.fotos[0]) || "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop");
+    const description = `Te invitamos a celebrar mi Cumpleaños el día ${dateText}. Haz clic para ver los detalles del evento y confirmar tu asistencia.`;
+    const ogImage = datos.fotoPortada || datos.portadaUrl || (datos.fotos && datos.fotos[0]) || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop";
 
     return {
       title: `${title} | Invitación Digital`,

@@ -33,54 +33,54 @@ interface PricingPlan {
 
 const pricingPlans: PricingPlan[] = [
   {
-    name: "Básico",
-    price: "$799",
-    description: "Ideal para eventos sencillos e informales.",
+    name: "Esencial",
+    price: "$350",
+    description: "Ideal para celebraciones de cumpleaños sencillas.",
     features: [
       { text: "Diseño responsivo móvil", included: true },
       { text: "Detalles de fecha y ubicación", included: true },
-      { text: "Confirmación RSVP básica (vía WhatsApp)", included: true },
-      { text: "Galería de hasta 5 fotos", included: true },
-      { text: "Música de fondo", included: false },
-      { text: "Sugerencia de regalos / Mesa de regalos", included: false },
-      { text: "Contador regresivo", included: false },
+      { text: "Confirmación RSVP vía WhatsApp", included: true },
+      { text: "Música de fondo", included: true },
+      { text: "Galería de fotos", included: false },
+      { text: "Itinerario del festejo", included: false },
+      { text: "Mesa de regalos", included: false },
     ],
     popular: false,
-    ctaText: "Comenzar Básico",
+    ctaText: "Comenzar Esencial",
     color: "border-slate-800 bg-slate-900/20",
   },
   {
-    name: "Premium",
-    price: "$1,499",
-    description: "El más elegido. Perfecto para Bodas y XV Años.",
+    name: "Completa",
+    price: "$550",
+    description: "La más equilibrada para una gran fiesta.",
     features: [
       { text: "Diseño responsivo móvil", included: true },
       { text: "Detalles de fecha y ubicación", included: true },
-      { text: "Confirmación RSVP en panel (este sistema)", included: true },
-      { text: "Galería de hasta 15 fotos", included: true },
-      { text: "Música de fondo (autoplay/manual)", included: true },
-      { text: "Sugerencia de regalos / Mesa de regalos", included: true },
-      { text: "Contador regresivo", included: true },
+      { text: "Confirmación RSVP vía WhatsApp", included: true },
+      { text: "Música de fondo", included: true },
+      { text: "Galería de fotos (hasta 3 fotos)", included: true },
+      { text: "Dress code, Frase & Itinerario", included: true },
+      { text: "Mesa y datos de regalos", included: true },
     ],
     popular: true,
-    ctaText: "Comenzar Premium",
+    ctaText: "Comenzar Completa",
     color: "border-violet-500 bg-slate-900/60 shadow-lg shadow-violet-500/5 ring-1 ring-violet-500/20",
   },
   {
-    name: "Deluxe",
-    price: "$2,299",
-    description: "Experiencia completa y personalizada sin límites.",
+    name: "Premium",
+    price: "$850",
+    description: "Experiencia espectacular y de primer nivel.",
     features: [
       { text: "Diseño responsivo móvil", included: true },
       { text: "Detalles de fecha y ubicación", included: true },
-      { text: "Confirmación RSVP en panel + recordatorios", included: true },
-      { text: "Galería ilimitada de fotos y videos", included: true },
-      { text: "Música de fondo y efectos especiales", included: true },
-      { text: "Sugerencia de regalos / Mesa de regalos", included: true },
-      { text: "Contador regresivo y pase de entrada QR", included: true },
+      { text: "Confirmación RSVP + límite de fecha", included: true },
+      { text: "Música de fondo & Animaciones", included: true },
+      { text: "Galería extendida + Fotos extra", included: true },
+      { text: "Buzón de deseos & Pases invitados", included: true },
+      { text: "Video integrado & Temáticas premium", included: true },
     ],
     popular: false,
-    ctaText: "Comenzar Deluxe",
+    ctaText: "Comenzar Premium",
     color: "border-slate-800 bg-slate-900/20",
   },
 ];
@@ -95,32 +95,18 @@ interface GalleryItem {
 
 const galleryItems: GalleryItem[] = [
   {
-    title: "Boda Elegante",
-    type: "Bodas",
-    slug: "ana-y-carlos",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop",
-    description: "Diseño minimalista y sofisticado con tonos dorados y tipografía clásica."
-  },
-  {
-    title: "XV Años Moderno",
-    type: "XV Años",
-    slug: "xv-maria-fernanda",
-    image: "https://images.unsplash.com/photo-1549417229-aa67d3263c09?q=80&w=600&auto=format&fit=crop",
-    description: "Diseño vibrante con tipografías audaces y galería de fotos interactiva."
-  },
-  {
-    title: "Baby Shower Dulce Espera",
-    type: "Baby Showers",
-    slug: "baby-mateo",
-    image: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=600&auto=format&fit=crop",
-    description: "Diseño tierno en colores pastel y tipografías amigables."
-  },
-  {
-    title: "Cumpleaños Fiesta",
+    title: "Cumpleaños Esencial",
     type: "Cumpleaños",
     slug: "santiago-cumple",
     image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop",
-    description: "Diseño divertido con timeline de la fiesta y detalles festivos."
+    description: "Diseño divertido con frase y detalles de la celebración esenciales."
+  },
+  {
+    title: "Cumpleaños Premium",
+    type: "Cumpleaños",
+    slug: "sofia-premium",
+    image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600&auto=format&fit=crop",
+    description: "Diseño elegante con fotos extra, pases, música y animación de confetti."
   }
 ];
 
@@ -169,7 +155,7 @@ export default function LandingPage() {
           </h1>
           
           <p className="mx-auto max-w-2xl text-slate-400 text-base sm:text-lg md:text-xl leading-relaxed">
-            Sorprende a tus invitados con invitaciones modernas, interactivas, responsivas y con confirmación RSVP en tiempo real para bodas, cumpleaños y eventos especiales.
+            Sorprende a tus invitados con invitaciones modernas, interactivas, responsivas y con confirmación RSVP en tiempo real para tus fiestas de cumpleaños.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 pt-4">
