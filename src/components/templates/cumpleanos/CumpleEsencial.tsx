@@ -55,13 +55,28 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
     setIsPlaying(!isPlaying);
   };
 
+  const getFraseDefault = (edad?: number | string | null): string => {
+    if (edad === undefined || edad === null || edad === "") {
+      return "¡Celebremos juntos esta fecha especial!";
+    }
+    const age = Number(edad);
+    if (isNaN(age) || age <= 0) {
+      return "¡Celebremos juntos esta fecha especial!";
+    }
+    if (age >= 1 && age <= 5) return `¡Estoy cumpliendo ${age} añitos!`;
+    if (age >= 6 && age <= 17) return `¡Celebremos mis ${age} años!`;
+    if (age >= 18 && age <= 29) return "¡Un año más de vida, un año más de aventuras!";
+    if (age >= 30 && age <= 49) return `¡${age} años y contando!`;
+    return `¡${age} años de historias por celebrar!`;
+  };
+
   const nombreFestejado = data.nombre || data.nombres || "Festejado";
   const edadFestejado = data.edad || "";
-  const fraseMensaje = data.mensaje || "¡Celebremos juntos esta fecha especial!";
+  const fraseMensaje = data.mensaje || getFraseDefault(data.edad);
   const fotoPortada = data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop";
   const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
   const direccionFiesta = data.direccion || "";
-  const mapaUrl = data.mapaUrl || data.mapsLink || "";
+  const mapaUrl = data.mapsLink || data.mapaUrl || (direccionFiesta ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionFiesta)}` : "");
   const horaFiesta = data.hora || "";
 
   return (
