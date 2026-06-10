@@ -49,7 +49,6 @@ export const CONFIGURACION_EVENTOS: Record<TipoEvento, Record<Paquete, PaqueteCo
         { id: "tipoCelebracion", tipo: "select", label: "Tipo de celebración", required: true, options: ["Adultos", "Infantil", "Sorpresa"] },
         { id: "fotoPortada", tipo: "upload", label: "Foto del festejado", required: true, max: 1 },
         { id: "mensaje", tipo: "textarea", label: "Frase o mensaje", required: false, placeholder: "¡Vamos a celebrar 30 años de risas!" },
-        { id: "musica", tipo: "select", label: "Música", required: true, options: ["Fiesta", "Pop", "Regional", "Infantil"] },
         { id: "whatsapp", tipo: "tel", label: "WhatsApp", required: true, placeholder: "5512345678" },
         { id: "colorPrimario", tipo: "color", label: "Color primario", required: false, default: "#f59e0b" },
         { id: "colorSecundario", tipo: "color", label: "Color secundario", required: false, default: "#1f2937" },

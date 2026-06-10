@@ -18,7 +18,7 @@ const rsvpFormSchema = z.object({
   }),
   pax: z.preprocess(
     (val) => Number(val),
-    z.number().int().min(1, "El número de personas debe ser al menos 1")
+    z.number().int().min(1, "Al menos 1").max(10, "El límite máximo de acompañantes es 10")
   ),
   telefono: z.string().optional(),
   mensaje: z.string().optional(),

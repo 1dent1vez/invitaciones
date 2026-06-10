@@ -31,7 +31,7 @@ describe("validateTemplateData", () => {
     };
     const result = validateTemplateData(config, data);
     expect(result.success).toBe(false);
-    expect(result.errors.length).toBe(8);
+    expect(result.errors.length).toBe(7);
   });
 
   it("falla la validación si falta el nombre en cumpleanos-esencial", () => {

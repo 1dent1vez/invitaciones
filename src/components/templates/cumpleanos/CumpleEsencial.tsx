@@ -101,15 +101,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
           className="absolute inset-0 w-full h-full object-cover select-none"
         />
         
-        {/* Play/Pause float button for background music */}
-        {data.musicaUrl && (
-          <button
-            onClick={toggleMusic}
-            className="absolute top-6 right-6 z-20 h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/70 border border-white/10 text-[var(--primary)] backdrop-blur-sm shadow-xl active:scale-95 transition-all"
-          >
-            {isPlaying ? <Volume2 className="h-5 w-5 animate-pulse" /> : <VolumeX className="h-5 w-5 text-slate-400" />}
-          </button>
-        )}
+
 
         <div className="w-full p-8 z-10 space-y-2 text-center flex flex-col items-center">
           <div className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20 mb-1">
@@ -189,18 +181,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
           </div>
         </div>
 
-        {/* Música Card basic fallback indicator */}
-        {data.musica && !data.musicaUrl && (
-          <div className="bg-slate-900/40 border border-[var(--primary)]/10 rounded-2xl p-4 flex items-center gap-3">
-            <div className="h-8 w-8 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] border border-slate-900">
-              <Music className="h-4.5 w-4.5" />
-            </div>
-            <div className="text-xs">
-              <span className="text-slate-400 font-semibold block uppercase text-[9px] tracking-wider">Música recomendada</span>
-              <span className="text-white font-medium">Género / Playlist: {data.musica}</span>
-            </div>
-          </div>
-        )}
+
 
       </div>
 
