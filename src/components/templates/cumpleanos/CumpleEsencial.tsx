@@ -4,6 +4,14 @@ import React, { useState, useEffect } from "react";
 import { Calendar, Clock, MapPin, Sparkles, Music, Volume2, VolumeX } from "lucide-react";
 import { InvitacionData } from "@/types";
 
+const getOptimizedImageUrl = (url: string): string => {
+  if (!url) return "";
+  if (url.includes("cloudinary.com")) {
+    return url.replace("/upload/", "/upload/f_auto,q_auto,w_800/");
+  }
+  return url;
+};
+
 interface CumpleEsencialProps {
   data: InvitacionData;
 }
@@ -73,7 +81,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
   const nombreFestejado = data.nombre || data.nombres || "Festejado";
   const edadFestejado = data.edad || "";
   const fraseMensaje = data.mensaje || getFraseDefault(data.edad);
-  const fotoPortada = data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop";
+  const fotoPortada = getOptimizedImageUrl(data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop");
   const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
   const direccionFiesta = data.direccion || "";
   const mapaUrl = data.mapsLink || data.mapaUrl || (direccionFiesta ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionFiesta)}` : "");
@@ -191,7 +199,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
             href={`https://wa.me/${data.whatsapp.replace(/\D/g, "")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-98 text-sm"
+            className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold h-11 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-98 text-sm"
             data-testid="whatsapp-confirmar"
           >
             <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">

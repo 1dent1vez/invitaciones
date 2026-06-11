@@ -75,4 +75,20 @@ describe("Birthday Templates Rendering Tests", () => {
     expect(screen.getByText(/Galería de Recuerdos/i)).toBeInTheDocument();
     expect(screen.getByText(/Buzón de Deseos/i)).toBeInTheDocument();
   });
+
+  it("optimiza la foto de portada si proviene de cloudinary en CumpleEsencial", () => {
+    const mockCloudinaryData = {
+      ...mockDataEsencial,
+      fotoPortada: "https://res.cloudinary.com/demo/image/upload/v12345/portada.jpg",
+    };
+    render(<CumpleEsencial data={mockCloudinaryData} />);
+    const img = screen.getByRole("img", { name: /cumpleañero/i });
+    expect(img).toHaveAttribute("src", "https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,w_800/v12345/portada.jpg");
+  });
+
+  it("los botones táctiles son de mínimo 44px de alto (clase h-11) en CumpleEsencial", () => {
+    render(<CumpleEsencial data={mockDataEsencial} />);
+    const whatsappBtn = screen.getByTestId("whatsapp-confirmar");
+    expect(whatsappBtn).toHaveClass("h-11");
+  });
 });
