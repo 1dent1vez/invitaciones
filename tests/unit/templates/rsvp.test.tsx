@@ -114,5 +114,35 @@ describe("PublicRSVPForm Pax Validation Test", () => {
       expect(confettiParticles.length).toBe(20);
     });
   });
+
+  it("rechaza 'Al' (2 chars) y acepta 'Ale' (3 chars) en RSVP", async () => {
+    render(<PublicRSVPForm slug="sofia-esencial" />);
+
+    // Open modal
+    const openBtn = screen.getByRole("button", { name: /Confirmar Lugar/i });
+    fireEvent.click(openBtn);
+
+    // Get Name input
+    const nombreInput = screen.getByPlaceholderText(/Ej. Juan Pérez/i);
+    const submitBtn = screen.getByRole("button", { name: "Confirmar" });
+
+    // Test rejection with 2 chars
+    fireEvent.change(nombreInput, { target: { value: "Al" } });
+    fireEvent.click(submitBtn);
+    await waitFor(() => {
+      expect(
+        screen.getByText("El nombre debe tener al menos 3 caracteres")
+      ).toBeInTheDocument();
+    });
+
+    // Test acceptance with 3 chars
+    fireEvent.change(nombreInput, { target: { value: "Ale" } });
+    fireEvent.click(submitBtn);
+    await waitFor(() => {
+      expect(
+        screen.queryByText("El nombre debe tener al menos 3 caracteres")
+      ).not.toBeInTheDocument();
+    });
+  });
 });
 

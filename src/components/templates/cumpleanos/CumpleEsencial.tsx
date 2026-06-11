@@ -221,8 +221,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
           </a>
         </div>
       )}
-
-      <div className="text-center pt-8 text-[10px] text-slate-700 uppercase tracking-[0.3em]">
+      <div className="text-center pt-8 text-[10px] text-slate-400 uppercase tracking-[0.3em]">
         ¡No faltes a esta gran noche!
       </div>
 

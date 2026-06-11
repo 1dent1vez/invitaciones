@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { createRSVPAction } from "./actions";
 
 const rsvpFormSchema = z.object({
-  nombre: z.string().min(2, "Por favor, escribe tu nombre completo"),
+  nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
   asiste: z.boolean({
     required_error: "Selecciona si asistirás o no",
   }),
