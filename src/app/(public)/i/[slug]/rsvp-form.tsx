@@ -21,7 +21,7 @@ const rsvpFormSchema = z.object({
     z.number().int().min(1, "Al menos 1").max(10, "El límite máximo de acompañantes es 10")
   ),
   telefono: z.string().optional(),
-  mensaje: z.string().optional(),
+  mensaje: z.string().max(200, 'El mensaje no debe superar los 200 caracteres').optional(),
 });
 
 type RSVPFormValues = z.infer<typeof rsvpFormSchema>;
@@ -175,10 +175,11 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
                 {/* Nombre */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <label htmlFor="rsvp-nombre" className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     Nombre Completo *
                   </label>
                   <Input
+                    id="rsvp-nombre"
                     type="text"
                     placeholder="Ej. Juan Pérez"
                     className="border-slate-900 bg-slate-950 text-slate-100 placeholder:text-slate-700"
@@ -192,9 +193,10 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
 
                 {/* ¿Asistirá? */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <label htmlFor="rsvp-asiste" className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     ¿Asistirás al evento? *
                   </label>
+                  <Input type="text" id="rsvp-asiste" className="hidden" />
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -231,10 +233,11 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden space-y-1.5"
                     >
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      <label htmlFor="rsvp-pax" className="text-xs font-bold uppercase tracking-wider text-slate-400">
                         Cantidad de Lugares (Pax) *
                       </label>
                       <Input
+                        id="rsvp-pax"
                         type="number"
                         min="1"
                         className="border-slate-900 bg-slate-950 text-slate-100"
@@ -264,16 +267,20 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
 
                 {/* Mensaje */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <label htmlFor="rsvp-mensaje" className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     Mensaje para los novios / festejados
                   </label>
                   <textarea
+                    id="rsvp-mensaje"
                     placeholder="Ej. ¡Muchas felicidades! Nos vemos ahí."
                     rows={3}
                     className="w-full rounded-lg border border-slate-900 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-700 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-all resize-none"
                     disabled={isPending}
                     {...register("mensaje")}
                   />
+                  {errors.mensaje && (
+                    <p className="text-2xs font-semibold text-rose-500">{errors.mensaje.message}</p>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4 border-t border-slate-900">
