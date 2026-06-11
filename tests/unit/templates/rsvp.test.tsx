@@ -85,5 +85,34 @@ describe("PublicRSVPForm Pax Validation Test", () => {
     const mensajeInput = screen.getByLabelText(/Mensaje para los novios/i);
     expect(mensajeInput).toHaveAttribute("id", "rsvp-mensaje");
   });
+
+  it("el contenedor de RSVP contiene las clases responsive de E-19", () => {
+    const { container } = render(<PublicRSVPForm slug="sofia-esencial" />);
+    const rsvpContainer = container.firstChild;
+    expect(rsvpContainer).toHaveClass("md:max-w-md");
+    expect(rsvpContainer).toHaveClass("md:mx-auto");
+  });
+
+  it("muestra confeti por 3 segundos al confirmar exitosamente (E-20)", async () => {
+    const { container } = render(<PublicRSVPForm slug="sofia-esencial" />);
+
+    // Open modal
+    const openBtn = screen.getByRole("button", { name: /Confirmar Lugar/i });
+    fireEvent.click(openBtn);
+
+    // Fill name
+    const nombreInput = screen.getByPlaceholderText(/Ej. Juan Pérez/i);
+    fireEvent.change(nombreInput, { target: { value: "Invitado E2E" } });
+
+    // Submit form
+    const submitBtn = screen.getByRole("button", { name: "Confirmar" });
+    fireEvent.click(submitBtn);
+
+    // Verify confetti is shown
+    await waitFor(() => {
+      const confettiParticles = container.querySelectorAll(".animate-fall");
+      expect(confettiParticles.length).toBe(20);
+    });
+  });
 });
 

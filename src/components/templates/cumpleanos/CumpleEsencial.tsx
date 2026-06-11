@@ -88,7 +88,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
   const horaFiesta = data.hora || "";
 
   return (
-    <div className="flex-1 flex flex-col justify-between bg-[#0B0C10] text-[#C5C6C7] pb-16 relative">
+    <div className="flex-1 flex flex-col justify-between bg-[#0B0C10] text-[#C5C6C7] pb-16 relative md:max-w-2xl md:mx-auto md:shadow-2xl">
       {/* Decorative Confetti Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
         <div className="absolute top-12 left-10 h-3.5 w-3.5 rounded-full bg-amber-400 animate-ping" />
@@ -100,7 +100,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
       <div className="absolute inset-4 border border-[var(--primary)]/10 pointer-events-none rounded-2xl" />
 
       {/* Hero Portada */}
-      <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden flex items-end animate-fade-in">
+      <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden flex items-end animate-fade-in md:h-[50vh] md:rounded-t-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/40 to-transparent z-10" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -140,7 +140,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
       </div>
 
       {/* Main Content */}
-      <div className="px-6 space-y-8 mt-4 relative">
+      <div className="px-6 space-y-8 mt-4 relative md:px-10 md:py-12">
         
         {/* Frase Festejo */}
         {data.mensaje && (
@@ -152,7 +152,7 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
         )}
 
         {/* Date and Location Card */}
-        <div className="bg-slate-900/60 border border-[var(--primary)]/10 rounded-2xl p-5 space-y-5 shadow-xl backdrop-blur-md">
+        <div className="bg-slate-900/60 border border-[var(--primary)]/10 rounded-2xl p-5 space-y-5 md:space-y-0 md:grid md:grid-cols-3 md:gap-6 shadow-xl backdrop-blur-md">
           {/* Date */}
           <div className="flex gap-4 items-start">
             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-[var(--primary)]/15">
@@ -161,9 +161,21 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
             <div className="space-y-1">
               <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿Cuándo?</span>
               <p className="text-sm font-semibold text-white capitalize">{dateText}</p>
-              {horaFiesta && <p className="text-xs text-slate-400 flex items-center gap-1"><Clock className="h-3 w-3" /> A las {horaFiesta} hrs</p>}
             </div>
           </div>
+
+          {/* Time */}
+          {horaFiesta && (
+            <div className="flex gap-4 items-start">
+              <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-[var(--primary)]/15">
+                <Clock className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿A qué hora?</span>
+                <p className="text-sm font-semibold text-white">A las {horaFiesta} hrs</p>
+              </div>
+            </div>
+          )}
 
           {/* Location */}
           <div className="flex gap-4 items-start">

@@ -28,7 +28,7 @@ export function TemplateWrapper({ children, data }: TemplateWrapperProps) {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-md min-h-screen bg-[#0b0f19] shadow-[0_0_50px_rgba(0,0,0,0.8)] relative flex flex-col overflow-x-hidden border-x border-slate-900"
+        className="w-full max-w-md md:max-w-2xl min-h-screen bg-[#0b0f19] shadow-[0_0_50px_rgba(0,0,0,0.8)] relative flex flex-col overflow-x-hidden border-x border-slate-900"
       >
         {children}
       </motion.div>

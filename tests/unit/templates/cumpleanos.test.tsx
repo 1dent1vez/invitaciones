@@ -91,4 +91,28 @@ describe("Birthday Templates Rendering Tests", () => {
     const whatsappBtn = screen.getByTestId("whatsapp-confirmar");
     expect(whatsappBtn).toHaveClass("h-11");
   });
+
+  it("contiene los breakpoints responsive indicados (E-19) en CumpleEsencial", () => {
+    const { container } = render(<CumpleEsencial data={mockDataEsencial} />);
+    
+    // Contenedor principal
+    const mainContainer = container.firstChild;
+    expect(mainContainer).toHaveClass("md:max-w-2xl");
+    expect(mainContainer).toHaveClass("md:mx-auto");
+    expect(mainContainer).toHaveClass("md:shadow-2xl");
+
+    // Hero Portada
+    const hero = container.querySelector(".animate-fade-in");
+    expect(hero).toHaveClass("md:h-[50vh]");
+    expect(hero).toHaveClass("md:rounded-t-2xl");
+
+    // Detalles wrapper (has py-12 / px-10 on md)
+    const detailsWrapper = container.querySelector(".md\\:px-10");
+    expect(detailsWrapper).toHaveClass("md:px-10");
+    expect(detailsWrapper).toHaveClass("md:py-12");
+
+    // Grid fecha/hora/lugar has md:grid-cols-3
+    const grid = container.querySelector(".md\\:grid-cols-3");
+    expect(grid).toBeInTheDocument();
+  });
 });

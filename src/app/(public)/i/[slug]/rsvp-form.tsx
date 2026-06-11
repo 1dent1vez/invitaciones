@@ -36,6 +36,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const isPastDeadline = React.useMemo(() => {
     if (!fechaLimiteRSVP) return false;
@@ -81,7 +82,11 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
 
       if (res.success) {
         setIsSubmitted(true);
+        setShowConfetti(true);
         reset();
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 3000);
       } else {
         setSubmitError(res.error || "Ocurrió un error al registrar el RSVP");
       }
@@ -89,7 +94,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
   };
 
   return (
-    <div className="w-full px-8 pb-12 pt-6 border-t border-slate-900/60 text-center space-y-4">
+    <div className="w-full px-8 pb-12 pt-6 border-t border-slate-900/60 text-center space-y-4 md:max-w-md md:mx-auto">
       <h3 className="text-xs uppercase tracking-widest text-[var(--primary)] font-sans font-semibold">
         Confirmación de Asistencia
       </h3>
@@ -304,7 +309,30 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                       "Confirmar"
                     )}
                   </Button>
-                </div>
+                  {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
+          {Array.from({ length: 20 }).map((_, i) => {
+            const left = `${i * 5}%`;
+            const delay = `${(i % 5) * 0.2}s`;
+            const duration = `${1.5 + (i % 3) * 0.5}s`;
+            const colors = ["#f59e0b", "#10b981", "#3b82f6", "#ec4899", "#8b5cf6", "#ef4444"];
+            const color = colors[i % colors.length];
+            return (
+              <div
+                key={i}
+                className="absolute top-0 w-2 h-4 rounded-xs animate-fall"
+                style={{
+                  left,
+                  backgroundColor: color,
+                  animationDelay: delay,
+                  animationDuration: duration,
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
               </form>
             </motion.div>
           </div>
