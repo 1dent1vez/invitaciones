@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Calendar, Clock, MapPin, Sparkles, Music, Volume2, VolumeX } from "lucide-react";
+import React from "react";
+import { Calendar, Clock, MapPin, Sparkles } from "lucide-react";
 import { InvitacionData } from "@/types";
 
 const getOptimizedImageUrl = (url: string): string => {
@@ -17,9 +17,6 @@ interface CumpleEsencialProps {
 }
 
 export function CumpleEsencial({ data }: CumpleEsencialProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
-
   // Parse date
   let dateText = data.fecha || "";
   try {
@@ -37,31 +34,6 @@ export function CumpleEsencial({ data }: CumpleEsencialProps) {
   } catch {
     // fallback
   }
-
-  // Audio helper
-  useEffect(() => {
-    if (data.musicaUrl) {
-      const sound = new Audio(data.musicaUrl);
-      sound.loop = true;
-      setAudio(sound);
-    }
-    return () => {
-      if (audio) {
-        audio.pause();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.musicaUrl]);
-
-  const toggleMusic = () => {
-    if (!audio) return;
-    if (isPlaying) {
-      audio.pause();
-    } else {
-      audio.play().catch(err => console.log("Audio play failed:", err));
-    }
-    setIsPlaying(!isPlaying);
-  };
 
   const getFraseDefault = (edad?: number | string | null): string => {
     if (edad === undefined || edad === null || edad === "") {
