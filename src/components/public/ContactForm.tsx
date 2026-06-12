@@ -81,10 +81,10 @@ export function ContactForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto bg-slate-900/40 p-6 rounded-2xl border border-slate-900 backdrop-blur-sm">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-[#E8B4B8]/30 shadow-md">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <label htmlFor="nombre" className="text-xs font-semibold text-slate-300">
+          <label htmlFor="nombre" className="text-xs font-semibold text-[#3D3D3D]/80">
             Nombre Completo *
           </label>
           <Input
@@ -95,11 +95,11 @@ export function ContactForm() {
             placeholder="Ana Martínez"
             required
             disabled={loading}
-            className="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-violet-500"
+            className="bg-[#F9F5F0]/60 border-[#E8B4B8]/40 text-[#3D3D3D] placeholder:text-[#3D3D3D]/30 focus-visible:ring-[#D4A373]"
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="telefono" className="text-xs font-semibold text-slate-300">
+          <label htmlFor="telefono" className="text-xs font-semibold text-[#3D3D3D]/80">
             Teléfono
           </label>
           <Input
@@ -110,14 +110,14 @@ export function ContactForm() {
             onChange={handleChange}
             placeholder="5512345678"
             disabled={loading}
-            className="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-violet-500"
+            className="bg-[#F9F5F0]/60 border-[#E8B4B8]/40 text-[#3D3D3D] placeholder:text-[#3D3D3D]/30 focus-visible:ring-[#D4A373]"
           />
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <label htmlFor="evento" className="text-xs font-semibold text-slate-300">
+          <label htmlFor="evento" className="text-xs font-semibold text-[#3D3D3D]/80">
             Tipo de Evento
           </label>
           <select
@@ -126,14 +126,14 @@ export function ContactForm() {
             value={form.evento}
             onChange={handleChange}
             disabled={loading}
-            className="flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full rounded-md border border-[#E8B4B8]/40 bg-[#F9F5F0]/60 px-3 py-2 text-sm text-[#3D3D3D] focus:outline-none focus:ring-2 focus:ring-[#D4A373] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="cumpleanos">Cumpleaños</option>
             <option value="otro">Otro</option>
           </select>
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="fecha" className="text-xs font-semibold text-slate-300">
+          <label htmlFor="fecha" className="text-xs font-semibold text-[#3D3D3D]/80">
             Fecha Tentativa
           </label>
           <Input
@@ -143,13 +143,13 @@ export function ContactForm() {
             value={form.fecha}
             onChange={handleChange}
             disabled={loading}
-            className="bg-slate-950/60 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-violet-500"
+            className="bg-[#F9F5F0]/60 border-[#E8B4B8]/40 text-[#3D3D3D] placeholder:text-[#3D3D3D]/30 focus-visible:ring-[#D4A373]"
           />
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="mensaje" className="text-xs font-semibold text-slate-300">
+        <label htmlFor="mensaje" className="text-xs font-semibold text-[#3D3D3D]/80">
           Mensaje / Detalles Adicionales *
         </label>
         <textarea
@@ -161,14 +161,14 @@ export function ContactForm() {
           placeholder="Cuéntanos más sobre tu evento (ej. invitados esperados, tema, etc.)."
           required
           disabled={loading}
-          className="flex min-h-[80px] w-full rounded-md border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex min-h-[80px] w-full rounded-md border border-[#E8B4B8]/40 bg-[#F9F5F0]/60 px-3 py-2 text-sm text-[#3D3D3D] placeholder:text-[#3D3D3D]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A373] disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
 
       <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 font-semibold shadow-lg shadow-violet-500/20 py-5 rounded-xl transition-all"
+        className="w-full bg-[#C85C5C] hover:bg-[#C85C5C]/90 text-white font-semibold shadow-md py-5 rounded-xl transition-all h-11"
       >
         {loading ? "Enviando..." : "Enviar Mensaje"}
       </Button>

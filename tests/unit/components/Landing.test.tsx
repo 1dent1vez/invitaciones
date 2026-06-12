@@ -12,12 +12,12 @@ describe("LandingPage Component", () => {
     );
     
     // Verificar que el título principal de la marca existe
-    const brandTitle = screen.getAllByText(/Kilo Invitaciones/i);
+    const brandTitle = screen.getAllByText(/¡Ábreme!/i);
     expect(brandTitle.length).toBeGreaterThan(0);
 
     // Verificar presencia del CTA "Ver ejemplos"
-    const ctaButton = screen.getByRole("button", { name: /Ver ejemplos/i });
-    expect(ctaButton).toBeInTheDocument();
+    const ctaLink = screen.getByText(/Ver ejemplos/i);
+    expect(ctaLink).toBeInTheDocument();
   });
 
   it("muestra las secciones clave: características, ejemplos y precios", () => {
@@ -27,15 +27,15 @@ describe("LandingPage Component", () => {
       </ToastProvider>
     );
 
-    // Verificar características
-    expect(screen.getByText(/100% Responsivo/i)).toBeInTheDocument();
-    expect(screen.getByText(/Ubicación GPS/i)).toBeInTheDocument();
-    expect(screen.getByText(/Control de Asistencia/i)).toBeInTheDocument();
+    // Verificar los pasos de cómo funciona
+    expect(screen.getByText(/Elige tu paquete/i)).toBeInTheDocument();
+    expect(screen.getByText(/Personaliza tu diseño/i)).toBeInTheDocument();
+    expect(screen.getByText(/Comparte y celebra/i)).toBeInTheDocument();
 
-    // Verificar sección ejemplos/galería
-    expect(screen.getByText(/Nuestros Diseños Inspiradores/i)).toBeInTheDocument();
+    // Verificar sección ejemplos/galería/demo
+    expect(screen.getByText(/Así se ve tu invitación/i)).toBeInTheDocument();
 
     // Verificar sección precios
-    expect(screen.getByText(/Planes Simples y Transparentes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Elige el plan perfecto para tu celebración/i)).toBeInTheDocument();
   });
 });
