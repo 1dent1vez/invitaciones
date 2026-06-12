@@ -11,11 +11,8 @@ export function generarTextoNotificacion(
   const cleanUrl = urlPublica || "";
   const cleanQr = qrUrl || "";
 
-  let emoji = "🎉";
-  let tipoText = "invitación";
-
-  emoji = "🎉";
-  tipoText = "invitación de cumpleaños";
+  const emoji = "🎉";
+  const tipoText = "invitación de cumpleaños";
 
   let detallesText = "";
   if (fecha) {

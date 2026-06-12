@@ -3,6 +3,21 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock, MapPin, Sparkles, Volume2, VolumeX, Image as ImageIcon, Gift, Shirt, Milestone } from "lucide-react";
 import { InvitacionData } from "@/types";
+import { getOptimizedImageUrl, formatFechaMX, parseItinerario } from "./shared/utils";
+import { MapsLink } from "./shared/MapsLink";
+import { RSVPForm } from "./shared/RSVPForm";
+
+if (typeof window !== "undefined" && !window.IntersectionObserver) {
+  Object.defineProperty(window, "IntersectionObserver", {
+    writable: true,
+    configurable: true,
+    value: class IntersectionObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+  });
+}
 
 interface CumpleCompletaProps {
   data: InvitacionData;
@@ -11,24 +26,6 @@ interface CumpleCompletaProps {
 export function CumpleCompleta({ data }: CumpleCompletaProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
-
-  // Parse date
-  let dateText = data.fecha || "";
-  try {
-    if (data.fecha) {
-      const d = new Date(data.fecha);
-      if (!isNaN(d.getTime())) {
-        dateText = d.toLocaleDateString("es-ES", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
-      }
-    }
-  } catch {
-    // fallback
-  }
 
   // Audio helper
   useEffect(() => {
@@ -55,31 +52,10 @@ export function CumpleCompleta({ data }: CumpleCompletaProps) {
     setIsPlaying(!isPlaying);
   };
 
-  const parseItinerario = (text?: string) => {
-    if (!text) return [];
-    
-    // Check if it's separate lines or separated by dash
-    const lines = text.includes("\n") ? text.split("\n") : text.split(" — ");
-    
-    return lines.map(line => {
-      const parts = line.split(/—|-|:/);
-      if (parts.length >= 2) {
-        const possibleHora = parts[0].trim();
-        // Check if there are digits in the first part, meaning it is a time
-        if (/\d+/.test(possibleHora)) {
-          // Re-join remaining parts in case they have dashes
-          const rest = line.substring(line.indexOf(parts[0]) + parts[0].length).replace(/^[\s—\-\:]+/, "").trim();
-          return { hora: possibleHora, event: rest };
-        }
-      }
-      return { hora: "", event: line.trim() };
-    }).filter(i => i.event !== "");
-  };
-
   const nombreFestejado = data.nombre || data.nombres || "Festejado";
   const edadFestejado = data.edad || "";
   const fraseMensaje = data.mensaje || "¡Celebremos juntos esta fecha especial!";
-  const fotoPortada = data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop";
+  const fotoPortada = getOptimizedImageUrl(data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop");
   const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
   const direccionFiesta = data.direccion || "";
   const mapaUrl = data.mapaUrl || data.mapsLink || "";
@@ -94,6 +70,15 @@ export function CumpleCompleta({ data }: CumpleCompletaProps) {
   const regalosBanco = data.datosRegalo || data.regalosDatos || "";
   const mesaRegalosActiva = data.mesaRegalos || false;
   const mesaRegalosDetalles = data.mesaRegalosDatos || "";
+
+  // Parse and format date
+  const dateObj = data.fecha ? new Date(data.fecha) : null;
+  let dateText = "";
+  if (dateObj && !isNaN(dateObj.getTime())) {
+    dateText = formatFechaMX(dateObj);
+  } else {
+    dateText = data.fecha || "";
+  }
 
   return (
     <div className="flex-1 flex flex-col justify-between bg-[#0B0C10] text-[#C5C6C7] pb-16 relative">
@@ -183,17 +168,10 @@ export function CumpleCompleta({ data }: CumpleCompletaProps) {
               <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿Dónde?</span>
               <p className="text-sm font-semibold text-white">{lugarFiesta}</p>
               {direccionFiesta && <p className="text-xs text-slate-400">{direccionFiesta}</p>}
-              {mapaUrl && (
-                <a
-                  href={mapaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-[var(--primary)] hover:underline mt-2 font-semibold transition-all"
-                >
-                  Ver dirección en Maps
-                  <Sparkles className="h-3 w-3" />
-                </a>
-              )}
+              
+              <div className="mt-2 w-full max-w-xs">
+                <MapsLink direccion={direccionFiesta} mapaUrl={mapaUrl} />
+              </div>
             </div>
           </div>
         </div>
@@ -290,24 +268,9 @@ export function CumpleCompleta({ data }: CumpleCompletaProps) {
           </div>
         )}
 
+        {/* RSVP Form */}
+        <RSVPForm whatsapp={data.whatsapp} />
       </div>
-
-      {data.whatsapp && (
-        <div className="px-6 py-2">
-          <a
-            href={`https://wa.me/${data.whatsapp.replace(/\D/g, "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-98 text-sm"
-            data-testid="whatsapp-confirmar"
-          >
-            <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.488 1.449 5.413 1.451 5.617 0 10.193-4.579 10.197-10.198.002-2.722-1.053-5.281-2.971-7.202C17.368 1.282 14.808.225 12.01.225c-5.626 0-10.201 4.582-10.206 10.201-.002 1.905.497 3.766 1.445 5.378L2.24 21.78l6.104-1.601-.697-.425zm9.336-6.43c-.27-.136-1.602-.79-1.85-.882-.25-.091-.43-.136-.61.136-.18.27-.698.88-.857 1.06-.16.182-.32.203-.59.067-.27-.136-1.14-.42-2.172-1.341-.803-.715-1.347-1.602-1.505-1.872-.158-.272-.017-.419.118-.554.123-.122.272-.32.408-.48.136-.163.18-.28.272-.465.091-.186.046-.35-.023-.487-.067-.136-.61-1.47-.837-2.013-.22-.53-.44-.457-.61-.466-.156-.008-.336-.01-.516-.01-.18 0-.473.067-.72.337-.247.27-.945.926-.945 2.261 0 1.335.972 2.625 1.107 2.81.136.185 1.914 2.923 4.636 4.103.648.28 1.153.447 1.548.572.651.207 1.243.177 1.71.107.52-.078 1.602-.656 1.828-1.288.225-.633.225-1.176.157-1.288-.068-.113-.248-.18-.518-.316z"/>
-            </svg>
-            Confirmar asistencia por WhatsApp
-          </a>
-        </div>
-      )}
 
       <div className="text-center pt-12 text-[10px] text-slate-700 uppercase tracking-[0.3em]">
         ¡No faltes a esta gran noche!
@@ -315,4 +278,5 @@ export function CumpleCompleta({ data }: CumpleCompletaProps) {
     </div>
   );
 }
+
 export default CumpleCompleta;

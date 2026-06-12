@@ -8,6 +8,21 @@ import {
 } from "lucide-react";
 import { InvitacionData } from "@/types";
 import { motion } from "framer-motion";
+import { getOptimizedImageUrl, formatFechaMX, parseItinerario } from "./shared/utils";
+import { MapsLink } from "./shared/MapsLink";
+import { RSVPForm } from "./shared/RSVPForm";
+
+if (typeof window !== "undefined" && !window.IntersectionObserver) {
+  Object.defineProperty(window, "IntersectionObserver", {
+    writable: true,
+    configurable: true,
+    value: class IntersectionObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+  });
+}
 
 function triggerConfetti() {
   if (typeof window === "undefined") return () => {};
@@ -163,24 +178,6 @@ export function CumplePremium({ data }: CumplePremiumProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
-  // Parse date
-  let dateText = data.fecha || "";
-  try {
-    if (data.fecha) {
-      const d = new Date(data.fecha);
-      if (!isNaN(d.getTime())) {
-        dateText = d.toLocaleDateString("es-ES", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
-      }
-    }
-  } catch {
-    // fallback
-  }
-
   // Audio helper
   useEffect(() => {
     if (data.musicaUrl) {
@@ -206,22 +203,6 @@ export function CumplePremium({ data }: CumplePremiumProps) {
     setIsPlaying(!isPlaying);
   };
 
-  const parseItinerario = (text?: string) => {
-    if (!text) return [];
-    const lines = text.includes("\n") ? text.split("\n") : text.split(" — ");
-    return lines.map(line => {
-      const parts = line.split(/—|-|:/);
-      if (parts.length >= 2) {
-        const possibleHora = parts[0].trim();
-        if (/\d+/.test(possibleHora)) {
-          const rest = line.substring(line.indexOf(parts[0]) + parts[0].length).replace(/^[\s—\-\:]+/, "").trim();
-          return { hora: possibleHora, event: rest };
-        }
-      }
-      return { hora: "", event: line.trim() };
-    }).filter(i => i.event !== "");
-  };
-
   // Trigger Confetti effect on mount if enabled
   useEffect(() => {
     if (data.confettiAnimacion !== false) {
@@ -233,7 +214,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
   const nombreFestejado = data.nombre || data.nombres || "Festejado";
   const edadFestejado = data.edad || "";
   const fraseMensaje = data.mensaje || "¡Celebremos juntos esta fecha especial!";
-  const fotoPortada = data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop";
+  const fotoPortada = getOptimizedImageUrl(data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop");
   const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
   const direccionFiesta = data.direccion || "";
   const mapaUrl = data.mapaUrl || data.mapsLink || "";
@@ -265,18 +246,22 @@ export function CumplePremium({ data }: CumplePremiumProps) {
   const videoURL = data.videoURL || "";
   const colorAcento = data.colorAcento || "Dorado";
 
+  // Parse date
+  const dateObj = data.fecha ? new Date(data.fecha) : null;
+  let dateText = "";
+  if (dateObj && !isNaN(dateObj.getTime())) {
+    dateText = formatFechaMX(dateObj);
+  } else {
+    dateText = data.fecha || "";
+  }
+
   // Parse RSVP deadline date
   let limitDateText = "";
   try {
     if (data.fechaLimiteRSVP) {
       const d = new Date(data.fechaLimiteRSVP);
       if (!isNaN(d.getTime())) {
-        limitDateText = d.toLocaleDateString("es-ES", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
+        limitDateText = formatFechaMX(d);
       }
     }
   } catch {
@@ -388,17 +373,10 @@ export function CumplePremium({ data }: CumplePremiumProps) {
               <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿Dónde?</span>
               <p className="text-sm font-semibold text-white">{lugarFiesta}</p>
               {direccionFiesta && <p className="text-xs text-slate-400">{direccionFiesta}</p>}
-              {mapaUrl && (
-                <a
-                  href={mapaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-[var(--primary)] hover:underline mt-2 font-semibold transition-all"
-                >
-                  Ver dirección en Maps
-                  <Sparkles className="h-3 w-3" />
-                </a>
-              )}
+              
+              <div className="mt-2 w-full max-w-xs">
+                <MapsLink direccion={direccionFiesta} mapaUrl={mapaUrl} />
+              </div>
             </div>
           </div>
 
@@ -603,6 +581,8 @@ export function CumplePremium({ data }: CumplePremiumProps) {
           </div>
         )}
 
+        {/* RSVP Form */}
+        <RSVPForm whatsapp={data.whatsapp} />
       </div>
 
       {/* Mensaje de Agradecimiento */}
@@ -620,4 +600,5 @@ export function CumplePremium({ data }: CumplePremiumProps) {
     </div>
   );
 }
+
 export default CumplePremium;
