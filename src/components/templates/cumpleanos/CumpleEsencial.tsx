@@ -1,8 +1,21 @@
 "use client";
 
-import React from "react";
-import { Calendar, Clock, MapPin, Sparkles } from "lucide-react";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Calendar, Clock, MapPin, Shirt, Check, ChevronDown } from "lucide-react";
 import { InvitacionData } from "@/types";
+
+if (typeof window !== "undefined" && !window.IntersectionObserver) {
+  Object.defineProperty(window, "IntersectionObserver", {
+    writable: true,
+    configurable: true,
+    value: class IntersectionObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+  });
+}
 
 const getOptimizedImageUrl = (url: string): string => {
   if (!url) return "";
@@ -13,206 +26,415 @@ const getOptimizedImageUrl = (url: string): string => {
 };
 
 interface CumpleEsencialProps {
-  data: InvitacionData;
+  data: InvitacionData & {
+    coordenadas?: { lat: number; lng: number };
+  };
+  fechaEvento?: Date;
+  direccion?: string;
 }
 
-export function CumpleEsencial({ data }: CumpleEsencialProps) {
-  // Parse date
-  let dateText = data.fecha || "";
-  try {
-    if (data.fecha) {
-      const d = new Date(data.fecha);
-      if (!isNaN(d.getTime())) {
-        dateText = d.toLocaleDateString("es-ES", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
-      }
-    }
-  } catch {
-    // fallback
-  }
+function getFraseEdad(edad: number): string {
+  if (edad <= 12) return `¡Está cumpliendo ${edad} añitos! 🎈`;
+  if (edad <= 17) return `¡Ya son ${edad} años! 🎉`;
+  if (edad <= 29) return `¡Cumple ${edad} años! 🥳`;
+  if (edad <= 49) return `¡${edad} años de grandeza! 🎂`;
+  return `¡${edad} años de vida! 🎊`;
+}
 
-  const getFraseDefault = (edad?: number | string | null): string => {
-    if (edad === undefined || edad === null || edad === "") {
-      return "¡Celebremos juntos esta fecha especial!";
-    }
-    const age = Number(edad);
-    if (isNaN(age) || age <= 0) {
-      return "¡Celebremos juntos esta fecha especial!";
-    }
-    if (age >= 1 && age <= 5) return `¡Estoy cumpliendo ${age} añitos!`;
-    if (age >= 6 && age <= 17) return `¡Celebremos mis ${age} años!`;
-    if (age >= 18 && age <= 29) return "¡Un año más de vida, un año más de aventuras!";
-    if (age >= 30 && age <= 49) return `¡${age} años y contando!`;
-    return `¡${age} años de historias por celebrar!`;
-  };
+function formatFechaMX(fecha: Date): string {
+  return new Intl.DateTimeFormat("es-MX", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(fecha);
+}
+
+function MapsLink({ direccion, coordenadas }: { direccion?: string; coordenadas?: { lat: number; lng: number } }) {
+  if (coordenadas) {
+    return (
+      <iframe
+        src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1000!2d${coordenadas.lng}!3d${coordenadas.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2smx!4v1`}
+        className="w-full h-64 rounded-xl border-0"
+        loading="lazy"
+      />
+    );
+  }
+  const query = encodeURIComponent(direccion || "");
+  return (
+    <a
+      href={`https://www.google.com/maps/search/?api=1&query=${query}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center justify-center gap-2 text-[var(--primary)] hover:underline p-6 text-sm font-semibold w-full bg-white transition-all"
+    >
+      <MapPin className="w-5 h-5 animate-bounce" />
+      Ver en Google Maps
+    </a>
+  );
+}
+
+// Animación de entrada para secciones
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-50px" },
+  transition: { duration: 0.6, ease: "easeOut" }
+};
+
+export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialProps) {
+  const [nombre, setNombre] = useState("");
+  const [pax, setPax] = useState(1);
+  const [mensaje, setMensaje] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const nombreFestejado = data.nombre || data.nombres || "Festejado";
   const edadFestejado = data.edad || "";
-  const fraseMensaje = data.mensaje || getFraseDefault(data.edad);
+  const fraseEdad = data.edad ? getFraseEdad(Number(data.edad)) : "";
   const fotoPortada = getOptimizedImageUrl(data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop");
+  
   const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
-  const direccionFiesta = data.direccion || "";
-  const mapaUrl = data.mapsLink || data.mapaUrl || (direccionFiesta ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionFiesta)}` : "");
+  const direccionFiesta = direccion || data.direccion || "";
   const horaFiesta = data.hora || "";
 
+  // Parse and format date
+  const dateObj = fechaEvento || (data.fecha ? new Date(data.fecha) : null);
+  let dateText = "";
+  if (dateObj && !isNaN(dateObj.getTime())) {
+    dateText = formatFechaMX(dateObj);
+  } else {
+    dateText = data.fecha || "";
+  }
+
+  const primaryColor = data.colorPrimario || "#F97316";
+  const themeStyles = {
+    "--primary": primaryColor,
+  } as React.CSSProperties;
+
   return (
-    <div className="flex-1 flex flex-col justify-between bg-[#0B0C10] text-[#C5C6C7] pb-16 relative md:max-w-2xl md:mx-auto md:shadow-2xl">
-      {/* Decorative Confetti Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-12 left-10 h-3.5 w-3.5 rounded-full bg-amber-400 animate-ping" />
-        <div className="absolute top-36 right-16 h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-        <div className="absolute top-2/3 left-16 h-3 w-3 rounded-full bg-[var(--primary)] animate-bounce" />
-        <div className="absolute top-1/2 right-12 h-2.5 w-2.5 rounded-full bg-[var(--secondary)]" />
-      </div>
-
-      <div className="absolute inset-4 border border-[var(--primary)]/10 pointer-events-none rounded-2xl" />
-
+    <div
+      style={themeStyles}
+      className="flex-1 flex flex-col justify-between bg-[#FEF7F0] text-gray-800 pb-16 relative md:max-w-2xl md:mx-auto md:shadow-2xl min-h-screen font-sans"
+    >
       {/* Hero Portada */}
-      <div className="relative h-[60vh] min-h-[380px] w-full overflow-hidden flex items-end animate-fade-in md:h-[50vh] md:rounded-t-2xl">
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/40 to-transparent z-10" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={fotoPortada}
-          alt="Cumpleañero"
-          className="absolute inset-0 w-full h-full object-cover select-none"
-        />
+      <div className="relative h-[65vh] min-h-[450px] max-h-[80vh] w-full overflow-hidden flex items-end animate-fade-in md:h-[50vh] md:rounded-t-2xl">
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
         
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute inset-0 w-full h-full"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={fotoPortada}
+            alt="Cumpleañero"
+            className="w-full h-full object-cover select-none"
+          />
+        </motion.div>
 
-
-        <div className="w-full p-8 z-10 space-y-2 text-center flex flex-col items-center">
-          <div className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20 mb-1">
-            <Sparkles className="h-4.5 w-4.5" />
-          </div>
-          <p className="text-2xs uppercase tracking-[0.3em] text-[var(--primary)] font-bold">¡Estás Invitado!</p>
-          <h1 className="text-3xl font-extrabold text-white uppercase tracking-tight font-sans">
-            ¡{edadFestejado} años!
-          </h1>
-          <h2 className="text-[clamp(1.5rem,5vw,3rem)] font-bold text-white font-sans tracking-tight">
-            {nombreFestejado}
-          </h2>
-          {fraseMensaje && (
-            <p className="text-xs italic text-slate-300 max-w-xs mx-auto mt-2 opacity-90">
-              {fraseMensaje}
-            </p>
-          )}
+        <div className="w-full p-8 z-10 space-y-4 text-center flex flex-col items-center">
           {data.tipoCelebracion && data.tipoCelebracion !== "general" && (
-            <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-violet-600/30 px-3 py-1 text-xs font-semibold ring-1 ring-violet-500/50 text-violet-300" data-testid="tipo-celebracion-badge">
-              {(data.tipoCelebracion.toLowerCase() === "infantil") && "🎈 Infantil"}
-              {(data.tipoCelebracion.toLowerCase() === "juvenil") && "🎸 Juvenil"}
+            <div
+              className="inline-flex items-center gap-1 rounded-full bg-violet-600/30 px-3 py-1 text-xs font-semibold ring-1 ring-violet-500/50 text-violet-300"
+              data-testid="tipo-celebracion-badge"
+            >
+              {data.tipoCelebracion.toLowerCase() === "infantil" && "🎈 Infantil"}
               {(data.tipoCelebracion.toLowerCase() === "adultos" || data.tipoCelebracion.toLowerCase() === "adulto") && "🍷 Adultos"}
-              {(data.tipoCelebracion.toLowerCase() === "sorpresa") && "🎁 Sorpresa"}
+              {data.tipoCelebracion.toLowerCase() === "sorpresa" && "🎁 Sorpresa"}
+              {data.tipoCelebracion.toLowerCase() === "juvenil" && "🎸 Juvenil"}
               {!["infantil", "juvenil", "adultos", "adulto", "sorpresa"].includes(data.tipoCelebracion.toLowerCase()) && `Celeb: ${data.tipoCelebracion}`}
             </div>
           )}
+
+          <p className="text-xs uppercase tracking-[0.3em] text-[var(--primary)] font-bold drop-shadow-md">
+            ¡Estás Invitado!
+          </p>
+
+          <h2 className="text-[clamp(2rem,8vw,4rem)] font-bold text-white text-center drop-shadow-lg leading-tight tracking-tight">
+            {nombreFestejado}
+          </h2>
+
+          {edadFestejado && (
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
+                {edadFestejado} Años
+              </span>
+              {fraseEdad && (
+                <p className="text-sm font-semibold text-slate-200 drop-shadow-md">
+                  {fraseEdad}
+                </p>
+              )}
+            </div>
+          )}
+
+          {dateText && (
+            <p className="text-xs text-slate-200 font-medium drop-shadow-md uppercase tracking-wider">
+              {dateText}
+            </p>
+          )}
+
+          {/* Scroll indicator sutil */}
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="pt-2"
+          >
+            <ChevronDown className="w-6 h-6 text-white/80" />
+          </motion.div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="px-6 space-y-8 mt-4 relative md:px-10 md:py-12">
-        
+      {/* Main Content Details */}
+      <div className="px-6 space-y-8 mt-6 relative md:px-10 md:py-12">
         {/* Frase Festejo */}
         {data.mensaje && (
-          <div className="text-center py-2">
-            <p className="text-sm italic font-light text-slate-400 max-w-xs mx-auto leading-relaxed">
+          <motion.div
+            initial={fadeInUp.initial}
+            whileInView={fadeInUp.whileInView}
+            viewport={fadeInUp.viewport}
+            transition={fadeInUp.transition}
+            className="text-center py-2"
+          >
+            <p className="text-base italic font-light text-gray-600 max-w-xs mx-auto leading-relaxed">
               &ldquo;{data.mensaje}&rdquo;
             </p>
-          </div>
+          </motion.div>
         )}
 
-        {/* Date and Location Card */}
-        <div className="bg-slate-900/60 border border-[var(--primary)]/10 rounded-2xl p-5 space-y-5 md:space-y-0 md:grid md:grid-cols-3 md:gap-6 shadow-xl backdrop-blur-md">
-          {/* Date */}
+        {/* Detalles Card */}
+        <motion.div
+          initial={fadeInUp.initial}
+          whileInView={fadeInUp.whileInView}
+          viewport={fadeInUp.viewport}
+          transition={fadeInUp.transition}
+          className="bg-white border border-gray-100 rounded-2xl p-6 shadow-xl space-y-6 md:space-y-0 md:grid md:grid-cols-3 md:gap-6"
+        >
+          {/* Fecha */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-[var(--primary)]/15">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] shrink-0">
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿Cuándo?</span>
-              <p className="text-sm font-semibold text-white capitalize">{dateText}</p>
+              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿Cuándo?</span>
+              <p className="text-sm font-semibold text-gray-800 capitalize">{dateText}</p>
             </div>
           </div>
 
-          {/* Time */}
+          {/* Hora */}
           {horaFiesta && (
             <div className="flex gap-4 items-start">
-              <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-[var(--primary)]/15">
+              <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] shrink-0">
                 <Clock className="h-5 w-5" />
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿A qué hora?</span>
-                <p className="text-sm font-semibold text-white">A las {horaFiesta} hrs</p>
+                <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿A qué hora?</span>
+                <p className="text-sm font-semibold text-gray-800">A las {horaFiesta} hrs</p>
               </div>
             </div>
           )}
 
-          {/* Location */}
+          {/* Ubicación */}
           <div className="flex gap-4 items-start">
-            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] shrink-0 border border-[var(--primary)]/15">
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] shrink-0">
               <MapPin className="h-5 w-5" />
             </div>
-            <div className="space-y-1">
-              <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿Dónde?</span>
-              <p className="text-sm font-semibold text-white">{lugarFiesta}</p>
-              {direccionFiesta && <p className="text-xs text-slate-400">{direccionFiesta}</p>}
-              {mapaUrl && (
-                <a
-                  href={mapaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-[var(--primary)] hover:underline mt-2 font-semibold transition-all"
-                >
-                  Ver dirección en Maps
-                  <Sparkles className="h-3 w-3" />
-                </a>
-              )}
+            <div className="space-y-1 w-full">
+              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿Dónde?</span>
+              <p className="text-sm font-semibold text-gray-800">{lugarFiesta}</p>
+              {direccionFiesta && <p className="text-xs text-gray-500 leading-normal">{direccionFiesta}</p>}
             </div>
           </div>
-        </div>
+        </motion.div>
 
+        {/* Dress code (si aplica en datos) */}
+        {data.dressCode && (
+          <motion.div
+            initial={fadeInUp.initial}
+            whileInView={fadeInUp.whileInView}
+            viewport={fadeInUp.viewport}
+            transition={fadeInUp.transition}
+            className="bg-white border border-gray-100 rounded-2xl p-5 shadow-md text-center flex flex-col items-center max-w-sm mx-auto"
+          >
+            <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] mb-2">
+              <Shirt className="h-5 w-5" />
+            </div>
+            <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">Código de Vestimenta</span>
+            <p className="text-sm font-bold text-gray-800 uppercase mt-0.5">{data.dressCode}</p>
+            {data.dressCodeDesc && <p className="text-xs text-gray-500 mt-1 max-w-xs">{data.dressCodeDesc}</p>}
+          </motion.div>
+        )}
 
+        {/* Maps Embed o Fallback */}
+        <motion.div
+          initial={fadeInUp.initial}
+          whileInView={fadeInUp.whileInView}
+          viewport={fadeInUp.viewport}
+          transition={fadeInUp.transition}
+          className="overflow-hidden rounded-2xl border border-gray-100 shadow-md bg-white p-2"
+        >
+          <MapsLink direccion={direccionFiesta} coordenadas={data.coordenadas} />
+        </motion.div>
 
+        {/* RSVP Section */}
+        <motion.div
+          initial={fadeInUp.initial}
+          whileInView={fadeInUp.whileInView}
+          viewport={fadeInUp.viewport}
+          transition={fadeInUp.transition}
+          className="bg-white border-2 border-[var(--primary)]/30 rounded-2xl p-6 shadow-xl space-y-4 max-w-md mx-auto w-full"
+        >
+          <div className="text-center space-y-1">
+            <h3 className="text-sm uppercase tracking-widest text-[var(--primary)] font-bold">
+              Confirmación de Asistencia
+            </h3>
+            <p className="text-xs text-gray-500">
+              Acompáñanos a celebrar este día tan especial
+            </p>
+          </div>
+
+          {status === "success" ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center py-6 text-center space-y-3"
+            >
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="h-14 w-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-inner"
+              >
+                <Check className="h-8 w-8 stroke-[3]" />
+              </motion.div>
+              <h4 className="text-base font-bold text-gray-800">¡Confirmación Registrada!</h4>
+              <p className="text-xs text-gray-600 font-medium px-4">
+                ¡Gracias! Tu confirmación ha sido registrada 🎉
+              </p>
+            </motion.div>
+          ) : (
+            <div className="space-y-4">
+              {status === "error" && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-semibold">
+                  El nombre debe tener al menos 3 caracteres para confirmar.
+                </div>
+              )}
+
+              <div className="space-y-3">
+                {/* Nombre */}
+                <div className="space-y-1">
+                  <label htmlFor="rsvp-nombre" className="text-2xs font-bold uppercase tracking-wider text-gray-500">
+                    Tu Nombre *
+                  </label>
+                  <input
+                    id="rsvp-nombre"
+                    type="text"
+                    placeholder="Tu nombre"
+                    value={nombre}
+                    onChange={(e) => {
+                      setNombre(e.target.value);
+                      if (status === "error" && e.target.value.trim().length >= 3) {
+                        setStatus("idle");
+                      }
+                    }}
+                    className={`w-full h-11 px-4 rounded-xl border bg-gray-50/50 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-all ${
+                      status === "error" && nombre.trim().length < 3
+                        ? "border-red-400 focus:border-red-400 focus:ring-red-100"
+                        : "border-gray-200 focus:border-[var(--primary)]"
+                    }`}
+                  />
+                </div>
+
+                {/* Número de personas */}
+                <div className="space-y-1">
+                  <label htmlFor="rsvp-pax" className="text-2xs font-bold uppercase tracking-wider text-gray-500">
+                    Número de Personas *
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="rsvp-pax"
+                      value={pax}
+                      onChange={(e) => setPax(Number(e.target.value))}
+                      className="w-full h-11 px-4 pr-10 rounded-xl border border-gray-200 bg-gray-50/50 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] transition-all appearance-none cursor-pointer"
+                    >
+                      {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
+                        <option key={val} value={val}>
+                          {val} {val === 1 ? "persona" : "personas"}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Mensaje opcional */}
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center">
+                    <label htmlFor="rsvp-mensaje" className="text-2xs font-bold uppercase tracking-wider text-gray-500">
+                      Mensaje Opcional
+                    </label>
+                    <span className="text-2xs text-gray-400 font-medium">
+                      {mensaje.length}/200
+                    </span>
+                  </div>
+                  <textarea
+                    id="rsvp-mensaje"
+                    placeholder="Deja un mensaje especial..."
+                    value={mensaje}
+                    onChange={(e) => setMensaje(e.target.value.slice(0, 200))}
+                    rows={3}
+                    className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50/50 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] transition-all resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Botón de Confirmación */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                className="pt-2"
+              >
+                <a
+                  href={`https://wa.me/${data.whatsapp?.replace(/\D/g, "") || ""}`}
+                  onClick={(e) => {
+                    if (nombre.trim().length < 3) {
+                      e.preventDefault();
+                      setStatus("error");
+                      return;
+                    }
+                    
+                    e.preventDefault();
+                    setStatus("loading");
+                    
+                    setTimeout(() => {
+                      setStatus("success");
+                      
+                      const whatsappClean = data.whatsapp?.replace(/\D/g, "") || "";
+                      const texto = `¡Hola! Confirmo mi asistencia a tu cumpleaños.\n*Nombre:* ${nombre.trim()}\n*Personas:* ${pax}\n*Mensaje:* ${mensaje.trim() || "Sin mensaje"}`;
+                      const url = `https://wa.me/${whatsappClean}?text=${encodeURIComponent(texto)}`;
+                      window.open(url, "_blank");
+                    }, 800);
+                  }}
+                  data-testid="whatsapp-confirmar"
+                  className="h-11 w-full bg-[var(--primary)] text-white font-bold rounded-full flex items-center justify-center gap-2 hover:opacity-90 shadow-lg shadow-[var(--primary)]/20 transition-all cursor-pointer text-sm"
+                >
+                  {status === "loading" ? (
+                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    "Confirmar asistencia"
+                  )}
+                </a>
+              </motion.div>
+            </div>
+          )}
+        </motion.div>
       </div>
 
-      {data.whatsapp && (
-        <div className="px-6 py-2">
-          <a
-            href={`https://wa.me/${data.whatsapp.replace(/\D/g, "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold h-11 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition-all active:scale-98 text-sm"
-            data-testid="whatsapp-confirmar"
-          >
-            <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.488 1.449 5.413 1.451 5.617 0 10.193-4.579 10.197-10.198.002-2.722-1.053-5.281-2.971-7.202C17.368 1.282 14.808.225 12.01.225c-5.626 0-10.201 4.582-10.206 10.201-.002 1.905.497 3.766 1.445 5.378L2.24 21.78l6.104-1.601-.697-.425zm9.336-6.43c-.27-.136-1.602-.79-1.85-.882-.25-.091-.43-.136-.61.136-.18.27-.698.88-.857 1.06-.16.182-.32.203-.59.067-.27-.136-1.14-.42-2.172-1.341-.803-.715-1.347-1.602-1.505-1.872-.158-.272-.017-.419.118-.554.123-.122.272-.32.408-.48.136-.163.18-.28.272-.465.091-.186.046-.35-.023-.487-.067-.136-.61-1.47-.837-2.013-.22-.53-.44-.457-.61-.466-.156-.008-.336-.01-.516-.01-.18 0-.473.067-.72.337-.247.27-.945.926-.945 2.261 0 1.335.972 2.625 1.107 2.81.136.185 1.914 2.923 4.636 4.103.648.28 1.153.447 1.548.572.651.207 1.243.177 1.71.107.52-.078 1.602-.656 1.828-1.288.225-.633.225-1.176.157-1.288-.068-.113-.248-.18-.518-.316z"/>
-            </svg>
-            Confirmar asistencia por WhatsApp
-          </a>
-        </div>
-      )}
-      <div className="text-center pt-8 text-[10px] text-slate-400 uppercase tracking-[0.3em]">
-        ¡No faltes a esta gran noche!
-      </div>
-
-      <footer className="mt-12 mb-4 text-center text-[10px] text-slate-500 space-y-1.5 font-sans tracking-normal">
-        <p className="opacity-80">
-          Invitación creada por TusInvitaciones.mx &copy; {new Date().getFullYear()}
-        </p>
-        <p>
-          <a
-            href="https://tusinvitaciones.mx"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-slate-400 hover:text-[var(--primary)] underline transition-colors"
-          >
-            ¿Quieres una invitación como esta?
-          </a>
-        </p>
-      </footer>
+      {/* Footer */}
+      <div className="w-full border-t border-gray-200/50 mt-16 pb-12" />
     </div>
   );
 }
+
 export default CumpleEsencial;
