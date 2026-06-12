@@ -30,6 +30,7 @@ export default async function PedidoDetallePage({ params }: PedidoDetallePagePro
       visitas: {
         select: {
           id: true,
+          fecha: true,
         },
       },
     },

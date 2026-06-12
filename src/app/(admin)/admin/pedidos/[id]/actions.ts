@@ -165,3 +165,43 @@ export async function clonarPedidoAction(
 
   redirect(`/admin/pedidos/${newId}/editar`);
 }
+
+export async function eliminarPedidoAction(
+  pedidoId: string
+): Promise<ActionResult<void>> {
+  try {
+    if (!pedidoId) return { success: false, error: "El ID del pedido es requerido" };
+
+    await prisma.$transaction(async (tx) => {
+      // Cascade delete manually since database foreign key cascades are not guaranteed
+      await tx.visita.deleteMany({ where: { pedidoId } });
+      await tx.pago.deleteMany({ where: { pedidoId } });
+      await tx.rSVP.deleteMany({ where: { pedidoId } });
+      await tx.pedido.delete({ where: { id: pedidoId } });
+    });
+
+    revalidatePath("/admin/pedidos");
+    return { success: true };
+  } catch (error) {
+    console.error("[eliminarPedidoAction]", error);
+    return { success: false, error: "Error al eliminar el pedido" };
+  }
+}
+
+export async function despublicarInvitacionAction(
+  pedidoId: string
+): Promise<ActionResult<void>> {
+  try {
+    if (!pedidoId) return { success: false, error: "El ID del pedido es requerido" };
+    await prisma.pedido.update({
+      where: { id: pedidoId },
+      data: { estadoInvitacion: "BORRADOR" },
+    });
+    revalidatePath(`/admin/pedidos/${pedidoId}`);
+    revalidatePath("/admin/pedidos");
+    return { success: true };
+  } catch (error) {
+    console.error("[despublicarInvitacionAction]", error);
+    return { success: false, error: "Error al despublicar la invitación" };
+  }
+}

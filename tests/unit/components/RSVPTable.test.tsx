@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { RSVPTable } from "@/app/(admin)/admin/pedidos/[id]/rsvp-table";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 describe("RSVPTable Component Tests", () => {
   const mockRSVPs = [
@@ -87,7 +87,7 @@ describe("RSVPTable Component Tests", () => {
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
     let exportedContent = "";
-    const mockBlob = vi.spyOn(global, "Blob").mockImplementation(function (content) {
+    const mockBlob = vi.spyOn(global, "Blob").mockImplementation(function (content: any) {
       exportedContent = content[0];
       return {} as any;
     } as any);

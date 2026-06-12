@@ -105,7 +105,7 @@ export async function updatePedidoEstadoAction(
   try {
     if (!id) return { success: false, error: "ID del pedido es requerido" };
 
-    const validStates = ["cotizado", "pagado", "en_produccion", "entregado", "completado"];
+    const validStates = ["cotizado", "pagado", "en_produccion", "entregado", "completado", "cancelado"];
     if (!validStates.includes(nuevoEstado)) {
       return { success: false, error: "Estado no válido" };
     }
