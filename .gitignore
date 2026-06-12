@@ -41,3 +41,7 @@ kilo-code-settings.json
 
 .env
 
+ecc-config/
+ecc-universal/
+.agent/
+
