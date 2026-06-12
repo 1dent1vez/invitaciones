@@ -14,6 +14,12 @@ const config: Config = {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        "rosa-regalo": "#E8B4B8",
+        "dorado-calido": "#D4A373",
+        terracota: "#C85C5C",
+        "crema-seda": "#F9F5F0",
+        "carbon-suave": "#3D3D3D",
+        "blanco-puro": "#FFFFFF",
         card: {
           DEFAULT: "var(--card)",
           foreground: "var(--card-foreground)",

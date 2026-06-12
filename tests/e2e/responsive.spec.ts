@@ -25,7 +25,7 @@ test.describe("Responsive Design Tests", () => {
     
     // Check main title of the mock invitation is visible
     await expect(page.locator("body")).toContainText("Santiago");
-    await expect(page.locator('a:has-text("Ver dirección en Maps")')).toBeVisible();
+    await expect(page.locator('a:has-text("Ver en Google Maps")')).toBeVisible();
   });
 
   test("debería cargar la demo de cumpleanos-esencial en móvil", async ({ page }) => {
@@ -34,6 +34,6 @@ test.describe("Responsive Design Tests", () => {
     
     // Check elements in mobile viewport
     await expect(page.locator("body")).toContainText("Santiago");
-    await expect(page.locator('a:has-text("Ver dirección en Maps")')).toBeVisible();
+    await expect(page.locator('a:has-text("Ver en Google Maps")')).toBeVisible();
   });
 });
