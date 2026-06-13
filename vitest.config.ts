@@ -10,8 +10,9 @@ export default defineConfig({
     setupFiles: './tests/setup.ts',
     exclude: [...configDefaults.exclude, '**/tests/e2e/**', '**/ecc-config/**', '**/scratch/**'],
     coverage: {
-      provider: 'v8',
+      provider: 'istanbul',
       reporter: ['text', 'json', 'html'],
+      include: ['src/**'],
     },
   },
   resolve: {
