@@ -1,7 +1,19 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import LandingPage from "@/app/(public)/page";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { ToastProvider } from "@/components/ui/toast";
+
+vi.mock("canvas-confetti", () => ({
+  default: vi.fn(),
+}));
+
+vi.mock("@/components/landing/HeroBox", () => ({
+  default: ({ onOpen }: { onOpen: () => void }) => (
+    <button data-testid="btn-abreme" onClick={onOpen}>
+      Ábreme
+    </button>
+  ),
+}));
 
 describe("LandingPage Component", () => {
   it("renderiza la landing page correctamente", () => {
@@ -15,8 +27,12 @@ describe("LandingPage Component", () => {
     const brandTitle = screen.getAllByText(/¡Ábreme!/i);
     expect(brandTitle.length).toBeGreaterThan(0);
 
-    // Verificar presencia del CTA "Ver ejemplos"
-    const ctaLink = screen.getByText(/Ver ejemplos/i);
+    // Hacer click en el botón de abrir
+    const openButton = screen.getByTestId("btn-abreme");
+    fireEvent.click(openButton);
+
+    // Verificar presencia del CTA "Ver Demo Completo"
+    const ctaLink = screen.getByText(/Ver Demo Completo/i);
     expect(ctaLink).toBeInTheDocument();
   });
 
@@ -27,15 +43,20 @@ describe("LandingPage Component", () => {
       </ToastProvider>
     );
 
+    // Hacer click en el botón de abrir
+    const openButton = screen.getByTestId("btn-abreme");
+    fireEvent.click(openButton);
+
     // Verificar los pasos de cómo funciona
-    expect(screen.getByText(/Elige tu paquete/i)).toBeInTheDocument();
-    expect(screen.getByText(/Personaliza tu diseño/i)).toBeInTheDocument();
-    expect(screen.getByText(/Comparte y celebra/i)).toBeInTheDocument();
+    expect(screen.getByText(/Elige tu plan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Envía tus datos/i)).toBeInTheDocument();
+    expect(screen.getByText(/Diseñamos con magia/i)).toBeInTheDocument();
+    expect(screen.getByText(/Comparte por WhatsApp/i)).toBeInTheDocument();
 
     // Verificar sección ejemplos/galería/demo
-    expect(screen.getByText(/Así se ve tu invitación/i)).toBeInTheDocument();
+    expect(screen.getByText(/Elige tu estilo favorito/i)).toBeInTheDocument();
 
     // Verificar sección precios
-    expect(screen.getByText(/Elige el plan perfecto para tu celebración/i)).toBeInTheDocument();
+    expect(screen.getByText(/Elige el plan ideal para tu fiesta/i)).toBeInTheDocument();
   });
 });

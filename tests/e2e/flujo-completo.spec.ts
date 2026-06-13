@@ -46,23 +46,33 @@ test.describe("Flujo End-to-End Completo", () => {
     const orderUrl = page.url();
 
     // 4. Editar invitación en /admin/pedidos/[id]/editar
-    await page.click('a:has-text("Editar Invitación")');
+    await page.click('a:has-text("Editar pedido")');
     await expect(page).toHaveURL(/\/admin\/pedidos\/c[a-zA-Z0-9]{24}\/editar/);
 
     // Update form details (required fields for cumpleanos-completa)
+    // tab: Información (active by default)
     await page.fill('input[name="nombre"]', 'Santiago');
     await page.fill('input[name="edad"]', '30');
     await page.fill('input[name="lugar"]', 'Salón Real');
     await page.fill('textarea[name="direccion"]', 'Av. Principal #123');
-    await page.fill('input[name="whatsapp"]', '5512345678');
     await page.selectOption('select[name="tipoCelebracion"]', 'Adultos');
+
+    // Expand the 'Otros detalles' accordion to reveal the select inputs
+    await page.click('button:has-text("Otros detalles")');
     await page.selectOption('select[name="musica"]', 'Fiesta');
     await page.selectOption('select[name="dressCode"]', 'Casual');
+
+    // tab: RSVP
+    await page.click('button:has-text("RSVP")');
+    await page.fill('input[name="whatsapp"]', '5512345678');
+
+    // tab: Fotos
+    await page.click('button:has-text("Fotos")');
     await page.fill('input[name="fotoPortada"]', 'https://images.unsplash.com/photo-1513151233558-d860c5398176');
 
-    // Verify photo limits (counter displays "0 de 3" for cumpleanos-completa)
+    // Verify photo limits (counter displays "0 de 6" for cumpleanos-completa)
     const galleryCount = page.locator('[data-testid="gallery-count"]');
-    await expect(galleryCount).toContainText('0 de 3');
+    await expect(galleryCount).toContainText('0 de 6');
 
     await page.click('button:has-text("Guardar borrador")');
     await expect(page.locator('text=Borrador guardado')).toBeVisible();
@@ -70,6 +80,9 @@ test.describe("Flujo End-to-End Completo", () => {
     // 5. Publicar invitación
     await page.click('button:has-text("Publicar")');
     await expect(page.locator('text=Invitación publicada')).toBeVisible();
+    
+    // Force reload to sync state from DB
+    await page.reload();
     
     // Wait for URL to appear
     const linkElement = page.locator('span.font-mono', { hasText: 'http' });
@@ -95,6 +108,7 @@ test.describe("Flujo End-to-End Completo", () => {
     // 8. Verificar RSVP en panel admin
     await page.goto(orderUrl);
     await expect(page.locator('table')).toContainText('Invitado E2E');
-    await expect(page.locator('table')).toContainText('5511223344');
+    await page.click('button:has-text("Ver todos")');
+    await expect(page.locator('role=dialog')).toContainText('5511223344');
   });
 });

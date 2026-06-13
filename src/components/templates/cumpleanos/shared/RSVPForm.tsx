@@ -168,10 +168,14 @@ export function RSVPForm({ whatsapp }: RSVPFormProps) {
                 setTimeout(() => {
                   setStatus("success");
                   
-                  const whatsappClean = whatsapp.replace(/\D/g, "");
-                  const texto = `¡Hola! Confirmo mi asistencia a tu cumpleaños.\n*Nombre:* ${nombre.trim()}\n*Personas:* ${pax}\n*Mensaje:* ${mensaje.trim() || "Sin mensaje"}`;
-                  const url = `https://wa.me/${whatsappClean}?text=${encodeURIComponent(texto)}`;
-                  window.open(url, "_blank");
+                  try {
+                    const whatsappClean = whatsapp.replace(/\D/g, "");
+                    const texto = `¡Hola! Confirmo mi asistencia a tu cumpleaños.\n*Nombre:* ${nombre.trim()}\n*Personas:* ${pax}\n*Mensaje:* ${mensaje.trim() || "Sin mensaje"}`;
+                    const url = `https://wa.me/${whatsappClean}?text=${encodeURIComponent(texto)}`;
+                    window.open(url, "_blank");
+                  } catch (err) {
+                    console.warn("window.open blocked or failed:", err);
+                  }
                 }, 800);
               }}
               data-testid="whatsapp-confirmar"

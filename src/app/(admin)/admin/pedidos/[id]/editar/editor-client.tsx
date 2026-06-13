@@ -755,6 +755,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
           slug: res.data?.slug || prev.slug,
           urlPublica: res.data?.urlPublica || prev.urlPublica,
           estado: "entregado",
+          estadoInvitacion: "PUBLICADA",
           datosInvitacion: saveRes.data as unknown as Prisma.JsonValue
         }));
         toast({

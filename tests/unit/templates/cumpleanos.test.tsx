@@ -30,6 +30,7 @@ const mockDataCompleta: InvitacionData = {
   mensajeFestejo: "Gracias por venir",
   itinerario: "20:00 Bienvenida\n22:00 Pastel",
   datosRegalo: "Efectivo",
+  mesaRegalos: true,
 };
 
 const mockDataPremium: InvitacionData = {
@@ -47,7 +48,7 @@ const mockDataPremium: InvitacionData = {
 };
 
 describe("Birthday Templates Rendering Tests", () => {
-  it("renderiza CumpleEsencial correctamente", () => {
+  it("renderiza CumpleEsencial correctamente (No-Regresión)", () => {
     render(<CumpleEsencial data={mockDataEsencial} />);
     expect(screen.getByText("Santiago")).toBeInTheDocument();
     expect(screen.getAllByText(/30/i).length).toBeGreaterThan(0);
@@ -56,15 +57,66 @@ describe("Birthday Templates Rendering Tests", () => {
     expect(screen.getByTestId("whatsapp-confirmar")).toHaveAttribute("href", "https://wa.me/5512345678");
   });
 
-  it("renderiza CumpleCompleta correctamente", () => {
+  it("renderiza CumpleCompleta y todas sus secciones correctamente", () => {
     render(<CumpleCompleta data={mockDataCompleta} />);
     expect(screen.getByText("Santiago")).toBeInTheDocument();
     expect(screen.getAllByText(/30/i).length).toBeGreaterThan(0);
     expect(screen.getByText("Terraza La Vista")).toBeInTheDocument();
+    
+    // Vestimenta
     expect(screen.getByText("Código de Vestimenta")).toBeInTheDocument();
     expect(screen.getByText("Casual")).toBeInTheDocument();
+    expect(screen.getByText("Vente cómodo")).toBeInTheDocument();
+    
+    // Mensaje Especial
+    expect(screen.getByText("Mensaje Especial")).toBeInTheDocument();
+    expect(screen.getByText("Gracias por venir")).toBeInTheDocument();
+
+    // Itinerario / Programa
+    expect(screen.getByText("Programa del Evento")).toBeInTheDocument();
+    expect(screen.getByText(/Bienvenida/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pastel/i)).toBeInTheDocument();
+
+    // Galería
+    expect(screen.getByText("Galería de Recuerdos")).toBeInTheDocument();
+
+    // Mesa de regalos
+    expect(screen.getByText("Mesa de Regalos")).toBeInTheDocument();
+    expect(screen.getByText("Efectivo")).toBeInTheDocument();
+    
     expect(screen.getByTestId("tipo-celebracion-badge")).toHaveTextContent("🍷 Adultos");
     expect(screen.getByTestId("whatsapp-confirmar")).toHaveAttribute("href", "https://wa.me/5512345678");
+  });
+
+  it("mapea los alias de campos correctamente en CumpleCompleta", () => {
+    const mockDataConAlias: InvitacionData = {
+      ...mockDataEsencial,
+      galeriaFotos: ["https://example.com/alias-galeria.jpg"],
+      dressCode: "Elegante",
+      dressCodeDescripcion: "Traje formal requerido",
+      mensajeFestejado: "Un mensaje con alias",
+      itinerario: "19:00 Recepción",
+      tieneMesaRegalos: true,
+      mesaRegalosDatos: "Liverpool 12345",
+    };
+    render(<CumpleCompleta data={mockDataConAlias} />);
+    
+    // Galería con alias
+    expect(screen.getByText("Galería de Recuerdos")).toBeInTheDocument();
+    const imgs = screen.getAllByRole("img");
+    const aliasImg = imgs.find(img => img.getAttribute("src") === "https://example.com/alias-galeria.jpg");
+    expect(aliasImg).toBeDefined();
+
+    // Vestimenta con alias
+    expect(screen.getByText("Elegante")).toBeInTheDocument();
+    expect(screen.getByText("Traje formal requerido")).toBeInTheDocument();
+
+    // Mensaje especial con alias
+    expect(screen.getByText("Un mensaje con alias")).toBeInTheDocument();
+
+    // Mesa de regalos con alias
+    expect(screen.getByText("Mesa de Regalos")).toBeInTheDocument();
+    expect(screen.getByText("Liverpool 12345")).toBeInTheDocument();
   });
 
   it("renderiza CumplePremium correctamente", () => {

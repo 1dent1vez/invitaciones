@@ -7,11 +7,19 @@ vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }));
 
-// Mock HTMLMediaElement functions that JSDOM does not implement
 if (typeof window !== "undefined") {
   window.HTMLMediaElement.prototype.load = () => {};
   window.HTMLMediaElement.prototype.play = async () => {};
   window.HTMLMediaElement.prototype.pause = () => {};
+  window.scrollTo = () => {};
+  window.matchMedia = window.matchMedia || (() => ({
+    matches: false,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => {},
+  }));
 }
 
 afterEach(() => {

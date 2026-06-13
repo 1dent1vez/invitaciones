@@ -13,19 +13,12 @@ export interface TimelineEvent {
   notas?: string;
 }
 
-export interface InvitacionData {
+export interface InvitacionEsencialData {
   nombres?: string;
   nombre?: string;
   edad?: number;
   fecha?: string;
   hora?: string;
-  horaCeremonia?: string;
-  horaRecepcion?: string;
-  horaMisa?: string;
-  templo?: string;
-  direccionTemplo?: string;
-  salon?: string;
-  direccionSalon?: string;
   lugar?: string;
   direccion?: string;
   ubicacion?: string;
@@ -34,22 +27,40 @@ export interface InvitacionData {
   fotoPortada?: string;
   portadaUrl?: string;
   mensaje?: string;
-  musica?: string;
-  musicaUrl?: string;
   whatsapp?: string;
   colorPrimario?: string;
   colorSecundario?: string;
+  tipoCelebracion?: string;
+}
+
+export interface InvitacionCompletaData extends InvitacionEsencialData {
   fotosGaleria?: string[];
+  galeriaFotos?: string[]; // Alias
   dressCode?: string;
   dressCodeDesc?: string;
-  mensajePadres?: string;
+  dressCodeDescripcion?: string; // Alias
   mensajeFestejo?: string;
+  mensajeFestejado?: string; // Alias
   itinerario?: string;
-  timeline?: TimelineEvent[];
   datosRegalo?: string;
-  regalosDatos?: string;
   mesaRegalos?: boolean;
+  tieneMesaRegalos?: boolean; // Alias
   mesaRegalosDatos?: string;
+}
+
+export interface InvitacionData extends InvitacionCompletaData {
+  horaCeremonia?: string;
+  horaRecepcion?: string;
+  horaMisa?: string;
+  templo?: string;
+  direccionTemplo?: string;
+  salon?: string;
+  direccionSalon?: string;
+  musica?: string;
+  musicaUrl?: string;
+  mensajePadres?: string;
+  timeline?: TimelineEvent[];
+  regalosDatos?: string;
   historiaConocieron?: string;
   historiaPropuesta?: string;
   historiaSignificado?: string;
@@ -77,7 +88,6 @@ export interface InvitacionData {
   historiaRecuerdo?: string;
   tematica?: string;
   tipoBebe?: string;
-  tipoCelebracion?: string;
   colorPrincipal?: string;
   padres?: string;
   fotos?: string[];
