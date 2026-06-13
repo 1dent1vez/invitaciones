@@ -80,8 +80,8 @@ export function RSVPTable({ rsvps, precio, datosInvitacion }: RSVPTableProps) {
       r.nombre,
       r.asiste ? 'Sí' : 'No',
       r.asiste ? r.pax : 0,
-      r.telefono || '',
-      r.mensaje || '',
+      r.telefono ?? '',
+      r.mensaje ?? '',
       new Date(r.createdAt).toLocaleString('es-MX'),
     ]);
 
@@ -276,13 +276,13 @@ export function RSVPTable({ rsvps, precio, datosInvitacion }: RSVPTableProps) {
                       {r.asiste ? r.pax : 0}
                     </td>
                     <td className="px-4 py-3.5 text-slate-400 font-mono text-xs">
-                      {r.telefono || '-'}
+                      {r.telefono ?? '-'}
                     </td>
                     <td
                       className="px-4 py-3.5 text-slate-400 max-w-[200px] truncate"
-                      title={r.mensaje || ''}
+                      title={r.mensaje ?? ''}
                     >
-                      {r.mensaje || <span className="italic text-slate-700">Sin mensaje</span>}
+                      {r.mensaje ?? <span className="italic text-slate-700">Sin mensaje</span>}
                     </td>
                     <td className="px-4 py-3.5 text-right text-slate-500 text-xs">
                       {new Intl.DateTimeFormat('es-MX', {

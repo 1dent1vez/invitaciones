@@ -22,7 +22,7 @@ export default async function PublicRSVPPage({ params }: PublicRSVPPageProps) {
   }
 
   const datos = order.datosInvitacion as unknown as InvitacionData;
-  const nombreFestejado = datos.nombre || datos.nombres || 'Festejado';
+  const nombreFestejado = datos.nombre ?? datos.nombres ?? 'Festejado';
 
   return (
     <TemplateWrapper data={datos}>

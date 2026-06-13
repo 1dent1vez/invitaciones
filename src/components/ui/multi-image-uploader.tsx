@@ -35,7 +35,7 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
         if (res.success && res.data) {
           newUrls.push(res.data);
         } else {
-          alert(res.error || 'No se pudo subir una de las imágenes.');
+          alert(res.error ?? 'No se pudo subir una de las imágenes.');
         }
       } catch {
         alert('No se pudo conectar al servidor para subir las imágenes.');

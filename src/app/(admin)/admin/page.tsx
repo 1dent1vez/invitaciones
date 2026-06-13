@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
       monto: true,
     },
   });
-  const totalIncome = Number(paymentsAggregate._sum.monto || 0);
+  const totalIncome = Number(paymentsAggregate._sum.monto ?? 0);
 
   // 3. Eventos/Pendientes de hoy (event dates falling within today)
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -336,7 +336,7 @@ export default async function AdminDashboardPage() {
                       <div>
                         <p className="font-semibold text-white">{client.nombre}</p>
                         <p className="text-xs text-slate-500">
-                          {client.email || 'Sin email'} | {client.telefono || 'Sin teléfono'}
+                          {client.email ?? 'Sin email'} | {client.telefono ?? 'Sin teléfono'}
                         </p>
                       </div>
                     </div>

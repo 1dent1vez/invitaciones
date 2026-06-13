@@ -73,7 +73,7 @@ export async function createPedidoAction(
 
     const slug = await getUniqueSlug(client.nombre, eventDate);
     const host =
-      process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+      process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000';
     const urlPublica = `${host}/i/${slug}`;
 
     const pedido = await prisma.pedido.create({
@@ -88,7 +88,7 @@ export async function createPedidoAction(
         estado: 'cotizado',
         slug,
         urlPublica,
-        datosInvitacion: defaultDatosJson as Prisma.InputJsonValue,
+        datosInvitacion: defaultDatosJson,
       },
     });
 

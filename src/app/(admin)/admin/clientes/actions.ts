@@ -40,10 +40,10 @@ export async function createClienteAction(
     const client = await prisma.cliente.create({
       data: {
         nombre: parsed.data.nombre.trim(),
-        telefono: parsed.data.telefono?.trim() || null,
+        telefono: parsed.data.telefono?.trim() ?? null,
         fuente: parsed.data.fuente,
-        email: parsed.data.email?.trim() || null,
-        notas: parsed.data.notas?.trim() || null,
+        email: parsed.data.email?.trim() ?? null,
+        notas: parsed.data.notas?.trim() ?? null,
       },
     });
 
@@ -71,10 +71,10 @@ export async function updateClienteAction(
       where: { id },
       data: {
         nombre: parsed.data.nombre.trim(),
-        telefono: parsed.data.telefono?.trim() || null,
+        telefono: parsed.data.telefono?.trim() ?? null,
         fuente: parsed.data.fuente,
-        email: parsed.data.email?.trim() || null,
-        notas: parsed.data.notas?.trim() || null,
+        email: parsed.data.email?.trim() ?? null,
+        notas: parsed.data.notas?.trim() ?? null,
       },
     });
 

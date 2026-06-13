@@ -71,7 +71,7 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
         setPedidos((prev) =>
           prev.map((p) => (p.id === pedidoId ? { ...p, estado: currentState } : p))
         );
-        alert(res.error || 'No se pudo actualizar el estado del pedido');
+        alert(res.error ?? 'No se pudo actualizar el estado del pedido');
       }
     });
   };
@@ -91,7 +91,7 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
     const nombreFestejado = (datos.nombre as string) || (datos.nombres as string) || '';
     return (
       p.cliente.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      (p.slug || '').toLowerCase().includes(search.toLowerCase()) ||
+      (p.slug ?? '').toLowerCase().includes(search.toLowerCase()) ||
       nombreFestejado.toLowerCase().includes(search.toLowerCase())
     );
   });

@@ -18,7 +18,7 @@ export function MapsLink({ direccion, coordenadas, mapaUrl }: MapsLinkProps) {
     );
   }
   const href =
-    mapaUrl ||
+    mapaUrl ??
     (direccion
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`
       : '');

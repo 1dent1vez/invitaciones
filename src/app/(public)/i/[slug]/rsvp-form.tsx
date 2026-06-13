@@ -76,8 +76,8 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
         nombre: data.nombre,
         asiste: data.asiste,
         pax: data.asiste ? data.pax : 1,
-        telefono: data.telefono || null,
-        mensaje: data.mensaje || null,
+        telefono: data.telefono ?? null,
+        mensaje: data.mensaje ?? null,
       });
 
       if (res.success) {
@@ -88,7 +88,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
           setShowConfetti(false);
         }, 3000);
       } else {
-        setSubmitError(res.error || 'Ocurrió un error al registrar el RSVP');
+        setSubmitError(res.error ?? 'Ocurrió un error al registrar el RSVP');
       }
     });
   };

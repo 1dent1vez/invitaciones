@@ -42,9 +42,9 @@ export async function createLeadAction(input: LeadInput): Promise<ActionResult> 
     await prisma.lead.create({
       data: {
         nombre,
-        evento: evento || null,
+        evento: evento ? evento : null,
         fecha: parsedFecha,
-        telefono: telefono || null,
+        telefono: telefono ? telefono : null,
         mensaje,
       },
     });

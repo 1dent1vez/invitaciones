@@ -41,7 +41,7 @@ export function LeadsClient({ initialLeads }: LeadsClientProps) {
       } else {
         toast({
           title: 'Error al eliminar',
-          description: res.error || 'Ocurrió un error al intentar eliminar el lead.',
+          description: res.error ?? 'Ocurrió un error al intentar eliminar el lead.',
           type: 'error',
         });
       }
@@ -59,9 +59,9 @@ export function LeadsClient({ initialLeads }: LeadsClientProps) {
     const s = search.toLowerCase();
     return (
       lead.nombre.toLowerCase().includes(s) ||
-      (lead.mensaje && lead.mensaje.toLowerCase().includes(s)) ||
-      (lead.telefono && lead.telefono.includes(s)) ||
-      (lead.evento && lead.evento.toLowerCase().includes(s))
+      (lead.mensaje?.toLowerCase().includes(s) ?? false) ||
+      (lead.telefono?.includes(s) ?? false) ||
+      (lead.evento?.toLowerCase().includes(s) ?? false)
     );
   });
 

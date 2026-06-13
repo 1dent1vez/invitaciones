@@ -18,7 +18,7 @@ export async function sha256(message: string): Promise<string> {
 }
 
 export async function getSessionHash(): Promise<string> {
-  const password = process.env.ADMIN_PASSWORD || 'admin_super_secret';
+  const password = process.env.ADMIN_PASSWORD ?? 'admin_super_secret';
   const salt = getWeeklySalt();
   return sha256(password + salt);
 }

@@ -59,8 +59,8 @@ export async function createRSVPAction(slug: string, input: RSVPInput): Promise<
         nombre,
         asiste,
         pax: finalPax,
-        telefono: telefono || null,
-        mensaje: mensaje || null,
+        telefono: telefono ?? null,
+        mensaje: mensaje ?? null,
       },
     });
 
@@ -95,8 +95,8 @@ export async function registrarVisitaAction(
     await prisma.visita.create({
       data: {
         pedidoId: pedido.id,
-        ip: ip || null,
-        userAgent: userAgent || null,
+        ip: ip ?? null,
+        userAgent: userAgent ?? null,
       },
     });
 

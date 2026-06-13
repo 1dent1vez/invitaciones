@@ -11,7 +11,7 @@ interface ActionResult<T> {
 
 export async function loginAction(password: string): Promise<ActionResult<void>> {
   try {
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin_super_secret';
+    const adminPassword = process.env.ADMIN_PASSWORD ?? 'admin_super_secret';
 
     if (password !== adminPassword) {
       return { success: false, error: 'Contraseña incorrecta' };

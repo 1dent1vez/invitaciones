@@ -86,40 +86,40 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
     setIsPlaying(!isPlaying);
   };
 
-  const nombreFestejado = data.nombre || data.nombres || 'Festejado';
-  const edadFestejado = data.edad || '';
+  const nombreFestejado = data.nombre ?? data.nombres ?? 'Festejado';
+  const edadFestejado = data.edad ?? '';
   const fraseEdad = data.edad ? getFraseEdad(Number(data.edad)) : '';
   const fotoPortada = getOptimizedImageUrl(
-    data.fotoPortada ||
-      data.portadaUrl ||
+    data.fotoPortada ??
+      data.portadaUrl ??
       'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop'
   );
 
-  const lugarFiesta = data.lugar || data.ubicacion || 'Lugar del Evento';
-  const direccionFiesta = direccion || data.direccion || '';
-  const horaFiesta = data.hora || '';
+  const lugarFiesta = data.lugar ?? data.ubicacion ?? 'Lugar del Evento';
+  const direccionFiesta = direccion ?? data.direccion ?? '';
+  const horaFiesta = data.hora ?? '';
 
   // Parse and format date
-  const dateObj = fechaEvento || (data.fecha ? new Date(data.fecha) : null);
+  const dateObj = fechaEvento ?? (data.fecha ? new Date(data.fecha) : null);
   let dateText = '';
   if (dateObj && !isNaN(dateObj.getTime())) {
     dateText = formatFechaMX(dateObj);
   } else {
-    dateText = data.fecha || '';
+    dateText = data.fecha ?? '';
   }
 
   // Completa specific features & aliases
-  const galleryPhotos = data.fotosGaleria || data.galeriaFotos || data.fotos || [];
-  const codeVestimenta = data.dressCode || '';
-  const descVestimenta = data.dressCodeDesc || data.dressCodeDescripcion || '';
-  const mensajeFestejo = data.mensajeFestejo || data.mensajeFestejado || '';
+  const galleryPhotos = data.fotosGaleria ?? data.galeriaFotos ?? data.fotos ?? [];
+  const codeVestimenta = data.dressCode ?? '';
+  const descVestimenta = data.dressCodeDesc ?? data.dressCodeDescripcion ?? '';
+  const mensajeFestejo = data.mensajeFestejo ?? data.mensajeFestejado ?? '';
   const itinerarioEventos = parseItinerario(data.itinerario);
-  const regalosBanco = data.datosRegalo || data.regalosDatos || '';
-  const mesaRegalosActiva = data.mesaRegalos || data.tieneMesaRegalos || false;
-  const mesaRegalosDetalles = data.mesaRegalosDatos || '';
+  const regalosBanco = data.datosRegalo ?? data.regalosDatos ?? '';
+  const mesaRegalosActiva = data.mesaRegalos ?? data.tieneMesaRegalos ?? false;
+  const mesaRegalosDetalles = data.mesaRegalosDatos ?? '';
 
-  const primaryColor = data.colorPrimario || '#F97316';
-  const secondaryColor = data.colorSecundario || '#1F2937';
+  const primaryColor = data.colorPrimario ?? '#F97316';
+  const secondaryColor = data.colorSecundario ?? '#1F2937';
   const themeStyles = {
     '--primary': primaryColor,
     '--secondary': secondaryColor,

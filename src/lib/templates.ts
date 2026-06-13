@@ -33,7 +33,7 @@ export function getTemplateConfig(type: TemplateType): TemplateConfig {
 
   if (!pkgConfig) {
     console.error(`No se encontró config para ${tipoEvento} - ${paquete}`);
-    const fallbackConfig = CONFIGURACION_EVENTOS['cumpleanos']['esencial'];
+    const fallbackConfig = CONFIGURACION_EVENTOS.cumpleanos.esencial;
     return {
       id: type,
       name: `${formatName()} ${formatPaquete(paquete)}`,

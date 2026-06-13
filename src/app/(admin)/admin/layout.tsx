@@ -160,7 +160,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <h1 className="text-sm font-semibold text-slate-400 hidden sm:block">
               {pathname === '/admin'
                 ? 'Dashboard'
-                : sidebarItems.find((i) => pathname.startsWith(i.href))?.name || 'Administración'}
+                : sidebarItems.find((i) => pathname.startsWith(i.href))?.name ?? 'Administración'}
             </h1>
           </div>
 

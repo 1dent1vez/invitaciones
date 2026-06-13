@@ -38,7 +38,7 @@ const quickClientSchema = z.object({
     .email('El correo no es válido')
     .optional()
     .or(z.literal(''))
-    .transform((val) => val || ''),
+    .transform((val) => val ?? ''),
   fuente: z.enum(['tienda', 'instagram', 'whatsapp', 'referido']),
 });
 
@@ -70,7 +70,7 @@ const eventSchema = z
     notas: z
       .string()
       .optional()
-      .transform((val) => val || ''),
+      .transform((val) => val ?? ''),
   })
   .refine(
     (data) => {
@@ -171,7 +171,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
         setStep(2);
         resetClientForm();
       } else {
-        setError(res.error || 'Error al crear cliente rápido');
+        setError(res.error ?? 'Error al crear cliente rápido');
       }
     } catch {
       setError('Error inesperado al registrar cliente');
@@ -199,7 +199,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
         router.push(`/admin/pedidos/${res.data.id}`);
         router.refresh();
       } else {
-        setError(res.error || 'Error al guardar el pedido');
+        setError(res.error ?? 'Error al guardar el pedido');
       }
     } catch (err) {
       console.error('[handleSavePedido] Client catch error:', err);
@@ -438,7 +438,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                         <div>
                           <p className="font-semibold text-white">{c.nombre}</p>
                           <p className="text-xs text-slate-500">
-                            {c.email || 'Sin email'} | {c.telefono || 'Sin teléfono'}
+                            {c.email ?? 'Sin email'} | {c.telefono ?? 'Sin teléfono'}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">

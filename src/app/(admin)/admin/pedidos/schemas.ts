@@ -31,5 +31,5 @@ export const pedidoSchema = z.object({
   notas: z
     .string()
     .optional()
-    .transform((val) => val || ''),
+    .transform((val) => val ?? ''),
 });

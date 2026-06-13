@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
         nombre,
         asiste,
         pax: finalPax,
-        telefono: telefono || null,
-        mensaje: mensaje || null,
+        telefono: telefono ?? null,
+        mensaje: mensaje ?? null,
       },
     });
 

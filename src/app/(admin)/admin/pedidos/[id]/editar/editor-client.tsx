@@ -185,7 +185,7 @@ const getPublishFormSchema = (templateType: TemplateType) => {
   return z.object(base);
 };
 
-type EditorFormValues = {
+interface EditorFormValues {
   nombres?: string;
   nombre?: string;
   edad?: number | string;
@@ -245,7 +245,7 @@ type EditorFormValues = {
   historiaPadres?: string | null;
   historiaAmigos?: string | null;
   chambelanes?: string | null;
-};
+}
 
 type PedidoWithCliente = Pedido & { cliente: Cliente };
 
@@ -258,7 +258,7 @@ function cleanFormValues(data: EditorFormValues): InvitacionData {
   const clean: Record<string, unknown> = {};
   const safeData = data || {};
 
-  (Object.keys(safeData) as Array<keyof EditorFormValues>).forEach((key) => {
+  (Object.keys(safeData) as (keyof EditorFormValues)[]).forEach((key) => {
     if (key !== 'fechaPart' && key !== 'horaPart' && (key as string) !== 'fecha') {
       const val = safeData[key];
       if (val !== null && val !== undefined && val !== '') {
@@ -278,56 +278,56 @@ function cleanFormValues(data: EditorFormValues): InvitacionData {
   return {
     ...clean,
     fecha: fechaIso,
-  } as unknown as InvitacionData;
+  };
 }
 
 function getSafeTemplateData(data: Partial<InvitacionData> | null | undefined): InvitacionData {
-  const safe = data || {};
+  const safe = data ?? {};
 
   const defaultPrimary = '#f59e0b';
   const defaultSecondary = '#1f2937';
 
   return {
-    nombres: safe.nombres || '',
-    nombre: safe.nombre || '',
-    edad: safe.edad || 0,
-    fecha: safe.fecha || new Date().toISOString(),
-    ubicacion: safe.ubicacion || '',
-    lugar: safe.lugar || '',
-    direccion: safe.direccion || '',
-    mapaUrl: safe.mapaUrl || '',
-    mapsLink: safe.mapsLink || '',
-    mensaje: safe.mensaje || '',
-    colorPrimario: safe.colorPrimario || defaultPrimary,
-    colorSecundario: safe.colorSecundario || defaultSecondary,
-    colorPrincipal: safe.colorPrimario || safe.colorPrincipal || defaultPrimary,
-    portadaUrl: safe.portadaUrl || '',
-    fotoPortada: safe.fotoPortada || '',
-    fotos: safe.fotos || [],
-    fotosGaleria: safe.fotosGaleria || [],
-    dressCode: safe.dressCode || '',
-    dressCodeDesc: safe.dressCodeDesc || '',
-    mensajeFestejo: safe.mensajeFestejo || '',
-    itinerario: safe.itinerario || '',
-    datosRegalo: safe.datosRegalo || '',
-    regalosDatos: safe.regalosDatos || '',
-    musicaUrl: safe.musicaUrl || '',
-    musica: safe.musica || '',
-    whatsapp: safe.whatsapp || '',
-    mesaRegalos: safe.mesaRegalos || false,
-    mesaRegalosDatos: safe.mesaRegalosDatos || '',
-    historiaEdad: safe.historiaEdad || '',
-    historiaSeresQueridos: safe.historiaSeresQueridos || '',
-    historiaRecuerdo: safe.historiaRecuerdo || '',
-    fotosExtra: safe.fotosExtra || [],
-    buzonDeseos: safe.buzonDeseos || false,
-    pases: safe.pases || false,
-    numPases: safe.numPases || 2,
-    tematica: safe.tematica || '',
-    videoURL: safe.videoURL || '',
-    colorAcento: safe.colorAcento || '',
-    padrinos: safe.padrinos || '',
-    padres: safe.padres || '',
+    nombres: safe.nombres ?? '',
+    nombre: safe.nombre ?? '',
+    edad: safe.edad ?? 0,
+    fecha: safe.fecha ?? new Date().toISOString(),
+    ubicacion: safe.ubicacion ?? '',
+    lugar: safe.lugar ?? '',
+    direccion: safe.direccion ?? '',
+    mapaUrl: safe.mapaUrl ?? '',
+    mapsLink: safe.mapsLink ?? '',
+    mensaje: safe.mensaje ?? '',
+    colorPrimario: safe.colorPrimario ?? defaultPrimary,
+    colorSecundario: safe.colorSecundario ?? defaultSecondary,
+    colorPrincipal: safe.colorPrimario ?? safe.colorPrincipal ?? defaultPrimary,
+    portadaUrl: safe.portadaUrl ?? '',
+    fotoPortada: safe.fotoPortada ?? '',
+    fotos: safe.fotos ?? [],
+    fotosGaleria: safe.fotosGaleria ?? [],
+    dressCode: safe.dressCode ?? '',
+    dressCodeDesc: safe.dressCodeDesc ?? '',
+    mensajeFestejo: safe.mensajeFestejo ?? '',
+    itinerario: safe.itinerario ?? '',
+    datosRegalo: safe.datosRegalo ?? '',
+    regalosDatos: safe.regalosDatos ?? '',
+    musicaUrl: safe.musicaUrl ?? '',
+    musica: safe.musica ?? '',
+    whatsapp: safe.whatsapp ?? '',
+    mesaRegalos: safe.mesaRegalos ?? false,
+    mesaRegalosDatos: safe.mesaRegalosDatos ?? '',
+    historiaEdad: safe.historiaEdad ?? '',
+    historiaSeresQueridos: safe.historiaSeresQueridos ?? '',
+    historiaRecuerdo: safe.historiaRecuerdo ?? '',
+    fotosExtra: safe.fotosExtra ?? [],
+    buzonDeseos: safe.buzonDeseos ?? false,
+    pases: safe.pases ?? false,
+    numPases: safe.numPases ?? 2,
+    tematica: safe.tematica ?? '',
+    videoURL: safe.videoURL ?? '',
+    colorAcento: safe.colorAcento ?? '',
+    padrinos: safe.padrinos ?? '',
+    padres: safe.padres ?? '',
   };
 }
 
@@ -507,9 +507,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
   const { toast } = useToast();
   const [pedido, setPedido] = useState<PedidoWithCliente>(() => {
     const p = { ...initialPedido };
-    if (!p.datosInvitacion) {
-      p.datosInvitacion = {} as unknown as Prisma.JsonValue;
-    }
+    p.datosInvitacion ??= {};
     return p;
   });
   const [uploadingField, setUploadingField] = useState<string | null>(null);
@@ -535,12 +533,10 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const [isLoading, setIsLoading] = useState(() =>
-    initialIsLoading !== undefined
-      ? initialIsLoading
-      : typeof process !== 'undefined' && process.env?.NODE_ENV === 'test'
-        ? false
-        : true
+  const [isLoading, setIsLoading] = useState(
+    () =>
+      initialIsLoading ??
+      (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test' ? false : true)
   );
   const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('mobile');
 
@@ -557,7 +553,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
   // Split date and time for inputs
   const initialDateParts = useMemo(() => {
     try {
-      const d = new Date(dbDatos.fecha || pedido.fechaEvento);
+      const d = new Date(dbDatos.fecha ?? pedido.fechaEvento);
       if (!isNaN(d.getTime())) {
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -581,65 +577,65 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
   const defaultValues = useMemo<EditorFormValues>(
     () => ({
       // Campos comunes / boda / xv / babyshower / cumpleanos
-      nombres: dbDatos.nombres || '',
-      nombre: dbDatos.nombre || pedido.cliente?.nombre || '',
-      edad: dbDatos.edad || '',
+      nombres: dbDatos.nombres ?? '',
+      nombre: dbDatos.nombre ?? pedido.cliente?.nombre ?? '',
+      edad: dbDatos.edad ?? '',
       fechaPart: initialDateParts.fechaPart,
       horaPart: initialDateParts.horaPart,
-      ubicacion: dbDatos.ubicacion || '',
-      lugar: dbDatos.lugar || pedido.notas || '',
-      direccion: dbDatos.direccion || '',
-      mapaUrl: dbDatos.mapaUrl || '',
-      mapsLink: dbDatos.mapsLink || '',
-      mensaje: dbDatos.mensaje || '',
-      colorPrimario: dbDatos.colorPrimario || '#f59e0b',
-      colorSecundario: dbDatos.colorSecundario || '#1f2937',
-      colorPrincipal: dbDatos.colorPrincipal || '#f59e0b',
-      portadaUrl: dbDatos.portadaUrl || '',
-      fotoPortada: dbDatos.fotoPortada || '',
-      dressCode: dbDatos.dressCode || '',
-      dressCodeDesc: dbDatos.dressCodeDesc || '',
-      mensajeFestejo: dbDatos.mensajeFestejo || '',
-      itinerario: dbDatos.itinerario || '',
-      datosRegalo: dbDatos.datosRegalo || '',
-      regalosDatos: dbDatos.regalosDatos || '',
-      musicaUrl: dbDatos.musicaUrl || '',
-      musica: dbDatos.musica || '',
-      whatsapp: dbDatos.whatsapp || '',
-      mesaRegalos: dbDatos.mesaRegalos || false,
-      mesaRegalosDatos: dbDatos.mesaRegalosDatos || '',
-      historiaEdad: dbDatos.historiaEdad || '',
-      historiaSeresQueridos: dbDatos.historiaSeresQueridos || '',
-      historiaRecuerdo: dbDatos.historiaRecuerdo || '',
-      fotosExtra: dbDatos.fotosExtra || [],
-      fotosGaleria: dbDatos.fotosGaleria || dbDatos.fotos || [],
-      buzonDeseos: dbDatos.buzonDeseos !== undefined ? dbDatos.buzonDeseos : false,
-      pases: dbDatos.pases !== undefined ? dbDatos.pases : false,
-      numPases: dbDatos.numPases || 2,
-      tematica: dbDatos.tematica || '',
-      videoURL: dbDatos.videoURL || '',
-      colorAcento: dbDatos.colorAcento || '',
-      padrinos: dbDatos.padrinos || '',
-      padres: dbDatos.padres || '',
-      nombreBebe: dbDatos.nombreBebe || '',
-      fechaLimiteRSVP: dbDatos.fechaLimiteRSVP || '',
-      mensajeAgradecimiento: dbDatos.mensajeAgradecimiento || '',
-      confettiAnimacion: dbDatos.confettiAnimacion !== undefined ? dbDatos.confettiAnimacion : true,
-      cuentaRegresiva: dbDatos.cuentaRegresiva !== undefined ? dbDatos.cuentaRegresiva : true,
-      tipoCelebracion: dbDatos.tipoCelebracion || '',
-      tipoBebe: dbDatos.tipoBebe || '',
-      nombreMama: dbDatos.nombreMama || '',
-      nombrePapa: dbDatos.nombrePapa || '',
-      listaRegalos: dbDatos.listaRegalos || '',
-      juegos: dbDatos.juegos || '',
-      historiaEmbarazo: dbDatos.historiaEmbarazo || '',
-      historiaVivencia: dbDatos.historiaVivencia || '',
-      historiaSignificado: dbDatos.historiaSignificado || '',
-      historiaConocieron: dbDatos.historiaConocieron || '',
-      historiaPropuesta: dbDatos.historiaPropuesta || '',
-      historiaPadres: dbDatos.historiaPadres || '',
-      historiaAmigos: dbDatos.historiaAmigos || '',
-      chambelanes: dbDatos.chambelanes || '',
+      ubicacion: dbDatos.ubicacion ?? '',
+      lugar: dbDatos.lugar ?? pedido.notas ?? '',
+      direccion: dbDatos.direccion ?? '',
+      mapaUrl: dbDatos.mapaUrl ?? '',
+      mapsLink: dbDatos.mapsLink ?? '',
+      mensaje: dbDatos.mensaje ?? '',
+      colorPrimario: dbDatos.colorPrimario ?? '#f59e0b',
+      colorSecundario: dbDatos.colorSecundario ?? '#1f2937',
+      colorPrincipal: dbDatos.colorPrincipal ?? '#f59e0b',
+      portadaUrl: dbDatos.portadaUrl ?? '',
+      fotoPortada: dbDatos.fotoPortada ?? '',
+      dressCode: dbDatos.dressCode ?? '',
+      dressCodeDesc: dbDatos.dressCodeDesc ?? '',
+      mensajeFestejo: dbDatos.mensajeFestejo ?? '',
+      itinerario: dbDatos.itinerario ?? '',
+      datosRegalo: dbDatos.datosRegalo ?? '',
+      regalosDatos: dbDatos.regalosDatos ?? '',
+      musicaUrl: dbDatos.musicaUrl ?? '',
+      musica: dbDatos.musica ?? '',
+      whatsapp: dbDatos.whatsapp ?? '',
+      mesaRegalos: dbDatos.mesaRegalos ?? false,
+      mesaRegalosDatos: dbDatos.mesaRegalosDatos ?? '',
+      historiaEdad: dbDatos.historiaEdad ?? '',
+      historiaSeresQueridos: dbDatos.historiaSeresQueridos ?? '',
+      historiaRecuerdo: dbDatos.historiaRecuerdo ?? '',
+      fotosExtra: dbDatos.fotosExtra ?? [],
+      fotosGaleria: dbDatos.fotosGaleria ?? dbDatos.fotos ?? [],
+      buzonDeseos: dbDatos.buzonDeseos ?? false,
+      pases: dbDatos.pases ?? false,
+      numPases: dbDatos.numPases ?? 2,
+      tematica: dbDatos.tematica ?? '',
+      videoURL: dbDatos.videoURL ?? '',
+      colorAcento: dbDatos.colorAcento ?? '',
+      padrinos: dbDatos.padrinos ?? '',
+      padres: dbDatos.padres ?? '',
+      nombreBebe: dbDatos.nombreBebe ?? '',
+      fechaLimiteRSVP: dbDatos.fechaLimiteRSVP ?? '',
+      mensajeAgradecimiento: dbDatos.mensajeAgradecimiento ?? '',
+      confettiAnimacion: dbDatos.confettiAnimacion ?? true,
+      cuentaRegresiva: dbDatos.cuentaRegresiva ?? true,
+      tipoCelebracion: dbDatos.tipoCelebracion ?? '',
+      tipoBebe: dbDatos.tipoBebe ?? '',
+      nombreMama: dbDatos.nombreMama ?? '',
+      nombrePapa: dbDatos.nombrePapa ?? '',
+      listaRegalos: dbDatos.listaRegalos ?? '',
+      juegos: dbDatos.juegos ?? '',
+      historiaEmbarazo: dbDatos.historiaEmbarazo ?? '',
+      historiaVivencia: dbDatos.historiaVivencia ?? '',
+      historiaSignificado: dbDatos.historiaSignificado ?? '',
+      historiaConocieron: dbDatos.historiaConocieron ?? '',
+      historiaPropuesta: dbDatos.historiaPropuesta ?? '',
+      historiaPadres: dbDatos.historiaPadres ?? '',
+      historiaAmigos: dbDatos.historiaAmigos ?? '',
+      chambelanes: dbDatos.chambelanes ?? '',
     }),
     [dbDatos, pedido, initialDateParts]
   );
@@ -737,7 +733,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
           type: 'success',
         });
       } else {
-        const err = res.error || 'Error al subir la imagen.';
+        const err = res.error ?? 'Error al subir la imagen.';
         setActionError(err);
         toast({
           title: 'Error al subir imagen',
@@ -788,7 +784,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
           type: 'success',
         });
       } else {
-        const errMsg = res.error || 'No se pudo guardar la invitación.';
+        const errMsg = res.error ?? 'No se pudo guardar la invitación.';
         setActionError(errMsg);
         toast({
           title: 'Error al guardar',
@@ -841,8 +837,8 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
       if (res.success && res.data) {
         setPedido((prev) => ({
           ...prev,
-          slug: res.data?.slug || prev.slug,
-          urlPublica: res.data?.urlPublica || prev.urlPublica,
+          slug: res.data?.slug ?? prev.slug,
+          urlPublica: res.data?.urlPublica ?? prev.urlPublica,
           estado: 'entregado',
           estadoInvitacion: 'PUBLICADA',
           datosInvitacion: saveRes.data as unknown as Prisma.JsonValue,
@@ -853,7 +849,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
           type: 'success',
         });
       } else {
-        const errMsg = res.error || 'Ocurrió un error al publicar la invitación.';
+        const errMsg = res.error ?? 'Ocurrió un error al publicar la invitación.';
         setActionError(errMsg);
         toast({
           title: 'Error al publicar',
@@ -871,14 +867,14 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
     try {
       const res = await generarQRAction(pedido.id);
       if (res.success && res.data) {
-        setPedido((prev) => ({ ...prev, qrUrl: res.data || prev.qrUrl }));
+        setPedido((prev) => ({ ...prev, qrUrl: res.data ?? prev.qrUrl }));
         toast({
           title: 'Código QR generado',
           description: 'El código QR se generó y guardó con éxito.',
           type: 'success',
         });
       } else {
-        const errMsg = res.error || 'No se pudo generar el código QR.';
+        const errMsg = res.error ?? 'No se pudo generar el código QR.';
         setActionError(errMsg);
         toast({
           title: 'Error al generar QR',
@@ -1195,7 +1191,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
             onChange={(urls) =>
               setValue(registerKey, urls, { shouldDirty: true, shouldValidate: true })
             }
-            maxImages={field.maxItems || (config.id.includes('premium') ? 6 : 3)}
+            maxImages={field.maxItems ?? (config.id.includes('premium') ? 6 : 3)}
           />
         ) : field.type === 'image' ? (
           <div className="space-y-3">
@@ -1332,7 +1328,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             <AutoSaveIndicator
               status={isAutoSaving ? 'saving' : isDirty ? 'unsaved' : 'saved'}
-              lastSaved={lastSaved || undefined}
+              lastSaved={lastSaved ?? undefined}
             />
             <Link href={`/admin/pedidos/${pedido.id}`}>
               <Button
@@ -1825,7 +1821,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
             Hubo un problema al cargar o procesar los datos de la invitación.
           </p>
           <pre className="text-[10px] text-slate-500 bg-black/40 p-3 rounded-lg overflow-x-auto text-left max-h-40 font-mono">
-            {err instanceof Error ? err.stack || err.message : String(err)}
+            {err instanceof Error ? err.stack ?? err.message : String(err)}
           </pre>
           <Button
             onClick={() => window.location.reload()}

@@ -22,14 +22,14 @@ export async function POST(request: NextRequest) {
 
     // Get IP and UserAgent from body or request headers as fallback
     const ip =
-      body.ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
-    const userAgent = body.userAgent || request.headers.get('user-agent');
+      body.ip ?? request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip');
+    const userAgent = body.userAgent ?? request.headers.get('user-agent');
 
     const newVisita = await prisma.visita.create({
       data: {
         pedidoId: pedido.id,
-        ip: ip || null,
-        userAgent: userAgent || null,
+        ip: ip ?? null,
+        userAgent: userAgent ?? null,
       },
     });
 

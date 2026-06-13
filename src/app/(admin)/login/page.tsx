@@ -48,7 +48,7 @@ export default function LoginPage() {
     try {
       const result = await loginAction(data.password);
       if (!result.success) {
-        setError(result.error || 'Contraseña incorrecta');
+        setError(result.error ?? 'Contraseña incorrecta');
       } else {
         router.push('/admin');
         router.refresh();

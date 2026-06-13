@@ -47,7 +47,7 @@ const clienteSchema = z.object({
     .string()
     .optional()
     .nullable()
-    .transform((val) => val || ''),
+    .transform((val) => val ?? ''),
   fuente: z.enum(['tienda', 'instagram', 'whatsapp', 'referido'], {
     message: 'Selecciona una fuente válida',
   }),
@@ -57,12 +57,12 @@ const clienteSchema = z.object({
     .optional()
     .nullable()
     .or(z.literal(''))
-    .transform((val) => val || ''),
+    .transform((val) => val ?? ''),
   notas: z
     .string()
     .optional()
     .nullable()
-    .transform((val) => val || ''),
+    .transform((val) => val ?? ''),
 });
 
 interface ClientesClientProps {
@@ -112,10 +112,10 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
     setError(null);
     reset({
       nombre: cliente.nombre,
-      telefono: cliente.telefono || '',
+      telefono: cliente.telefono ?? '',
       fuente: cliente.fuente as 'tienda' | 'instagram' | 'whatsapp' | 'referido',
-      email: cliente.email || '',
-      notas: cliente.notas || '',
+      email: cliente.email ?? '',
+      notas: cliente.notas ?? '',
     });
     setIsOpen(true);
   };
@@ -134,7 +134,7 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
           router.push('/admin/clientes');
           router.refresh();
         } else {
-          setError(res.error || 'Ocurrió un error al actualizar');
+          setError(res.error ?? 'Ocurrió un error al actualizar');
         }
       } else {
         const res = await createClienteAction(data);
@@ -142,10 +142,10 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
           const newClient = {
             id: res.data.id,
             nombre: data.nombre,
-            telefono: data.telefono || null,
-            email: data.email || null,
+            telefono: data.telefono ?? null,
+            email: data.email ?? null,
             fuente: data.fuente,
-            notas: data.notas || null,
+            notas: data.notas ?? null,
             createdAt: new Date(),
             updatedAt: new Date(),
           };
@@ -154,7 +154,7 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
           router.push('/admin/clientes');
           router.refresh();
         } else {
-          setError(res.error || 'Ocurrió un error al crear');
+          setError(res.error ?? 'Ocurrió un error al crear');
         }
       }
     } catch {
@@ -172,7 +172,7 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
       if (res.success) {
         setClientes((prev) => prev.filter((c) => c.id !== id));
       } else {
-        alert(res.error || 'No se pudo eliminar el cliente');
+        alert(res.error ?? 'No se pudo eliminar el cliente');
       }
     } catch {
       alert('Error al intentar eliminar');
@@ -183,8 +183,8 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
   const filteredClientes = clientes.filter(
     (c) =>
       c.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      (c.email && c.email.toLowerCase().includes(search.toLowerCase())) ||
-      (c.telefono && c.telefono.includes(search))
+      (c.email?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+      (c.telefono?.includes(search) ?? false)
   );
 
   const getSourceBadge = (source: string) => {

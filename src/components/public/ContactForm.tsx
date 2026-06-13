@@ -64,7 +64,7 @@ export function ContactForm() {
       } else {
         toast({
           title: 'Error al enviar',
-          description: res.error || 'Ocurrió un error inesperado.',
+          description: res.error ?? 'Ocurrió un error inesperado.',
           type: 'error',
         });
       }

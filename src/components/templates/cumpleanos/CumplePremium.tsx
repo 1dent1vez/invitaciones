@@ -62,7 +62,7 @@ function triggerConfetti() {
   window.addEventListener('resize', resizeHandler);
 
   const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#aa77ff', '#ff77ff'];
-  const particles: Array<{
+  const particles: {
     x: number;
     y: number;
     size: number;
@@ -71,7 +71,7 @@ function triggerConfetti() {
     speedY: number;
     rotation: number;
     rotationSpeed: number;
-  }> = [];
+  }[] = [];
 
   for (let i = 0; i < 120; i++) {
     particles.push({
@@ -232,44 +232,44 @@ export function CumplePremium({ data }: CumplePremiumProps) {
     }
   }, [data.confettiAnimacion, data.fecha]); // include date to re-trigger if dates change
 
-  const nombreFestejado = data.nombre || data.nombres || 'Festejado';
-  const edadFestejado = data.edad || '';
-  const fraseMensaje = data.mensaje || '¡Celebremos juntos esta fecha especial!';
+  const nombreFestejado = data.nombre ?? data.nombres ?? 'Festejado';
+  const edadFestejado = data.edad ?? '';
+  const fraseMensaje = data.mensaje ?? '¡Celebremos juntos esta fecha especial!';
   const fotoPortada = getOptimizedImageUrl(
-    data.fotoPortada ||
-      data.portadaUrl ||
+    data.fotoPortada ??
+      data.portadaUrl ??
       'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop'
   );
-  const lugarFiesta = data.lugar || data.ubicacion || 'Lugar del Evento';
-  const direccionFiesta = data.direccion || '';
-  const mapaUrl = data.mapaUrl || data.mapsLink || '';
-  const horaFiesta = data.hora || '';
+  const lugarFiesta = data.lugar ?? data.ubicacion ?? 'Lugar del Evento';
+  const direccionFiesta = data.direccion ?? '';
+  const mapaUrl = data.mapaUrl ?? data.mapsLink ?? '';
+  const horaFiesta = data.hora ?? '';
 
   // Gallery and completion features
-  const galleryPhotos = data.fotosGaleria || data.fotos || [];
-  const extraPhotos = data.fotosExtra || [];
+  const galleryPhotos = data.fotosGaleria ?? data.fotos ?? [];
+  const extraPhotos = data.fotosExtra ?? [];
   const allPhotos = [...galleryPhotos, ...extraPhotos].slice(0, 12);
 
-  const codeVestimenta = data.dressCode || '';
-  const descVestimenta = data.dressCodeDesc || '';
-  const mensajeFestejo = data.mensajeFestejo || '';
+  const codeVestimenta = data.dressCode ?? '';
+  const descVestimenta = data.dressCodeDesc ?? '';
+  const mensajeFestejo = data.mensajeFestejo ?? '';
   const itinerarioEventos = parseItinerario(data.itinerario);
-  const regalosBanco = data.datosRegalo || data.regalosDatos || '';
-  const mesaRegalosActiva = data.mesaRegalos || false;
-  const mesaRegalosDetalles = data.mesaRegalosDatos || '';
+  const regalosBanco = data.datosRegalo ?? data.regalosDatos ?? '';
+  const mesaRegalosActiva = data.mesaRegalos ?? false;
+  const mesaRegalosDetalles = data.mesaRegalosDatos ?? '';
 
   // Premium specific features
-  const histEdad = data.historiaEdad || '';
-  const histSeres = data.historiaSeresQueridos || '';
-  const histRecuerdo = data.historiaRecuerdo || '';
+  const histEdad = data.historiaEdad ?? '';
+  const histSeres = data.historiaSeresQueridos ?? '';
+  const histRecuerdo = data.historiaRecuerdo ?? '';
   const tieneHistoria = histEdad || histSeres || histRecuerdo;
 
-  const activarBuzon = data.buzonDeseos || false;
-  const tienePases = data.pases || false;
-  const numPasesDefault = data.numPases || 2;
-  const tematicaDeco = data.tematica || '';
-  const videoURL = data.videoURL || '';
-  const colorAcento = data.colorAcento || 'Dorado';
+  const activarBuzon = data.buzonDeseos ?? false;
+  const tienePases = data.pases ?? false;
+  const numPasesDefault = data.numPases ?? 2;
+  const tematicaDeco = data.tematica ?? '';
+  const videoURL = data.videoURL ?? '';
+  const colorAcento = data.colorAcento ?? 'Dorado';
 
   // Parse date
   const dateObj = data.fecha ? new Date(data.fecha) : null;
@@ -277,7 +277,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
   if (dateObj && !isNaN(dateObj.getTime())) {
     dateText = formatFechaMX(dateObj);
   } else {
-    dateText = data.fecha || '';
+    dateText = data.fecha ?? '';
   }
 
   // Parse RSVP deadline date

@@ -37,29 +37,29 @@ const fadeInUp = {
 };
 
 export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialProps) {
-  const nombreFestejado = data.nombre || data.nombres || 'Festejado';
-  const edadFestejado = data.edad || '';
+  const nombreFestejado = data.nombre ?? data.nombres ?? 'Festejado';
+  const edadFestejado = data.edad ?? '';
   const fraseEdad = data.edad ? getFraseEdad(Number(data.edad)) : '';
   const fotoPortada = getOptimizedImageUrl(
-    data.fotoPortada ||
-      data.portadaUrl ||
+    data.fotoPortada ??
+      data.portadaUrl ??
       'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop'
   );
 
-  const lugarFiesta = data.lugar || data.ubicacion || 'Lugar del Evento';
-  const direccionFiesta = direccion || data.direccion || '';
-  const horaFiesta = data.hora || '';
+  const lugarFiesta = data.lugar ?? data.ubicacion ?? 'Lugar del Evento';
+  const direccionFiesta = direccion ?? data.direccion ?? '';
+  const horaFiesta = data.hora ?? '';
 
   // Parse and format date
-  const dateObj = fechaEvento || (data.fecha ? new Date(data.fecha) : null);
+  const dateObj = fechaEvento ?? (data.fecha ? new Date(data.fecha) : null);
   let dateText = '';
   if (dateObj && !isNaN(dateObj.getTime())) {
     dateText = formatFechaMX(dateObj);
   } else {
-    dateText = data.fecha || '';
+    dateText = data.fecha ?? '';
   }
 
-  const primaryColor = data.colorPrimario || '#F97316';
+  const primaryColor = data.colorPrimario ?? '#F97316';
   const themeStyles = {
     '--primary': primaryColor,
   } as React.CSSProperties;

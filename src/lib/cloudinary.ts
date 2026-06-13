@@ -8,7 +8,7 @@ cloudinary.config({
 
 export async function uploadToCloudinary(
   fileBuffer: Buffer,
-  folder: string = 'invitaciones'
+  folder = 'invitaciones'
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(

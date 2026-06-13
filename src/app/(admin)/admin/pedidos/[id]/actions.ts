@@ -43,8 +43,8 @@ export async function registrarPagoAction(
           pedidoId,
           monto: parsed.data.monto,
           metodo: parsed.data.metodo,
-          comprobante: parsed.data.comprobante || null,
-          notas: parsed.data.notas || null,
+          comprobante: parsed.data.comprobante ?? null,
+          notas: parsed.data.notas ?? null,
         },
       });
 
@@ -149,7 +149,7 @@ export async function clonarPedidoAction(pedidoId: string): Promise<ActionResult
         slug: null,
         urlPublica: null,
         qrUrl: null,
-        datosInvitacion: newDatos as unknown as Prisma.InputJsonValue,
+        datosInvitacion: newDatos,
       },
     });
     newId = newPedido.id;

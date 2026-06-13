@@ -31,11 +31,11 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
     }
 
     const datos = order.datosInvitacion as unknown as InvitacionData;
-    const title = datos.nombre || datos.nombres || 'Mi Cumpleaños';
+    const title = datos.nombre ?? datos.nombres ?? 'Mi Cumpleaños';
 
     let dateText = '';
     try {
-      const d = new Date(datos.fecha || order.fechaEvento);
+      const d = new Date(datos.fecha ?? order.fechaEvento);
       if (!isNaN(d.getTime())) {
         dateText = d.toLocaleDateString('es-ES', {
           day: 'numeric',
@@ -49,9 +49,9 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
 
     const description = `Te invitamos a celebrar mi Cumpleaños el día ${dateText}. Haz clic para ver los detalles del evento y confirmar tu asistencia.`;
     const ogImage =
-      datos.fotoPortada ||
-      datos.portadaUrl ||
-      (datos.fotos && datos.fotos[0]) ||
+      datos.fotoPortada ??
+      datos.portadaUrl ??
+      (datos.fotos?.[0]) ??
       'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop';
 
     return {
@@ -100,7 +100,7 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
   let userAgent: string | null = null;
   try {
     const headersList = headers();
-    ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip');
+    ip = headersList.get('x-forwarded-for') ?? headersList.get('x-real-ip');
     userAgent = headersList.get('user-agent');
   } catch {
     // Graceful fallback for non-request scope contexts (like Vitest)

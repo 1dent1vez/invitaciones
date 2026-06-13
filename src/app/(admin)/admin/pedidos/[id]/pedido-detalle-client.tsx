@@ -187,7 +187,7 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
     if (success) {
       toast({
         title: 'Copiado',
-        description: `${label || 'El texto'} ha sido copiado al portapapeles.`,
+        description: `${label ?? 'El texto'} ha sido copiado al portapapeles.`,
         type: 'success',
       });
     }
@@ -246,9 +246,9 @@ function RSVPList({ asistencias, onShowAll }: { asistencias: RSVP[]; onShowAll: 
                 </td>
                 <td
                   className="px-4 py-3 text-gray-500 max-w-[150px] truncate"
-                  title={r.mensaje || ''}
+                  title={r.mensaje ?? ''}
                 >
-                  {r.mensaje || <span className="italic text-gray-400">Sin mensaje</span>}
+                  {r.mensaje ?? <span className="italic text-gray-400">Sin mensaje</span>}
                 </td>
                 <td className="px-4 py-3 text-right text-gray-400 font-mono">
                   {formatFechaCorta(r.createdAt)}
@@ -393,8 +393,8 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
 
     const text = generarTextoNotificacion(
       pedido.cliente.nombre,
-      pedido.urlPublica || '',
-      pedido.qrUrl || qrDataUrl || '',
+      pedido.urlPublica ?? '',
+      pedido.qrUrl ?? qrDataUrl ?? '',
       pedido.tipoEvento,
       fecha,
       hora,
@@ -430,7 +430,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
         } else {
           toast({
             title: 'Error',
-            description: res.error || 'Error al despublicar',
+            description: res.error ?? 'Error al despublicar',
             type: 'error',
           });
         }
@@ -440,8 +440,8 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
           setPedido((prev) => ({
             ...prev,
             estadoInvitacion: 'PUBLICADA',
-            urlPublica: res.data?.urlPublica || prev.urlPublica,
-            slug: res.data?.slug || prev.slug,
+            urlPublica: res.data?.urlPublica ?? prev.urlPublica,
+            slug: res.data?.slug ?? prev.slug,
           }));
           toast({
             title: 'Publicada',
@@ -449,7 +449,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
             type: 'success',
           });
         } else {
-          toast({ title: 'Error', description: res.error || 'Error al publicar', type: 'error' });
+          toast({ title: 'Error', description: res.error ?? 'Error al publicar', type: 'error' });
         }
       }
     } catch {
@@ -466,7 +466,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
     try {
       const res = await generarQRAction(pedido.id);
       if (res.success && res.data) {
-        setPedido((prev: PedidoFull) => ({ ...prev, qrUrl: res.data || prev.qrUrl }));
+        setPedido((prev: PedidoFull) => ({ ...prev, qrUrl: res.data ?? prev.qrUrl }));
         toast({
           title: 'QR Generado',
           description: 'El QR oficial se ha guardado en la nube.',
@@ -475,7 +475,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
       } else {
         toast({
           title: 'Error',
-          description: res.error || 'No se pudo generar el código QR.',
+          description: res.error ?? 'No se pudo generar el código QR.',
           type: 'error',
         });
       }
@@ -498,7 +498,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
     }
     const link = document.createElement('a');
     link.href = targetUrl;
-    link.download = `qr-pedido-${pedido.slug || pedido.id}.png`;
+    link.download = `qr-pedido-${pedido.slug ?? pedido.id}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -522,7 +522,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
         setPedido((prev: PedidoFull) => ({ ...prev, estado: previousState }));
         toast({
           title: 'Error',
-          description: res.error || 'No se pudo actualizar el estado',
+          description: res.error ?? 'No se pudo actualizar el estado',
           type: 'error',
         });
       }
@@ -542,7 +542,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
       } else {
         toast({
           title: 'Error',
-          description: res.error || 'No se pudo completar el pedido.',
+          description: res.error ?? 'No se pudo completar el pedido.',
           type: 'error',
         });
       }
@@ -563,7 +563,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
       } else {
         toast({
           title: 'Error',
-          description: res.error || 'No se pudo cancelar el pedido.',
+          description: res.error ?? 'No se pudo cancelar el pedido.',
           type: 'error',
         });
       }
@@ -581,8 +581,8 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
           pedidoId: pedido.id,
           monto: new Prisma.Decimal(data.monto),
           metodo: data.metodo,
-          comprobante: data.comprobante || null,
-          notas: data.notas || null,
+          comprobante: data.comprobante ?? null,
+          notas: data.notas ?? null,
           fecha: new Date(),
         };
 
@@ -610,7 +610,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
           notas: '',
         });
       } else {
-        setError(res.error || 'Error al registrar el pago');
+        setError(res.error ?? 'Error al registrar el pago');
       }
     } catch {
       setError('Error inesperado en el servidor');
@@ -631,8 +631,8 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
     }
   })();
 
-  const colorPrimario = dataInvitacion.colorPrimario || '#8B5CF6';
-  const colorSecundario = dataInvitacion.colorSecundario || '#4C1D95';
+  const colorPrimario = dataInvitacion.colorPrimario ?? '#8B5CF6';
+  const colorSecundario = dataInvitacion.colorSecundario ?? '#4C1D95';
 
   const primerRSVP = pedido.rsvps.length > 0 ? pedido.rsvps[pedido.rsvps.length - 1] : null;
 
@@ -883,7 +883,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                     </span>
                     <span className="text-xs text-gray-800 font-bold capitalize flex items-center gap-1.5">
                       <PlusCircle className="h-3.5 w-3.5 text-gray-400" />
-                      {lastPayment?.metodo || 'Sin pagos'}
+                      {lastPayment?.metodo ?? 'Sin pagos'}
                     </span>
                   </div>
                   <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col justify-center">
@@ -922,9 +922,9 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                   <div className="flex items-center gap-1">
                     <span
                       className="text-xs text-gray-900 font-mono font-medium max-w-[150px] truncate"
-                      title={lastPayment?.comprobante || ''}
+                      title={lastPayment?.comprobante ?? ''}
                     >
-                      {lastPayment?.comprobante || 'Sin referencia'}
+                      {lastPayment?.comprobante ?? 'Sin referencia'}
                     </span>
                     {lastPayment?.comprobante && (
                       <CopyButton text={lastPayment.comprobante} label="La referencia" />
@@ -1023,7 +1023,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                   )}
                 >
                   <Mail className="h-3.5 w-3.5" />
-                  {pedido.cliente.email || 'No registrado'}
+                  {pedido.cliente.email ?? 'No registrado'}
                 </a>
               </div>
 
@@ -1039,7 +1039,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                   )}
                 >
                   <Phone className="h-3.5 w-3.5" />
-                  {pedido.cliente.telefono || 'No registrado'}
+                  {pedido.cliente.telefono ?? 'No registrado'}
                 </a>
               </div>
 
@@ -1047,7 +1047,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                 <span className="text-xs text-gray-500 font-medium">Notas del Cliente</span>
                 <textarea
                   readOnly
-                  value={pedido.cliente.notas || 'Sin notas adicionales.'}
+                  value={pedido.cliente.notas ?? 'Sin notas adicionales.'}
                   className="w-full text-xs text-gray-650 bg-gray-50 border border-gray-200 rounded-xl p-3 h-20 resize-none outline-none focus:ring-0 leading-relaxed overflow-y-auto"
                 />
               </div>
@@ -1097,7 +1097,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
               {pedido.urlPublica ? (
                 <div className="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100">
                   <img
-                    src={qrDataUrl || pedido.qrUrl || ''}
+                    src={qrDataUrl || pedido.qrUrl ?? ''}
                     alt="QR Invitación"
                     className="w-48 h-48 object-contain"
                   />
@@ -1110,7 +1110,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
               )}
               {pedido.urlPublica && (
                 <span className="text-[10px] font-mono text-gray-400 mt-2.5">
-                  ID: {pedido.slug || pedido.id}
+                  ID: {pedido.slug ?? pedido.id}
                 </span>
               )}
             </div>
@@ -1167,7 +1167,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
 
                   <Button
                     onClick={async () => {
-                      const success = await copy(pedido.urlPublica || '');
+                      const success = await copy(pedido.urlPublica ?? '');
                       if (success) {
                         toast({
                           title: 'Copiado',
@@ -1190,10 +1190,10 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                         await share({
                           title: 'Mi Invitación',
                           text: `¡Te invito a mi cumpleaños! Abre el enlace para ver los detalles:`,
-                          url: pedido.urlPublica || '',
+                          url: pedido.urlPublica ?? '',
                         });
                       } else {
-                        const success = await copy(pedido.urlPublica || '');
+                        const success = await copy(pedido.urlPublica ?? '');
                         if (success) {
                           toast({
                             title: 'Copiado',

@@ -87,7 +87,7 @@ export async function publicarInvitacionAction(
     let slug = pedido.slug;
     if (!slug) {
       const datos = (pedido.datosInvitacion as unknown as InvitacionData) || {};
-      const names = datos.nombre || datos.nombres || pedido.cliente.nombre || 'evento';
+      const names = datos.nombre ?? datos.nombres ?? pedido.cliente.nombre ?? 'evento';
 
       let baseSlug = await slugify(names);
       const date = new Date(pedido.fechaEvento);
@@ -118,7 +118,7 @@ export async function publicarInvitacionAction(
     }
 
     const host =
-      process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+      process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000';
     const urlPublica = `${host}/i/${slug}`;
 
     const updated = await prisma.pedido.update({
@@ -137,8 +137,8 @@ export async function publicarInvitacionAction(
     return {
       success: true,
       data: {
-        urlPublica: updated.urlPublica || urlPublica,
-        slug: updated.slug || slug,
+        urlPublica: updated.urlPublica ?? urlPublica,
+        slug: updated.slug ?? slug,
       },
     };
   } catch (error) {

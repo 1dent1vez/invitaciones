@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const host = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const host = process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000';
 
   // Fetch all published invitation slugs
   const orders = await prisma.pedido.findMany({
