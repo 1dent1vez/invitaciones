@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Star, Smartphone, Eye, Sparkles } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { CumpleEsencial } from "@/components/templates/cumpleanos/CumpleEsencial";
+import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Star, Smartphone, Eye, Sparkles } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { CumpleEsencial } from '@/components/templates/cumpleanos/CumpleEsencial';
 
 // Elemento del abanico de tarjetas
 interface FanCardProps {
@@ -43,7 +43,7 @@ function FanCard({ title, age, theme, image, index, hovered }: FanCardProps) {
   return (
     <motion.div
       animate={styles}
-      transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      transition={{ type: 'spring', stiffness: 100, damping: 15 }}
       className="absolute w-48 h-64 bg-white rounded-2xl border-2 border-rosa-regalo shadow-xl overflow-hidden flex flex-col justify-between p-4 origin-bottom cursor-pointer select-none"
     >
       <div className="relative w-full h-32 rounded-xl overflow-hidden bg-crema-seda">
@@ -77,22 +77,25 @@ export default function SocialProof() {
 
   const previewCards = [
     {
-      title: "Santiago Pool Party",
-      age: "8",
-      theme: "Infantil / Acuática",
-      image: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=400&auto=format&fit=crop",
+      title: 'Santiago Pool Party',
+      age: '8',
+      theme: 'Infantil / Acuática',
+      image:
+        'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=400&auto=format&fit=crop',
     },
     {
-      title: "30 Años de Sofía",
-      age: "30",
-      theme: "Adulto / Elegante",
-      image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=400&auto=format&fit=crop",
+      title: '30 Años de Sofía',
+      age: '30',
+      theme: 'Adulto / Elegante',
+      image:
+        'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=400&auto=format&fit=crop',
     },
     {
-      title: "Neón Fest Carlos",
-      age: "18",
-      theme: "Temática / Neón",
-      image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=400&auto=format&fit=crop",
+      title: 'Neón Fest Carlos',
+      age: '18',
+      theme: 'Temática / Neón',
+      image:
+        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=400&auto=format&fit=crop',
     },
   ];
 
@@ -110,7 +113,8 @@ export default function SocialProof() {
                 Elige tu estilo favorito
               </h2>
               <p className="text-base sm:text-lg text-carbon-suave/70 max-w-xl font-medium">
-                Pasa el mouse sobre el abanico de tarjetas para ver cómo lucen nuestros diferentes estilos y temáticas. Creamos una identidad visual única para tu evento.
+                Pasa el mouse sobre el abanico de tarjetas para ver cómo lucen nuestros diferentes
+                estilos y temáticas. Creamos una identidad visual única para tu evento.
               </p>
             </div>
 
@@ -141,8 +145,8 @@ export default function SocialProof() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "bg-terracota hover:bg-terracota/95 text-white font-extrabold rounded-full px-8 py-6 text-sm shadow-lg shadow-terracota/10 flex items-center gap-2 transition transform hover:scale-105 h-auto"
+                  buttonVariants({ size: 'lg' }),
+                  'bg-terracota hover:bg-terracota/95 text-white font-extrabold rounded-full px-8 py-6 text-sm shadow-lg shadow-terracota/10 flex items-center gap-2 transition transform hover:scale-105 h-auto'
                 )}
               >
                 <Eye className="w-4.5 h-4.5" />
@@ -170,20 +174,21 @@ export default function SocialProof() {
               <div className="rounded-[1.8rem] md:rounded-[2rem] overflow-hidden w-full h-full bg-white flex flex-col overflow-y-auto scrollbar-thin">
                 <CumpleEsencial
                   data={{
-                    nombre: "Mateo Hernández",
+                    nombre: 'Mateo Hernández',
                     edad: 30,
-                    fecha: "2026-10-24",
-                    hora: "19:00",
-                    lugar: "Terraza El Mirador",
-                    direccion: "Av. Chapultepec #456, Guadalajara, Jal.",
-                    tipoCelebracion: "adultos",
-                    mensaje: "¡Acompáñame a celebrar un año más de risas y buenos momentos!",
-                    whatsapp: "5512345678",
-                    colorPrimario: "#D4A373",
-                    colorSecundario: "#3D3D3D",
-                    fotoPortada: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop"
+                    fecha: '2026-10-24',
+                    hora: '19:00',
+                    lugar: 'Terraza El Mirador',
+                    direccion: 'Av. Chapultepec #456, Guadalajara, Jal.',
+                    tipoCelebracion: 'adultos',
+                    mensaje: '¡Acompáñame a celebrar un año más de risas y buenos momentos!',
+                    whatsapp: '5512345678',
+                    colorPrimario: '#D4A373',
+                    colorSecundario: '#3D3D3D',
+                    fotoPortada:
+                      'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=600&auto=format&fit=crop',
                   }}
-                  fechaEvento={new Date("2026-10-24T19:00:00Z")}
+                  fechaEvento={new Date('2026-10-24T19:00:00Z')}
                   direccion="Av. Chapultepec #456, Guadalajara, Jal."
                 />
               </div>

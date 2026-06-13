@@ -1,22 +1,34 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Calendar, Clock, MapPin, Shirt, ChevronDown, Volume2, VolumeX, Image as ImageIcon, Gift, Milestone, X } from "lucide-react";
-import { InvitacionData } from "@/types";
-import { getOptimizedImageUrl, getFraseEdad, formatFechaMX, parseItinerario } from "./shared/utils";
-import { MapsLink } from "./shared/MapsLink";
-import { RSVPForm } from "./shared/RSVPForm";
+import React, { useState, useEffect } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Shirt,
+  ChevronDown,
+  Volume2,
+  VolumeX,
+  Image as ImageIcon,
+  Gift,
+  Milestone,
+  X,
+} from 'lucide-react';
+import { InvitacionData } from '@/types';
+import { getOptimizedImageUrl, getFraseEdad, formatFechaMX, parseItinerario } from './shared/utils';
+import { MapsLink } from './shared/MapsLink';
+import { RSVPForm } from './shared/RSVPForm';
 
-if (typeof window !== "undefined" && !window.IntersectionObserver) {
-  Object.defineProperty(window, "IntersectionObserver", {
+if (typeof window !== 'undefined' && !window.IntersectionObserver) {
+  Object.defineProperty(window, 'IntersectionObserver', {
     writable: true,
     configurable: true,
     value: class IntersectionObserver {
       observe() {}
       unobserve() {}
       disconnect() {}
-    }
+    },
   });
 }
 
@@ -39,14 +51,14 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
     ? {
         initial: { opacity: 1, y: 0 },
         whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true, margin: "-50px" },
-        transition: { duration: 0 }
+        viewport: { once: true, margin: '-50px' },
+        transition: { duration: 0 },
       }
     : {
         initial: { opacity: 0, y: 30 },
         whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true, margin: "-50px" },
-        transition: { duration: 0.6, ease: "easeOut" }
+        viewport: { once: true, margin: '-50px' },
+        transition: { duration: 0.6, ease: 'easeOut' },
       };
 
   // Audio helper
@@ -69,44 +81,48 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play().catch(err => console.log("Audio play failed:", err));
+      audio.play().catch((err) => console.log('Audio play failed:', err));
     }
     setIsPlaying(!isPlaying);
   };
 
-  const nombreFestejado = data.nombre || data.nombres || "Festejado";
-  const edadFestejado = data.edad || "";
-  const fraseEdad = data.edad ? getFraseEdad(Number(data.edad)) : "";
-  const fotoPortada = getOptimizedImageUrl(data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop");
-  
-  const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
-  const direccionFiesta = direccion || data.direccion || "";
-  const horaFiesta = data.hora || "";
+  const nombreFestejado = data.nombre || data.nombres || 'Festejado';
+  const edadFestejado = data.edad || '';
+  const fraseEdad = data.edad ? getFraseEdad(Number(data.edad)) : '';
+  const fotoPortada = getOptimizedImageUrl(
+    data.fotoPortada ||
+      data.portadaUrl ||
+      'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop'
+  );
+
+  const lugarFiesta = data.lugar || data.ubicacion || 'Lugar del Evento';
+  const direccionFiesta = direccion || data.direccion || '';
+  const horaFiesta = data.hora || '';
 
   // Parse and format date
   const dateObj = fechaEvento || (data.fecha ? new Date(data.fecha) : null);
-  let dateText = "";
+  let dateText = '';
   if (dateObj && !isNaN(dateObj.getTime())) {
     dateText = formatFechaMX(dateObj);
   } else {
-    dateText = data.fecha || "";
+    dateText = data.fecha || '';
   }
 
   // Completa specific features & aliases
   const galleryPhotos = data.fotosGaleria || data.galeriaFotos || data.fotos || [];
-  const codeVestimenta = data.dressCode || "";
-  const descVestimenta = data.dressCodeDesc || data.dressCodeDescripcion || "";
-  const mensajeFestejo = data.mensajeFestejo || data.mensajeFestejado || "";
+  const codeVestimenta = data.dressCode || '';
+  const descVestimenta = data.dressCodeDesc || data.dressCodeDescripcion || '';
+  const mensajeFestejo = data.mensajeFestejo || data.mensajeFestejado || '';
   const itinerarioEventos = parseItinerario(data.itinerario);
-  const regalosBanco = data.datosRegalo || data.regalosDatos || "";
+  const regalosBanco = data.datosRegalo || data.regalosDatos || '';
   const mesaRegalosActiva = data.mesaRegalos || data.tieneMesaRegalos || false;
-  const mesaRegalosDetalles = data.mesaRegalosDatos || "";
+  const mesaRegalosDetalles = data.mesaRegalosDatos || '';
 
-  const primaryColor = data.colorPrimario || "#F97316";
-  const secondaryColor = data.colorSecundario || "#1F2937";
+  const primaryColor = data.colorPrimario || '#F97316';
+  const secondaryColor = data.colorSecundario || '#1F2937';
   const themeStyles = {
-    "--primary": primaryColor,
-    "--secondary": secondaryColor,
+    '--primary': primaryColor,
+    '--secondary': secondaryColor,
   } as React.CSSProperties;
 
   return (
@@ -117,11 +133,11 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
       {/* Hero Portada */}
       <div className="relative h-[65vh] min-h-[450px] max-h-[80vh] w-full overflow-hidden flex items-end animate-fade-in md:h-[50vh] md:rounded-t-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-        
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: "easeOut" }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
           className="absolute inset-0 w-full h-full"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -139,21 +155,29 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
             className="absolute top-6 right-6 z-20 h-11 w-11 flex items-center justify-center rounded-full bg-slate-950/70 border border-white/10 text-[var(--primary)] backdrop-blur-sm shadow-xl active:scale-95 transition-all cursor-pointer"
             data-testid="toggle-musica-btn"
           >
-            {isPlaying ? <Volume2 className="h-5 w-5 animate-pulse" /> : <VolumeX className="h-5 w-5 text-slate-400" />}
+            {isPlaying ? (
+              <Volume2 className="h-5 w-5 animate-pulse" />
+            ) : (
+              <VolumeX className="h-5 w-5 text-slate-400" />
+            )}
           </button>
         )}
 
         <div className="w-full p-8 z-10 space-y-4 text-center flex flex-col items-center">
-          {data.tipoCelebracion && data.tipoCelebracion !== "general" && (
+          {data.tipoCelebracion && data.tipoCelebracion !== 'general' && (
             <div
               className="inline-flex items-center gap-1 rounded-full bg-violet-600/30 px-3 py-1 text-xs font-semibold ring-1 ring-violet-500/50 text-violet-300"
               data-testid="tipo-celebracion-badge"
             >
-              {data.tipoCelebracion.toLowerCase() === "infantil" && "🎈 Infantil"}
-              {(data.tipoCelebracion.toLowerCase() === "adultos" || data.tipoCelebracion.toLowerCase() === "adulto") && "🍷 Adultos"}
-              {data.tipoCelebracion.toLowerCase() === "sorpresa" && "🎁 Sorpresa"}
-              {data.tipoCelebracion.toLowerCase() === "juvenil" && "🎸 Juvenil"}
-              {!["infantil", "juvenil", "adultos", "adulto", "sorpresa"].includes(data.tipoCelebracion.toLowerCase()) && `Celeb: ${data.tipoCelebracion}`}
+              {data.tipoCelebracion.toLowerCase() === 'infantil' && '🎈 Infantil'}
+              {(data.tipoCelebracion.toLowerCase() === 'adultos' ||
+                data.tipoCelebracion.toLowerCase() === 'adulto') &&
+                '🍷 Adultos'}
+              {data.tipoCelebracion.toLowerCase() === 'sorpresa' && '🎁 Sorpresa'}
+              {data.tipoCelebracion.toLowerCase() === 'juvenil' && '🎸 Juvenil'}
+              {!['infantil', 'juvenil', 'adultos', 'adulto', 'sorpresa'].includes(
+                data.tipoCelebracion.toLowerCase()
+              ) && `Celeb: ${data.tipoCelebracion}`}
             </div>
           )}
 
@@ -171,9 +195,7 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
                 {edadFestejado} Años
               </span>
               {fraseEdad && (
-                <p className="text-sm font-semibold text-slate-200 drop-shadow-md">
-                  {fraseEdad}
-                </p>
+                <p className="text-sm font-semibold text-slate-200 drop-shadow-md">{fraseEdad}</p>
               )}
             </div>
           )}
@@ -187,7 +209,7 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
           {/* Scroll indicator sutil */}
           <motion.div
             animate={shouldReduceMotion ? {} : { y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
             className="pt-2"
           >
             <ChevronDown className="w-6 h-6 text-white/80" />
@@ -226,7 +248,9 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿Cuándo?</span>
+              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+                ¿Cuándo?
+              </span>
               <p className="text-sm font-semibold text-gray-800 capitalize">{dateText}</p>
             </div>
           </div>
@@ -238,7 +262,9 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
                 <Clock className="h-5 w-5" />
               </div>
               <div className="space-y-1">
-                <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿A qué hora?</span>
+                <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+                  ¿A qué hora?
+                </span>
                 <p className="text-sm font-semibold text-gray-800">A las {horaFiesta} hrs</p>
               </div>
             </div>
@@ -250,9 +276,13 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
               <MapPin className="h-5 w-5" />
             </div>
             <div className="space-y-1 w-full">
-              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿Dónde?</span>
+              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+                ¿Dónde?
+              </span>
               <p className="text-sm font-semibold text-gray-800">{lugarFiesta}</p>
-              {direccionFiesta && <p className="text-xs text-gray-500 leading-normal">{direccionFiesta}</p>}
+              {direccionFiesta && (
+                <p className="text-xs text-gray-500 leading-normal">{direccionFiesta}</p>
+              )}
             </div>
           </div>
         </motion.div>
@@ -266,10 +296,16 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
             transition={fadeInUp.transition}
             className="bg-white border border-gray-100 rounded-2xl p-6 shadow-md text-center space-y-3 relative overflow-hidden"
           >
-            <span className="absolute -top-4 -left-2 text-8xl font-serif text-[var(--primary)]/10 select-none pointer-events-none">&ldquo;</span>
-            <span className="absolute -bottom-16 -right-2 text-8xl font-serif text-[var(--primary)]/10 select-none pointer-events-none">&rdquo;</span>
-            
-            <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold block">Mensaje Especial</span>
+            <span className="absolute -top-4 -left-2 text-8xl font-serif text-[var(--primary)]/10 select-none pointer-events-none">
+              &ldquo;
+            </span>
+            <span className="absolute -bottom-16 -right-2 text-8xl font-serif text-[var(--primary)]/10 select-none pointer-events-none">
+              &rdquo;
+            </span>
+
+            <span className="text-xs uppercase tracking-widest text-[var(--primary)] font-bold block">
+              Mensaje Especial
+            </span>
             <p className="text-sm text-gray-600 italic leading-relaxed max-w-md mx-auto relative z-10">
               {mensajeFestejo}
             </p>
@@ -360,9 +396,13 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] mb-2">
               <Shirt className="h-5 w-5" />
             </div>
-            <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">Código de Vestimenta</span>
+            <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+              Código de Vestimenta
+            </span>
             <p className="text-sm font-bold text-gray-800 uppercase mt-0.5">{codeVestimenta}</p>
-            {descVestimenta && <p className="text-xs text-gray-500 mt-1 max-w-xs">{descVestimenta}</p>}
+            {descVestimenta && (
+              <p className="text-xs text-gray-500 mt-1 max-w-xs">{descVestimenta}</p>
+            )}
           </motion.div>
         )}
 
@@ -389,8 +429,12 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
             )}
             {mesaRegalosDetalles && (
               <div className="bg-gray-50 p-3.5 rounded-xl border border-gray-100 text-xs">
-                <span className="text-[10px] text-gray-400 font-bold block uppercase tracking-wide">Mesa Registrada</span>
-                <span className="text-gray-800 font-semibold mt-0.5 block">{mesaRegalosDetalles}</span>
+                <span className="text-[10px] text-gray-400 font-bold block uppercase tracking-wide">
+                  Mesa Registrada
+                </span>
+                <span className="text-gray-800 font-semibold mt-0.5 block">
+                  {mesaRegalosDetalles}
+                </span>
               </div>
             )}
           </motion.div>
@@ -430,12 +474,14 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
           >
             <X className="h-6 w-6" />
           </button>
-          
+
           {/* Prev button */}
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedImageIndex((prev) => (prev! - 1 + galleryPhotos.length) % galleryPhotos.length);
+              setSelectedImageIndex(
+                (prev) => (prev! - 1 + galleryPhotos.length) % galleryPhotos.length
+              );
             }}
             className="absolute left-6 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-2 z-50 rounded-full bg-slate-900/60 border border-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
             aria-label="Foto anterior"
@@ -460,7 +506,9 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
               if (swipe < -swipeThreshold) {
                 setSelectedImageIndex((prev) => (prev! + 1) % galleryPhotos.length);
               } else if (swipe > swipeThreshold) {
-                setSelectedImageIndex((prev) => (prev! - 1 + galleryPhotos.length) % galleryPhotos.length);
+                setSelectedImageIndex(
+                  (prev) => (prev! - 1 + galleryPhotos.length) % galleryPhotos.length
+                );
               }
             }}
           >

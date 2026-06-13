@@ -1,28 +1,24 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
-import { 
-  LayoutDashboard, 
-  Users, 
-  FileText, 
-  Settings, 
-  LogOut, 
+import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
+  Settings,
+  LogOut,
   Menu,
   Sparkles,
-  Mail
-} from "lucide-react";
+  Mail,
+} from 'lucide-react';
 
-import { cn } from "@/lib/utils";
-import { logoutAction } from "../login/actions";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger 
-} from "@/components/ui/sheet";
+import { cn } from '@/lib/utils';
+import { logoutAction } from '../login/actions';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 interface SidebarItem {
   name: string;
@@ -31,18 +27,14 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { name: "Panel Control", href: "/admin", icon: LayoutDashboard },
-  { name: "Clientes", href: "/admin/clientes", icon: Users },
-  { name: "Pedidos", href: "/admin/pedidos", icon: FileText },
-  { name: "Leads", href: "/admin/leads", icon: Mail },
-  { name: "Configuración", href: "/admin/configuracion", icon: Settings },
+  { name: 'Panel Control', href: '/admin', icon: LayoutDashboard },
+  { name: 'Clientes', href: '/admin/clientes', icon: Users },
+  { name: 'Pedidos', href: '/admin/pedidos', icon: FileText },
+  { name: 'Leads', href: '/admin/leads', icon: Mail },
+  { name: 'Configuración', href: '/admin/configuracion', icon: Settings },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -53,20 +45,27 @@ export default function AdminLayout({
     try {
       const result = await logoutAction();
       if (result.success) {
-        router.push("/login");
+        router.push('/login');
         router.refresh();
       }
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error('Logout failed:', error);
     } finally {
       setIsLoggingOut(false);
     }
   };
 
-  const NavigationList = ({ className, onItemClick }: { className?: string; onItemClick?: () => void }) => (
-    <nav className={cn("space-y-1.5", className)}>
+  const NavigationList = ({
+    className,
+    onItemClick,
+  }: {
+    className?: string;
+    onItemClick?: () => void;
+  }) => (
+    <nav className={cn('space-y-1.5', className)}>
       {sidebarItems.map((item) => {
-        const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+        const isActive =
+          pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
         const Icon = item.icon;
         return (
           <Link
@@ -74,10 +73,10 @@ export default function AdminLayout({
             href={item.href}
             onClick={onItemClick}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-              isActive 
-                ? "bg-violet-600 text-white shadow-lg shadow-violet-600/10" 
-                : "text-slate-400 hover:bg-slate-900 hover:text-white"
+              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
+              isActive
+                ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/10'
+                : 'text-slate-400 hover:bg-slate-900 hover:text-white'
             )}
           >
             <Icon className="h-4.5 w-4.5" />
@@ -93,7 +92,10 @@ export default function AdminLayout({
       {/* Sidebar for Desktop */}
       <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r border-slate-900 bg-slate-900/40 backdrop-blur-xl z-20">
         <div className="flex h-16 items-center justify-between px-6 border-b border-slate-900">
-          <Link href="/admin" className="flex items-center gap-2 font-bold text-white text-lg tracking-tight">
+          <Link
+            href="/admin"
+            className="flex items-center gap-2 font-bold text-white text-lg tracking-tight"
+          >
             <Sparkles className="h-5 w-5 text-violet-400" />
             <span>Kilo Invitaciones</span>
           </Link>
@@ -107,7 +109,7 @@ export default function AdminLayout({
             disabled={isLoggingOut}
           >
             <LogOut className="h-4.5 w-4.5" />
-            {isLoggingOut ? "Cerrando..." : "Cerrar Sesión"}
+            {isLoggingOut ? 'Cerrando...' : 'Cerrar Sesión'}
           </Button>
         </div>
       </aside>
@@ -121,12 +123,19 @@ export default function AdminLayout({
             <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
               <SheetTrigger
                 render={
-                  <Button variant="ghost" size="icon" className="md:hidden text-slate-400 hover:text-white hover:bg-slate-900">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden text-slate-400 hover:text-white hover:bg-slate-900"
+                  >
                     <Menu className="h-5 w-5" />
                   </Button>
                 }
               />
-              <SheetContent side="left" className="w-64 border-r border-slate-900 bg-slate-950 p-0 text-slate-100">
+              <SheetContent
+                side="left"
+                className="w-64 border-r border-slate-900 bg-slate-950 p-0 text-slate-100"
+              >
                 <div className="flex h-16 items-center px-6 border-b border-slate-900">
                   <span className="flex items-center gap-2 font-bold text-white text-lg">
                     <Sparkles className="h-5 w-5 text-violet-400" />
@@ -142,14 +151,16 @@ export default function AdminLayout({
                     disabled={isLoggingOut}
                   >
                     <LogOut className="h-4.5 w-4.5" />
-                    {isLoggingOut ? "Cerrando..." : "Cerrar Sesión"}
+                    {isLoggingOut ? 'Cerrando...' : 'Cerrar Sesión'}
                   </Button>
                 </div>
               </SheetContent>
             </Sheet>
 
             <h1 className="text-sm font-semibold text-slate-400 hidden sm:block">
-              {pathname === "/admin" ? "Dashboard" : sidebarItems.find(i => pathname.startsWith(i.href))?.name || "Administración"}
+              {pathname === '/admin'
+                ? 'Dashboard'
+                : sidebarItems.find((i) => pathname.startsWith(i.href))?.name || 'Administración'}
             </h1>
           </div>
 
@@ -161,15 +172,15 @@ export default function AdminLayout({
             </div>
             <Avatar className="ring-2 ring-violet-500/20">
               <AvatarImage src="" />
-              <AvatarFallback className="bg-violet-600/20 text-violet-400 font-bold">AD</AvatarFallback>
+              <AvatarFallback className="bg-violet-600/20 text-violet-400 font-bold">
+                AD
+              </AvatarFallback>
             </Avatar>
           </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-6 md:p-8 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

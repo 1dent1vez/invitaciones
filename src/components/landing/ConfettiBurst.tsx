@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import confetti from "canvas-confetti";
+import confetti from 'canvas-confetti';
 
 /**
  * Disparador de confeti premium con los colores oficiales de ¡Ábreme!:
@@ -9,13 +9,13 @@ import confetti from "canvas-confetti";
 export const fireConfetti = () => {
   // Respetar la preferencia de reducción de movimiento del sistema
   if (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ) {
     return;
   }
 
-  const colors = ["#E8B4B8", "#D4A373", "#C85C5C", "#F9F5F0"];
+  const colors = ['#E8B4B8', '#D4A373', '#C85C5C', '#F9F5F0'];
 
   // Burst 1: Izquierda
   confetti({

@@ -1,49 +1,58 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { EditorClient } from "@/app/(admin)/admin/pedidos/[id]/editar/editor-client";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { EditorClient } from '@/app/(admin)/admin/pedidos/[id]/editar/editor-client';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock("next/navigation", () => ({
+vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
     refresh: vi.fn(),
   }),
 }));
 
-vi.mock("@/components/ui/toast", () => ({
+vi.mock('@/components/ui/toast', () => ({
   useToast: () => ({
     toast: vi.fn(),
   }),
 }));
 
 // Mock the actions to prevent database/server-side operations
-vi.mock("@/app/(admin)/admin/pedidos/[id]/editar/actions", () => {
+vi.mock('@/app/(admin)/admin/pedidos/[id]/editar/actions', () => {
   return {
     savePedidoDatosAction: vi.fn(() => Promise.resolve({ success: true, data: {} })),
-    publicarInvitacionAction: vi.fn(() => Promise.resolve({ success: true, data: { slug: "test-slug", urlPublica: "http://localhost:3000/i/test-slug" } })),
-    generarQRAction: vi.fn(() => Promise.resolve({ success: true, data: "https://cloudinary.com/qr.png" })),
-    uploadImageAction: vi.fn(() => Promise.resolve({ success: true, data: "https://cloudinary.com/image.png" })),
+    publicarInvitacionAction: vi.fn(() =>
+      Promise.resolve({
+        success: true,
+        data: { slug: 'test-slug', urlPublica: 'http://localhost:3000/i/test-slug' },
+      })
+    ),
+    generarQRAction: vi.fn(() =>
+      Promise.resolve({ success: true, data: 'https://cloudinary.com/qr.png' })
+    ),
+    uploadImageAction: vi.fn(() =>
+      Promise.resolve({ success: true, data: 'https://cloudinary.com/image.png' })
+    ),
   };
 });
 
-describe("EditorClient Component Tests", () => {
+describe('EditorClient Component Tests', () => {
   const mockPedido = {
-    id: "pedido-123",
-    clienteId: "cliente-123",
-    tipoEvento: "cumpleanos",
-    paquete: "esencial",
-    fechaEvento: new Date("2026-12-18T18:00:00Z"),
-    template: "cumpleanos-esencial",
-    precio: 350.00,
-    estado: "cotizado",
+    id: 'pedido-123',
+    clienteId: 'cliente-123',
+    tipoEvento: 'cumpleanos',
+    paquete: 'esencial',
+    fechaEvento: new Date('2026-12-18T18:00:00Z'),
+    template: 'cumpleanos-esencial',
+    precio: 350.0,
+    estado: 'cotizado',
     slug: null,
     urlPublica: null,
     qrUrl: null,
     datosInvitacion: null,
-    notas: "Notas de prueba de ubicacion",
+    notas: 'Notas de prueba de ubicacion',
     cliente: {
-      id: "cliente-123",
-      nombre: "Ana y Carlos",
-      fuente: "instagram",
+      id: 'cliente-123',
+      nombre: 'Ana y Carlos',
+      fuente: 'instagram',
       telefono: null,
       email: null,
       notas: null,
@@ -54,12 +63,12 @@ describe("EditorClient Component Tests", () => {
     vi.clearAllMocks();
   });
 
-  it("debe renderizar el formulario dinámico con los campos del template", () => {
+  it('debe renderizar el formulario dinámico con los campos del template', () => {
     render(<EditorClient pedido={mockPedido as any} />);
 
     // should render the title/header
-    expect(screen.getByText("Editar Invitación")).toBeInTheDocument();
-    expect(screen.getByText("Cumpleaños Esencial")).toBeInTheDocument();
+    expect(screen.getByText('Editar Invitación')).toBeInTheDocument();
+    expect(screen.getByText('Cumpleaños Esencial')).toBeInTheDocument();
 
     // cumpleanos-esencial template fields
     expect(screen.getByText(/Nombre del festejado/i)).toBeInTheDocument();
@@ -67,61 +76,62 @@ describe("EditorClient Component Tests", () => {
     expect(screen.getByText(/Nombre del lugar/i)).toBeInTheDocument();
   });
 
-  it("debe actualizar el preview instantáneamente al escribir en un campo", async () => {
+  it('debe actualizar el preview instantáneamente al escribir en un campo', async () => {
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
     const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
     expect(nombresInput).not.toBeNull();
-    console.log("DIAGNOSTIC - nombresInput value:", nombresInput.value);
-    
+    console.log('DIAGNOSTIC - nombresInput value:', nombresInput.value);
+
     // Change input value
-    fireEvent.change(nombresInput, { target: { value: "Santiago" } });
+    fireEvent.change(nombresInput, { target: { value: 'Santiago' } });
 
     // Check if the preview reflects the change instantly
-    expect(screen.getByText("Santiago")).toBeInTheDocument();
+    expect(screen.getByText('Santiago')).toBeInTheDocument();
   });
 
-  it("debe cambiar el color en el preview al seleccionar un color en el picker", async () => {
+  it('debe cambiar el color en el preview al seleccionar un color en el picker', async () => {
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
     // Default primary color is #F59E0B for cumpleanos-esencial
     const wrapper = container.querySelector('[style*="--primary"]');
     expect(wrapper).not.toBeNull();
-    let styleAttr = wrapper?.getAttribute("style") || "";
-    expect(styleAttr.toLowerCase()).toContain("--primary: #f59e0b");
+    let styleAttr = wrapper?.getAttribute('style') || '';
+    expect(styleAttr.toLowerCase()).toContain('--primary: #f59e0b');
 
     // Get color principal text input (associated with default color value)
     const colorInput = container.querySelector('input[name="colorPrimario"]') as HTMLInputElement;
     expect(colorInput).not.toBeNull();
-    
+
     // Change color input value to #ff0000
-    fireEvent.change(colorInput, { target: { value: "#ff0000" } });
+    fireEvent.change(colorInput, { target: { value: '#ff0000' } });
 
     // Check if the wrapper style was updated
     await waitFor(() => {
-      const updatedStyle = wrapper?.getAttribute("style") || "";
-      expect(updatedStyle).toContain("--primary: #ff0000");
+      const updatedStyle = wrapper?.getAttribute('style') || '';
+      expect(updatedStyle).toContain('--primary: #ff0000');
     });
   });
 
-  it("debe guardar como borrador exitosamente aun con campos vacios", async () => {
-    const { savePedidoDatosAction } = await import("@/app/(admin)/admin/pedidos/[id]/editar/actions");
+  it('debe guardar como borrador exitosamente aun con campos vacios', async () => {
+    const { savePedidoDatosAction } =
+      await import('@/app/(admin)/admin/pedidos/[id]/editar/actions');
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
     const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
     expect(nombresInput).not.toBeNull();
-    fireEvent.change(nombresInput, { target: { value: "" } });
+    fireEvent.change(nombresInput, { target: { value: '' } });
 
     // Submit the form directly
-    const form = container.querySelector("form");
+    const form = container.querySelector('form');
     expect(form).not.toBeNull();
     fireEvent.submit(form!);
 
     // Log the page content or form state to see if there are validation errors
-    const errorElements = container.querySelectorAll(".text-rose-500");
+    const errorElements = container.querySelectorAll('.text-rose-500');
     if (errorElements.length > 0) {
-      console.log("VALIDATION ERRORS FOUND IN TEST:");
-      errorElements.forEach(el => console.log("-", el.textContent));
+      console.log('VALIDATION ERRORS FOUND IN TEST:');
+      errorElements.forEach((el) => console.log('-', el.textContent));
     }
 
     await waitFor(() => {
@@ -129,16 +139,17 @@ describe("EditorClient Component Tests", () => {
     });
   });
 
-  it("debe fallar al publicar y mostrar errores si hay campos requeridos vacios", async () => {
-    const { publicarInvitacionAction } = await import("@/app/(admin)/admin/pedidos/[id]/editar/actions");
+  it('debe fallar al publicar y mostrar errores si hay campos requeridos vacios', async () => {
+    const { publicarInvitacionAction } =
+      await import('@/app/(admin)/admin/pedidos/[id]/editar/actions');
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
     const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
     expect(nombresInput).not.toBeNull();
-    fireEvent.change(nombresInput, { target: { value: "" } });
+    fireEvent.change(nombresInput, { target: { value: '' } });
 
     // Click "Publicar"
-    const publishBtn = screen.getByRole("button", { name: /^Publicar$/i });
+    const publishBtn = screen.getByRole('button', { name: /^Publicar$/i });
     fireEvent.click(publishBtn);
 
     // Assert that validation error is displayed
@@ -150,38 +161,37 @@ describe("EditorClient Component Tests", () => {
     expect(publicarInvitacionAction).not.toHaveBeenCalled();
   });
 
-  it("debe mostrar skeleton loader durante la carga inicial", async () => {
+  it('debe mostrar skeleton loader durante la carga inicial', async () => {
     render(<EditorClient pedido={mockPedido as any} initialIsLoading={true} />);
-    expect(screen.getByTestId("editor-skeleton")).toBeInTheDocument();
+    expect(screen.getByTestId('editor-skeleton')).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.queryByTestId("editor-skeleton")).not.toBeInTheDocument();
+      expect(screen.queryByTestId('editor-skeleton')).not.toBeInTheDocument();
     });
   });
 
-  it("debe alternar el viewport entre móvil y escritorio", async () => {
+  it('debe alternar el viewport entre móvil y escritorio', async () => {
     render(<EditorClient pedido={mockPedido as any} />);
     await waitFor(() => {
-      expect(screen.queryByTestId("editor-skeleton")).not.toBeInTheDocument();
+      expect(screen.queryByTestId('editor-skeleton')).not.toBeInTheDocument();
     });
 
-    const simulator = screen.getByTestId("device-simulator");
-    expect(simulator.className).toContain("max-w-[360px]");
-    
-    const desktopBtn = screen.getByText("🖥️ Escritorio");
+    const simulator = screen.getByTestId('device-simulator');
+    expect(simulator.className).toContain('max-w-[360px]');
+
+    const desktopBtn = screen.getByText('🖥️ Escritorio');
     fireEvent.click(desktopBtn);
-    expect(simulator.className).toContain("max-w-[768px]");
+    expect(simulator.className).toContain('max-w-[768px]');
   });
 
-  it("debe mostrar watermark si la invitación está en estado borrador", async () => {
+  it('debe mostrar watermark si la invitación está en estado borrador', async () => {
     const borradorPedido = {
       ...mockPedido,
-      estadoInvitacion: "BORRADOR",
+      estadoInvitacion: 'BORRADOR',
     };
     render(<EditorClient pedido={borradorPedido as any} />);
     await waitFor(() => {
-      expect(screen.queryByTestId("editor-skeleton")).not.toBeInTheDocument();
+      expect(screen.queryByTestId('editor-skeleton')).not.toBeInTheDocument();
     });
-    expect(screen.getByTestId("watermark-borrador")).toBeInTheDocument();
+    expect(screen.getByTestId('watermark-borrador')).toBeInTheDocument();
   });
-
 });

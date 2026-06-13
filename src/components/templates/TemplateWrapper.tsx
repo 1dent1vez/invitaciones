@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import { motion } from "framer-motion";
-import { InvitacionData } from "@/types";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { InvitacionData } from '@/types';
 
 interface TemplateWrapperProps {
   children: React.ReactNode;
@@ -11,16 +11,16 @@ interface TemplateWrapperProps {
 
 export function TemplateWrapper({ children, data }: TemplateWrapperProps) {
   const safeData = data || {};
-  const primaryColor = safeData.colorPrincipal || safeData.colorPrimario || "#8B5CF6";
-  const secondaryColor = safeData.colorSecundario || "#EC4899";
+  const primaryColor = safeData.colorPrincipal || safeData.colorPrimario || '#8B5CF6';
+  const secondaryColor = safeData.colorSecundario || '#EC4899';
 
   const themeStyles = {
-    "--primary": primaryColor,
-    "--secondary": secondaryColor,
+    '--primary': primaryColor,
+    '--secondary': secondaryColor,
   } as React.CSSProperties;
 
   return (
-    <div 
+    <div
       style={themeStyles}
       className="min-h-screen w-full bg-[#030712] text-slate-100 flex justify-center selection:bg-[var(--primary)] selection:text-white"
     >

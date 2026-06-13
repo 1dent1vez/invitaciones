@@ -7,24 +7,24 @@ export function generarTextoNotificacion(
   hora?: string,
   lugar?: string
 ): string {
-  const cleanNombre = nombreCliente || "cliente";
-  const cleanUrl = urlPublica || "";
-  const cleanQr = qrUrl || "";
+  const cleanNombre = nombreCliente || 'cliente';
+  const cleanUrl = urlPublica || '';
+  const cleanQr = qrUrl || '';
 
-  const emoji = "🎉";
-  const tipoText = "invitación de cumpleaños";
+  const emoji = '🎉';
+  const tipoText = 'invitación de cumpleaños';
 
-  let detallesText = "";
+  let detallesText = '';
   if (fecha) {
     let dateText = fecha;
     try {
       const d = new Date(fecha);
       if (!isNaN(d.getTime())) {
-        dateText = d.toLocaleDateString("es-ES", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
+        dateText = d.toLocaleDateString('es-ES', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
         });
       }
     } catch {

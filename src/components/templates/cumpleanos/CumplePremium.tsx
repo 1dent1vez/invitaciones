@@ -1,43 +1,55 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { 
-  Calendar, Clock, MapPin, Sparkles, Volume2, VolumeX, 
-  Image as ImageIcon, Gift, Shirt, Milestone, BookOpen, MessageSquare, 
-  QrCode, UserCheck, Video 
-} from "lucide-react";
-import { InvitacionData } from "@/types";
-import { motion } from "framer-motion";
-import { getOptimizedImageUrl, formatFechaMX, parseItinerario } from "./shared/utils";
-import { MapsLink } from "./shared/MapsLink";
-import { RSVPForm } from "./shared/RSVPForm";
+import React, { useState, useEffect } from 'react';
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Image as ImageIcon,
+  Gift,
+  Shirt,
+  Milestone,
+  BookOpen,
+  MessageSquare,
+  QrCode,
+  UserCheck,
+  Video,
+} from 'lucide-react';
+import { InvitacionData } from '@/types';
+import { motion } from 'framer-motion';
+import { getOptimizedImageUrl, formatFechaMX, parseItinerario } from './shared/utils';
+import { MapsLink } from './shared/MapsLink';
+import { RSVPForm } from './shared/RSVPForm';
 
-if (typeof window !== "undefined" && !window.IntersectionObserver) {
-  Object.defineProperty(window, "IntersectionObserver", {
+if (typeof window !== 'undefined' && !window.IntersectionObserver) {
+  Object.defineProperty(window, 'IntersectionObserver', {
     writable: true,
     configurable: true,
     value: class IntersectionObserver {
       observe() {}
       unobserve() {}
       disconnect() {}
-    }
+    },
   });
 }
 
 function triggerConfetti() {
-  if (typeof window === "undefined") return () => {};
-  
-  const canvas = document.createElement("canvas");
-  canvas.style.position = "fixed";
-  canvas.style.top = "0";
-  canvas.style.left = "0";
-  canvas.style.width = "100%";
-  canvas.style.height = "100%";
-  canvas.style.pointerEvents = "none";
-  canvas.style.zIndex = "9999";
+  if (typeof window === 'undefined') return () => {};
+
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'fixed';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '9999';
   document.body.appendChild(canvas);
 
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext('2d');
   if (!ctx) return () => {};
 
   let width = (canvas.width = window.innerWidth);
@@ -47,9 +59,9 @@ function triggerConfetti() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
   };
-  window.addEventListener("resize", resizeHandler);
+  window.addEventListener('resize', resizeHandler);
 
-  const colors = ["#FF6B6B", "#4ECDC4", "#FFE66D", "#aa77ff", "#ff77ff"];
+  const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#aa77ff', '#ff77ff'];
   const particles: Array<{
     x: number;
     y: number;
@@ -102,15 +114,15 @@ function triggerConfetti() {
       if (canvas.parentNode) {
         document.body.removeChild(canvas);
       }
-      window.removeEventListener("resize", resizeHandler);
+      window.removeEventListener('resize', resizeHandler);
     }
   }
 
   update();
-  
+
   return () => {
     cancelAnimationFrame(animationFrameId);
-    window.removeEventListener("resize", resizeHandler);
+    window.removeEventListener('resize', resizeHandler);
     if (canvas.parentNode) {
       document.body.removeChild(canvas);
     }
@@ -118,7 +130,12 @@ function triggerConfetti() {
 }
 
 function CountdownTimer({ fecha }: { fecha: string }) {
-  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+  const [timeLeft, setTimeLeft] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  } | null>(null);
 
   useEffect(() => {
     const target = new Date(fecha).getTime();
@@ -148,10 +165,10 @@ function CountdownTimer({ fecha }: { fecha: string }) {
   if (!timeLeft) return null;
 
   const units = [
-    { label: "Días", value: timeLeft.days },
-    { label: "Hrs", value: timeLeft.hours },
-    { label: "Min", value: timeLeft.minutes },
-    { label: "Seg", value: timeLeft.seconds },
+    { label: 'Días', value: timeLeft.days },
+    { label: 'Hrs', value: timeLeft.hours },
+    { label: 'Min', value: timeLeft.minutes },
+    { label: 'Seg', value: timeLeft.seconds },
   ];
 
   return (
@@ -162,8 +179,12 @@ function CountdownTimer({ fecha }: { fecha: string }) {
           layout
           className="bg-slate-900/60 border border-[var(--primary)]/15 rounded-xl p-2 backdrop-blur-md"
         >
-          <div className="text-lg font-bold text-white font-mono tracking-tight">{String(unit.value).padStart(2, "0")}</div>
-          <div className="text-[9px] uppercase tracking-wider text-[var(--primary)] mt-0.5 font-semibold">{unit.label}</div>
+          <div className="text-lg font-bold text-white font-mono tracking-tight">
+            {String(unit.value).padStart(2, '0')}
+          </div>
+          <div className="text-[9px] uppercase tracking-wider text-[var(--primary)] mt-0.5 font-semibold">
+            {unit.label}
+          </div>
         </motion.div>
       ))}
     </div>
@@ -198,7 +219,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play().catch(err => console.log("Audio play failed:", err));
+      audio.play().catch((err) => console.log('Audio play failed:', err));
     }
     setIsPlaying(!isPlaying);
   };
@@ -211,52 +232,56 @@ export function CumplePremium({ data }: CumplePremiumProps) {
     }
   }, [data.confettiAnimacion, data.fecha]); // include date to re-trigger if dates change
 
-  const nombreFestejado = data.nombre || data.nombres || "Festejado";
-  const edadFestejado = data.edad || "";
-  const fraseMensaje = data.mensaje || "¡Celebremos juntos esta fecha especial!";
-  const fotoPortada = getOptimizedImageUrl(data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop");
-  const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
-  const direccionFiesta = data.direccion || "";
-  const mapaUrl = data.mapaUrl || data.mapsLink || "";
-  const horaFiesta = data.hora || "";
-  
+  const nombreFestejado = data.nombre || data.nombres || 'Festejado';
+  const edadFestejado = data.edad || '';
+  const fraseMensaje = data.mensaje || '¡Celebremos juntos esta fecha especial!';
+  const fotoPortada = getOptimizedImageUrl(
+    data.fotoPortada ||
+      data.portadaUrl ||
+      'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop'
+  );
+  const lugarFiesta = data.lugar || data.ubicacion || 'Lugar del Evento';
+  const direccionFiesta = data.direccion || '';
+  const mapaUrl = data.mapaUrl || data.mapsLink || '';
+  const horaFiesta = data.hora || '';
+
   // Gallery and completion features
   const galleryPhotos = data.fotosGaleria || data.fotos || [];
   const extraPhotos = data.fotosExtra || [];
   const allPhotos = [...galleryPhotos, ...extraPhotos].slice(0, 12);
 
-  const codeVestimenta = data.dressCode || "";
-  const descVestimenta = data.dressCodeDesc || "";
-  const mensajeFestejo = data.mensajeFestejo || "";
+  const codeVestimenta = data.dressCode || '';
+  const descVestimenta = data.dressCodeDesc || '';
+  const mensajeFestejo = data.mensajeFestejo || '';
   const itinerarioEventos = parseItinerario(data.itinerario);
-  const regalosBanco = data.datosRegalo || data.regalosDatos || "";
+  const regalosBanco = data.datosRegalo || data.regalosDatos || '';
   const mesaRegalosActiva = data.mesaRegalos || false;
-  const mesaRegalosDetalles = data.mesaRegalosDatos || "";
+  const mesaRegalosDetalles = data.mesaRegalosDatos || '';
 
   // Premium specific features
-  const histEdad = data.historiaEdad || "";
-  const histSeres = data.historiaSeresQueridos || "";
-  const histRecuerdo = data.historiaRecuerdo || "";
+  const histEdad = data.historiaEdad || '';
+  const histSeres = data.historiaSeresQueridos || '';
+  const histRecuerdo = data.historiaRecuerdo || '';
   const tieneHistoria = histEdad || histSeres || histRecuerdo;
 
   const activarBuzon = data.buzonDeseos || false;
   const tienePases = data.pases || false;
   const numPasesDefault = data.numPases || 2;
-  const tematicaDeco = data.tematica || "";
-  const videoURL = data.videoURL || "";
-  const colorAcento = data.colorAcento || "Dorado";
+  const tematicaDeco = data.tematica || '';
+  const videoURL = data.videoURL || '';
+  const colorAcento = data.colorAcento || 'Dorado';
 
   // Parse date
   const dateObj = data.fecha ? new Date(data.fecha) : null;
-  let dateText = "";
+  let dateText = '';
   if (dateObj && !isNaN(dateObj.getTime())) {
     dateText = formatFechaMX(dateObj);
   } else {
-    dateText = data.fecha || "";
+    dateText = data.fecha || '';
   }
 
   // Parse RSVP deadline date
-  let limitDateText = "";
+  let limitDateText = '';
   try {
     if (data.fechaLimiteRSVP) {
       const d = new Date(data.fechaLimiteRSVP);
@@ -294,7 +319,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
           alt="Cumpleañero"
           className="absolute inset-0 w-full h-full object-cover select-none"
         />
-        
+
         {/* Confetti float button */}
         {data.confettiAnimacion !== false && (
           <button
@@ -312,7 +337,11 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             onClick={toggleMusic}
             className="absolute top-6 right-6 z-20 h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/70 border border-white/10 text-[var(--primary)] backdrop-blur-sm shadow-xl active:scale-95 transition-all"
           >
-            {isPlaying ? <Volume2 className="h-5 w-5 animate-pulse" /> : <VolumeX className="h-5 w-5 text-slate-400" />}
+            {isPlaying ? (
+              <Volume2 className="h-5 w-5 animate-pulse" />
+            ) : (
+              <VolumeX className="h-5 w-5 text-slate-400" />
+            )}
           </button>
         )}
 
@@ -320,7 +349,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
           <div className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20 mb-1">
             <Sparkles className="h-4.5 w-4.5" />
           </div>
-          <p className="text-2xs uppercase tracking-[0.3em] text-[var(--primary)] font-bold">VIP Invitation</p>
+          <p className="text-2xs uppercase tracking-[0.3em] text-[var(--primary)] font-bold">
+            VIP Invitation
+          </p>
           <h1 className="text-4xl font-extrabold text-white uppercase tracking-tight font-sans">
             Mis {edadFestejado} Años
           </h1>
@@ -337,7 +368,6 @@ export function CumplePremium({ data }: CumplePremiumProps) {
 
       {/* Main Content */}
       <div className="px-6 space-y-10 mt-4 relative z-10">
-        
         {/* Frase Festejo */}
         <div className="text-center py-2">
           <p className="text-sm italic font-light text-slate-400 max-w-xs mx-auto leading-relaxed">
@@ -359,9 +389,15 @@ export function CumplePremium({ data }: CumplePremiumProps) {
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿Cuándo?</span>
+              <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">
+                ¿Cuándo?
+              </span>
               <p className="text-sm font-semibold text-white capitalize">{dateText}</p>
-              {horaFiesta && <p className="text-xs text-slate-400 flex items-center gap-1"><Clock className="h-3 w-3" /> A las {horaFiesta} hrs</p>}
+              {horaFiesta && (
+                <p className="text-xs text-slate-400 flex items-center gap-1">
+                  <Clock className="h-3 w-3" /> A las {horaFiesta} hrs
+                </p>
+              )}
             </div>
           </div>
 
@@ -370,10 +406,12 @@ export function CumplePremium({ data }: CumplePremiumProps) {
               <MapPin className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">¿Dónde?</span>
+              <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">
+                ¿Dónde?
+              </span>
               <p className="text-sm font-semibold text-white">{lugarFiesta}</p>
               {direccionFiesta && <p className="text-xs text-slate-400">{direccionFiesta}</p>}
-              
+
               <div className="mt-2 w-full max-w-xs">
                 <MapsLink direccion={direccionFiesta} mapaUrl={mapaUrl} />
               </div>
@@ -386,7 +424,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
                 <Clock className="h-5 w-5" />
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">Límite para Confirmar</span>
+                <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">
+                  Límite para Confirmar
+                </span>
                 <p className="text-sm font-semibold text-white">Antes del {limitDateText}</p>
                 <p className="text-[10px] text-slate-400">Agradecemos tu pronta confirmación.</p>
               </div>
@@ -400,7 +440,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             <div className="h-9 w-9 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] border border-[var(--primary)]/25 mb-1 animate-pulse">
               <UserCheck className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] tracking-widest text-[var(--primary)] uppercase font-bold">Tu Pase Personalizado</span>
+            <span className="text-[10px] tracking-widest text-[var(--primary)] uppercase font-bold">
+              Tu Pase Personalizado
+            </span>
             <p className="text-xs text-slate-400">Esta invitación es válida para:</p>
             <p className="text-xl font-black text-white font-mono tracking-wider bg-slate-950 px-4 py-1.5 rounded-xl border border-slate-900 mt-2">
               {numPasesDefault} PASES
@@ -411,7 +453,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
         {/* Mensaje del Festejado */}
         {mensajeFestejo && (
           <div className="bg-slate-900/40 border border-[var(--primary)]/10 rounded-2xl p-6 text-center space-y-2 shadow-inner">
-            <span className="text-[10px] tracking-widest text-[var(--primary)] uppercase font-bold block">Mensaje Especial</span>
+            <span className="text-[10px] tracking-widest text-[var(--primary)] uppercase font-bold block">
+              Mensaje Especial
+            </span>
             <p className="text-xs text-slate-300 leading-relaxed font-light whitespace-pre-line">
               {mensajeFestejo}
             </p>
@@ -447,7 +491,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             <div className="space-y-4">
               {histEdad && (
                 <div className="bg-slate-900/40 border-l-2 border-[var(--primary)] p-4 rounded-r-xl space-y-1">
-                  <h4 className="text-xs font-bold text-white uppercase">El Significado de esta Edad</h4>
+                  <h4 className="text-xs font-bold text-white uppercase">
+                    El Significado de esta Edad
+                  </h4>
                   <p className="text-xs text-slate-400 leading-relaxed font-light">{histEdad}</p>
                 </div>
               )}
@@ -460,7 +506,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
               {histRecuerdo && (
                 <div className="bg-slate-900/40 border-l-2 border-amber-500/80 p-4 rounded-r-xl space-y-1">
                   <h4 className="text-xs font-bold text-white uppercase">Un Recuerdo Especial</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed font-light">{histRecuerdo}</p>
+                  <p className="text-xs text-slate-400 leading-relaxed font-light">
+                    {histRecuerdo}
+                  </p>
                 </div>
               )}
             </div>
@@ -484,7 +532,11 @@ export function CumplePremium({ data }: CumplePremiumProps) {
                     {idx + 1}
                   </div>
                   <div className="space-y-0.5">
-                    {item.hora && <span className="text-[10px] font-mono text-[var(--primary)] font-semibold">{item.hora}</span>}
+                    {item.hora && (
+                      <span className="text-[10px] font-mono text-[var(--primary)] font-semibold">
+                        {item.hora}
+                      </span>
+                    )}
                     <h4 className="text-sm font-bold text-white">{item.event}</h4>
                   </div>
                 </div>
@@ -502,7 +554,10 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             </span>
             <div className="grid grid-cols-3 gap-2">
               {allPhotos.map((photo, index) => (
-                <div key={index} className="aspect-square rounded-xl overflow-hidden border border-slate-900 shadow-md group relative">
+                <div
+                  key={index}
+                  className="aspect-square rounded-xl overflow-hidden border border-slate-900 shadow-md group relative"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo}
@@ -522,7 +577,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-950 text-[var(--primary)] border border-[var(--primary)]/15 mb-1">
               <Shirt className="h-5 w-5" />
             </div>
-            <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">Código de Vestimenta</span>
+            <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">
+              Código de Vestimenta
+            </span>
             <p className="text-sm font-bold text-white uppercase">{codeVestimenta}</p>
             {descVestimenta && <p className="text-xs text-slate-400 max-w-xs">{descVestimenta}</p>}
             {colorAcento && (
@@ -539,8 +596,13 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             <QrCode className="h-4.5 w-4.5" />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] tracking-widest text-[var(--primary)] uppercase font-bold">Comparte tus fotos</span>
-            <p className="text-xs text-slate-400 max-w-xs">Durante el evento, escanea el código QR en las mesas para subir tus recuerdos a nuestro álbum colectivo.</p>
+            <span className="text-[10px] tracking-widest text-[var(--primary)] uppercase font-bold">
+              Comparte tus fotos
+            </span>
+            <p className="text-xs text-slate-400 max-w-xs">
+              Durante el evento, escanea el código QR en las mesas para subir tus recuerdos a
+              nuestro álbum colectivo.
+            </p>
           </div>
           <div className="h-32 w-32 bg-white p-2.5 rounded-xl border border-slate-900 shadow-md flex items-center justify-center relative group select-none">
             {/* Simple simulated QR pattern */}
@@ -563,7 +625,9 @@ export function CumplePremium({ data }: CumplePremiumProps) {
             )}
             {mesaRegalosActiva && mesaRegalosDetalles && (
               <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-900 text-xs">
-                <span className="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">Mesa Registrada</span>
+                <span className="text-[10px] text-slate-400 font-semibold block uppercase tracking-wide">
+                  Mesa Registrada
+                </span>
                 <span className="text-white font-medium">{mesaRegalosDetalles}</span>
               </div>
             )}
@@ -577,7 +641,10 @@ export function CumplePremium({ data }: CumplePremiumProps) {
               <MessageSquare className="h-5 w-5" />
               <span className="text-xs uppercase tracking-widest font-bold">Buzón de Deseos</span>
             </div>
-            <p className="text-xs text-slate-400">Deja un mensaje especial de felicitación en la caja de comentarios al confirmar tu asistencia.</p>
+            <p className="text-xs text-slate-400">
+              Deja un mensaje especial de felicitación en la caja de comentarios al confirmar tu
+              asistencia.
+            </p>
           </div>
         )}
 

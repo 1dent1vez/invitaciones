@@ -1,17 +1,19 @@
-"use client";
+'use client';
 
-import { motion, useReducedMotion } from "framer-motion";
-import { Gift, Sparkles, Send } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { motion, useReducedMotion } from 'framer-motion';
+import { Gift, Sparkles, Send } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function FinalCTA() {
   const shouldReduceMotion = useReducedMotion();
 
   // Animaciones spring para el botón
   const buttonAnimVariants = {
-    hover: shouldReduceMotion ? {} : { scale: 1.05, transition: { type: "spring", stiffness: 300, damping: 10 } },
+    hover: shouldReduceMotion
+      ? {}
+      : { scale: 1.05, transition: { type: 'spring', stiffness: 300, damping: 10 } },
     tap: shouldReduceMotion ? {} : { scale: 0.95 },
   };
 
@@ -25,7 +27,7 @@ export default function FinalCTA() {
           transition: {
             duration: 5,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           },
         },
   };
@@ -56,7 +58,8 @@ export default function FinalCTA() {
             ¿Quieres que tu fiesta empiece desde el primer mensaje?
           </h2>
           <p className="text-base sm:text-lg text-carbon-suave/80 font-medium">
-            No dejes la confirmación al último momento. Dale a tus invitados una invitación digna de tu evento. Nosotros nos encargamos de todo el diseño.
+            No dejes la confirmación al último momento. Dale a tus invitados una invitación digna de
+            tu evento. Nosotros nos encargamos de todo el diseño.
           </p>
         </div>
 
@@ -65,8 +68,8 @@ export default function FinalCTA() {
           <Link
             href="#contacto"
             className={cn(
-              buttonVariants({ size: "lg" }),
-              "bg-terracota hover:bg-terracota/95 text-white font-extrabold rounded-full px-12 py-7 text-lg sm:text-xl shadow-2xl shadow-terracota/30 inline-flex items-center gap-3 cursor-pointer h-auto"
+              buttonVariants({ size: 'lg' }),
+              'bg-terracota hover:bg-terracota/95 text-white font-extrabold rounded-full px-12 py-7 text-lg sm:text-xl shadow-2xl shadow-terracota/30 inline-flex items-center gap-3 cursor-pointer h-auto'
             )}
           >
             <motion.span

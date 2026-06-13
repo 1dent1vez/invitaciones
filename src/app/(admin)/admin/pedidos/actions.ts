@@ -1,21 +1,20 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
-import { ActionResult, PedidoInput } from "@/types";
-import { pedidoSchema } from "./schemas";
-
+import { revalidatePath } from 'next/cache';
+import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
+import { ActionResult, PedidoInput } from '@/types';
+import { pedidoSchema } from './schemas';
 
 function slugify(text: string): string {
   return text
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove accents
-    .replace(/[^a-z0-9\s-]/g, "") // remove special characters
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove accents
+    .replace(/[^a-z0-9\s-]/g, '') // remove special characters
     .trim()
-    .replace(/\s+/g, "-") // replace spaces with dashes
-    .replace(/-+/g, "-"); // collapse multiple dashes
+    .replace(/\s+/g, '-') // replace spaces with dashes
+    .replace(/-+/g, '-'); // collapse multiple dashes
 }
 
 export async function getUniqueSlug(clientName: string, eventDate: Date): Promise<string> {
@@ -36,12 +35,14 @@ export async function getUniqueSlug(clientName: string, eventDate: Date): Promis
   return slug;
 }
 
-export async function createPedidoAction(input: PedidoInput): Promise<ActionResult<{ id: string }>> {
+export async function createPedidoAction(
+  input: PedidoInput
+): Promise<ActionResult<{ id: string }>> {
   try {
     const parsed = pedidoSchema.safeParse(input);
     if (!parsed.success) {
-      console.error("[createPedidoAction] Zod validation failed:", parsed.error.format());
-      return { success: false, error: parsed.error.issues[0]?.message || "Datos no válidos" };
+      console.error('[createPedidoAction] Zod validation failed:', parsed.error.format());
+      return { success: false, error: parsed.error.issues[0]?.message || 'Datos no válidos' };
     }
 
     const client = await prisma.cliente.findUnique({
@@ -49,29 +50,30 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
     });
 
     if (!client) {
-      return { success: false, error: "El cliente seleccionado no existe" };
+      return { success: false, error: 'El cliente seleccionado no existe' };
     }
 
     const eventDate = new Date(parsed.data.fechaEvento);
     if (isNaN(eventDate.getTime())) {
-      console.error("[createPedidoAction] Invalid date:", parsed.data.fechaEvento);
-      return { success: false, error: "La fecha del evento no es válida" };
+      console.error('[createPedidoAction] Invalid date:', parsed.data.fechaEvento);
+      return { success: false, error: 'La fecha del evento no es válida' };
     }
 
     // Initial default variables for the invitation template
     const defaultDatosJson = {
       nombre: client.nombre,
       fecha: parsed.data.fechaEvento,
-      lugar: "",
-      direccion: "",
-      colorPrimario: "#f59e0b",
-      colorSecundario: "#1f2937",
-      fotoPortada: "",
-      mensaje: "¡Estás invitado a celebrar conmigo!",
+      lugar: '',
+      direccion: '',
+      colorPrimario: '#f59e0b',
+      colorSecundario: '#1f2937',
+      fotoPortada: '',
+      mensaje: '¡Estás invitado a celebrar conmigo!',
     };
 
     const slug = await getUniqueSlug(client.nombre, eventDate);
-    const host = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+    const host =
+      process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
     const urlPublica = `${host}/i/${slug}`;
 
     const pedido = await prisma.pedido.create({
@@ -83,18 +85,21 @@ export async function createPedidoAction(input: PedidoInput): Promise<ActionResu
         template: parsed.data.template,
         precio: new Prisma.Decimal(parsed.data.precio),
         notas: parsed.data.notas || null,
-        estado: "cotizado",
+        estado: 'cotizado',
         slug,
         urlPublica,
         datosInvitacion: defaultDatosJson as Prisma.InputJsonValue,
       },
     });
 
-    revalidatePath("/admin/pedidos");
+    revalidatePath('/admin/pedidos');
     return { success: true, data: { id: pedido.id } };
   } catch (error) {
-    console.error("[createPedidoAction] Database error:", error);
-    return { success: false, error: "Error al registrar el pedido. Por favor, intente nuevamente." };
+    console.error('[createPedidoAction] Database error:', error);
+    return {
+      success: false,
+      error: 'Error al registrar el pedido. Por favor, intente nuevamente.',
+    };
   }
 }
 
@@ -103,11 +108,18 @@ export async function updatePedidoEstadoAction(
   nuevoEstado: string
 ): Promise<ActionResult<void>> {
   try {
-    if (!id) return { success: false, error: "ID del pedido es requerido" };
+    if (!id) return { success: false, error: 'ID del pedido es requerido' };
 
-    const validStates = ["cotizado", "pagado", "en_produccion", "entregado", "completado", "cancelado"];
+    const validStates = [
+      'cotizado',
+      'pagado',
+      'en_produccion',
+      'entregado',
+      'completado',
+      'cancelado',
+    ];
     if (!validStates.includes(nuevoEstado)) {
-      return { success: false, error: "Estado no válido" };
+      return { success: false, error: 'Estado no válido' };
     }
 
     await prisma.pedido.update({
@@ -115,12 +127,12 @@ export async function updatePedidoEstadoAction(
       data: { estado: nuevoEstado },
     });
 
-    revalidatePath("/admin/pedidos");
+    revalidatePath('/admin/pedidos');
     revalidatePath(`/admin/pedidos/${id}`);
-    revalidatePath("/admin");
+    revalidatePath('/admin');
     return { success: true };
   } catch (error) {
-    console.error("[updatePedidoEstadoAction]", error);
-    return { success: false, error: "Error al actualizar el estado del pedido" };
+    console.error('[updatePedidoEstadoAction]', error);
+    return { success: false, error: 'Error al actualizar el estado del pedido' };
   }
 }

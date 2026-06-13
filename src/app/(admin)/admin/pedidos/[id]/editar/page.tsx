@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { EditorClient } from "./editor-client";
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { EditorClient } from './editor-client';
 
 export const revalidate = 0;
 

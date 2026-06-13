@@ -1,5 +1,5 @@
-import React from "react";
-import { MapPin } from "lucide-react";
+import React from 'react';
+import { MapPin } from 'lucide-react';
 
 interface MapsLinkProps {
   direccion?: string;
@@ -17,9 +17,13 @@ export function MapsLink({ direccion, coordenadas, mapaUrl }: MapsLinkProps) {
       />
     );
   }
-  const href = mapaUrl || (direccion ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}` : "");
+  const href =
+    mapaUrl ||
+    (direccion
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`
+      : '');
   if (!href) return null;
-  
+
   return (
     <a
       href={href}

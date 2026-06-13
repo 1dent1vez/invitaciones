@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { AlertTriangle, RotateCcw, Home } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useEffect } from 'react';
+import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function ErrorPage({
   error,
@@ -30,7 +30,8 @@ export default function ErrorPage({
             Ha ocurrido un problema
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed px-4">
-            Ocurrió un error inesperado al procesar la solicitud. Si el problema persiste, ponte en contacto con soporte.
+            Ocurrió un error inesperado al procesar la solicitud. Si el problema persiste, ponte en
+            contacto con soporte.
           </p>
         </div>
 

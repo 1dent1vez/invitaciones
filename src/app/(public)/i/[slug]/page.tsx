@@ -1,12 +1,12 @@
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
-import { headers } from "next/headers";
-import { prisma } from "@/lib/prisma";
-import { TEMPLATE_COMPONENTS } from "@/lib/templates";
-import { TemplateWrapper } from "@/components/templates/TemplateWrapper";
-import { TemplateType, InvitacionData } from "@/types";
-import { PublicRSVPForm } from "./rsvp-form";
-import { registrarVisitaAction } from "./actions";
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { prisma } from '@/lib/prisma';
+import { TEMPLATE_COMPONENTS } from '@/lib/templates';
+import { TemplateWrapper } from '@/components/templates/TemplateWrapper';
+import { TemplateType, InvitacionData } from '@/types';
+import { PublicRSVPForm } from './rsvp-form';
+import { registrarVisitaAction } from './actions';
 
 export const revalidate = 0;
 
@@ -24,23 +24,23 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
       where: { slug },
     });
 
-    if (!order || !order.datosInvitacion || order.estadoInvitacion !== "PUBLICADA") {
+    if (!order || !order.datosInvitacion || order.estadoInvitacion !== 'PUBLICADA') {
       return {
-        title: "Invitación Digital",
+        title: 'Invitación Digital',
       };
     }
 
     const datos = order.datosInvitacion as unknown as InvitacionData;
-    const title = datos.nombre || datos.nombres || "Mi Cumpleaños";
-    
-    let dateText = "";
+    const title = datos.nombre || datos.nombres || 'Mi Cumpleaños';
+
+    let dateText = '';
     try {
       const d = new Date(datos.fecha || order.fechaEvento);
       if (!isNaN(d.getTime())) {
-        dateText = d.toLocaleDateString("es-ES", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
+        dateText = d.toLocaleDateString('es-ES', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
         });
       }
     } catch {
@@ -48,7 +48,11 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
     }
 
     const description = `Te invitamos a celebrar mi Cumpleaños el día ${dateText}. Haz clic para ver los detalles del evento y confirmar tu asistencia.`;
-    const ogImage = datos.fotoPortada || datos.portadaUrl || (datos.fotos && datos.fotos[0]) || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop";
+    const ogImage =
+      datos.fotoPortada ||
+      datos.portadaUrl ||
+      (datos.fotos && datos.fotos[0]) ||
+      'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop';
 
     return {
       title: `${title} | Invitación Digital`,
@@ -64,10 +68,10 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
             alt: title,
           },
         ],
-        type: "website",
+        type: 'website',
       },
       twitter: {
-        card: "summary_large_image",
+        card: 'summary_large_image',
         title: `${title} | Invitación Digital`,
         description,
         images: [ogImage],
@@ -75,7 +79,7 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
     };
   } catch {
     return {
-      title: "Invitación Digital",
+      title: 'Invitación Digital',
     };
   }
 }
@@ -87,7 +91,7 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
     where: { slug },
   });
 
-  if (!order || !order.datosInvitacion || order.estadoInvitacion !== "PUBLICADA") {
+  if (!order || !order.datosInvitacion || order.estadoInvitacion !== 'PUBLICADA') {
     notFound();
   }
 
@@ -96,14 +100,14 @@ export default async function PublicInvitationPage({ params }: PublicInvitationP
   let userAgent: string | null = null;
   try {
     const headersList = headers();
-    ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip");
-    userAgent = headersList.get("user-agent");
+    ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip');
+    userAgent = headersList.get('user-agent');
   } catch {
     // Graceful fallback for non-request scope contexts (like Vitest)
   }
 
   registrarVisitaAction(slug, ip, userAgent).catch((err) => {
-    console.error("Error al registrar la visita en analytics:", err);
+    console.error('Error al registrar la visita en analytics:', err);
   });
 
   const templateType = order.template as TemplateType;

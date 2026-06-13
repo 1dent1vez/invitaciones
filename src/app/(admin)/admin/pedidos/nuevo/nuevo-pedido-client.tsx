@@ -1,46 +1,51 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm, Resolver } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { 
-  FileText, 
-  UserPlus, 
-  ArrowRight, 
-  ArrowLeft, 
-  Loader2, 
-  Check, 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm, Resolver } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+  FileText,
+  UserPlus,
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+  Check,
   Sparkles,
   Users,
-  Search
-} from "lucide-react";
-import { Cliente } from "@prisma/client";
+  Search,
+} from 'lucide-react';
+import { Cliente } from '@prisma/client';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { createClienteAction } from "../../clientes/actions";
-import { createPedidoAction } from "../actions";
-import { PedidoInput } from "@/types";
-
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { createClienteAction } from '../../clientes/actions';
+import { createPedidoAction } from '../actions';
+import { PedidoInput } from '@/types';
 
 const quickClientSchema = z.object({
-  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  telefono: z.string()
-    .regex(/^[0-9]{10}$/, "El teléfono debe tener exactamente 10 dígitos numéricos")
-    .min(10, "Mínimo 10 dígitos")
-    .max(10, "Máximo 10 dígitos"),
-  email: z.string().email("El correo no es válido").optional().or(z.literal("")).transform(val => val || ""),
-  fuente: z.enum(["tienda", "instagram", "whatsapp", "referido"]),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  telefono: z
+    .string()
+    .regex(/^[0-9]{10}$/, 'El teléfono debe tener exactamente 10 dígitos numéricos')
+    .min(10, 'Mínimo 10 dígitos')
+    .max(10, 'Máximo 10 dígitos'),
+  email: z
+    .string()
+    .email('El correo no es válido')
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => val || ''),
+  fuente: z.enum(['tienda', 'instagram', 'whatsapp', 'referido']),
 });
 
 interface EventFormValues {
   clienteId: string;
-  tipoEvento: "cumpleanos";
-  paquete: "esencial" | "completa" | "premium";
+  tipoEvento: 'cumpleanos';
+  paquete: 'esencial' | 'completa' | 'premium';
   fechaPart: string;
   horaPart: string;
   template: string;
@@ -48,26 +53,37 @@ interface EventFormValues {
   notas: string;
 }
 
-const eventSchema = z.object({
-  clienteId: z.string().optional(),
-  tipoEvento: z.literal("cumpleanos").default("cumpleanos"),
-  paquete: z.enum(["esencial", "completa", "premium"], {
-    message: "Selecciona un paquete",
-  }),
-  fechaPart: z.string().min(1, "La fecha del evento es requerida"),
-  horaPart: z.string().min(1, "La hora del evento es requerida"),
-  template: z.string().optional(),
-  precio: z.preprocess((val) => Number(val), z.number().positive("El precio debe ser un número positivo")),
-  notas: z.string().optional().transform(val => val || ""),
-}).refine((data) => {
-  if (!data.fechaPart || !data.horaPart) return true;
-  const combined = new Date(`${data.fechaPart}T${data.horaPart}`);
-  if (isNaN(combined.getTime())) return false;
-  return combined > new Date();
-}, {
-  message: "La fecha y hora del evento debe ser futura",
-  path: ["fechaPart"],
-});
+const eventSchema = z
+  .object({
+    clienteId: z.string().optional(),
+    tipoEvento: z.literal('cumpleanos').default('cumpleanos'),
+    paquete: z.enum(['esencial', 'completa', 'premium'], {
+      message: 'Selecciona un paquete',
+    }),
+    fechaPart: z.string().min(1, 'La fecha del evento es requerida'),
+    horaPart: z.string().min(1, 'La hora del evento es requerida'),
+    template: z.string().optional(),
+    precio: z.preprocess(
+      (val) => Number(val),
+      z.number().positive('El precio debe ser un número positivo')
+    ),
+    notas: z
+      .string()
+      .optional()
+      .transform((val) => val || ''),
+  })
+  .refine(
+    (data) => {
+      if (!data.fechaPart || !data.horaPart) return true;
+      const combined = new Date(`${data.fechaPart}T${data.horaPart}`);
+      if (isNaN(combined.getTime())) return false;
+      return combined > new Date();
+    },
+    {
+      message: 'La fecha y hora del evento debe ser futura',
+      path: ['fechaPart'],
+    }
+  );
 
 interface NuevoPedidoClientProps {
   clientes: Cliente[];
@@ -77,13 +93,13 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
   const router = useRouter();
   const [clientes, setClientes] = useState<Cliente[]>(initialClientes);
   const [step, setStep] = useState(1);
-  const [selectedClienteId, setSelectedClienteId] = useState("");
+  const [selectedClienteId, setSelectedClienteId] = useState('');
   const [isNewClientForm, setIsNewClientForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Client search state
-  const [clientSearch, setClientSearch] = useState("");
+  const [clientSearch, setClientSearch] = useState('');
 
   // Forms
   const {
@@ -92,12 +108,14 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
     formState: { errors: clientErrors },
     reset: resetClientForm,
   } = useForm<z.infer<typeof quickClientSchema>>({
-    resolver: zodResolver(quickClientSchema) as unknown as Resolver<z.infer<typeof quickClientSchema>>,
+    resolver: zodResolver(quickClientSchema) as unknown as Resolver<
+      z.infer<typeof quickClientSchema>
+    >,
     defaultValues: {
-      nombre: "",
-      telefono: "",
-      email: "",
-      fuente: "tienda",
+      nombre: '',
+      telefono: '',
+      email: '',
+      fuente: 'tienda',
     },
   });
 
@@ -109,23 +127,23 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
   } = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormValues>,
     defaultValues: {
-      clienteId: "",
-      tipoEvento: "cumpleanos",
-      paquete: "esencial",
-      fechaPart: "",
-      horaPart: "18:00",
-      template: "cumpleanos-esencial",
+      clienteId: '',
+      tipoEvento: 'cumpleanos',
+      paquete: 'esencial',
+      fechaPart: '',
+      horaPart: '18:00',
+      template: 'cumpleanos-esencial',
       precio: 350,
-      notas: "",
+      notas: '',
     } as EventFormValues,
   });
 
   const handleNextStep1 = () => {
     if (!selectedClienteId) {
-      setError("Por favor, selecciona un cliente para continuar.");
+      setError('Por favor, selecciona un cliente para continuar.');
       return;
     }
-    setEventValue("clienteId", selectedClienteId);
+    setEventValue('clienteId', selectedClienteId);
     setError(null);
     setStep(2);
   };
@@ -146,17 +164,17 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-        setClientes(prev => [newClient, ...prev]);
+        setClientes((prev) => [newClient, ...prev]);
         setSelectedClienteId(newClient.id);
-        setEventValue("clienteId", newClient.id);
+        setEventValue('clienteId', newClient.id);
         setIsNewClientForm(false);
         setStep(2);
         resetClientForm();
       } else {
-        setError(res.error || "Error al crear cliente rápido");
+        setError(res.error || 'Error al crear cliente rápido');
       }
     } catch {
-      setError("Error inesperado al registrar cliente");
+      setError('Error inesperado al registrar cliente');
     } finally {
       setIsLoading(false);
     }
@@ -181,18 +199,18 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
         router.push(`/admin/pedidos/${res.data.id}`);
         router.refresh();
       } else {
-        setError(res.error || "Error al guardar el pedido");
+        setError(res.error || 'Error al guardar el pedido');
       }
     } catch (err) {
-      console.error("[handleSavePedido] Client catch error:", err);
-      setError(err instanceof Error ? err.message : "Error inesperado al guardar el pedido");
+      console.error('[handleSavePedido] Client catch error:', err);
+      setError(err instanceof Error ? err.message : 'Error inesperado al guardar el pedido');
     } finally {
       setIsLoading(false);
     }
   };
 
   // Filter clients client-side
-  const filteredClientes = clientes.filter(c =>
+  const filteredClientes = clientes.filter((c) =>
     c.nombre.toLowerCase().includes(clientSearch.toLowerCase())
   );
 
@@ -214,33 +232,41 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
         <div className="flex items-center gap-8 w-full max-w-md">
           {/* Step 1 Indicator */}
           <div className="flex items-center gap-2.5">
-            <div className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ring-1 transition-all",
-              step === 1 
-                ? "bg-violet-600/20 ring-violet-500 text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.1)]" 
-                : "bg-slate-900 ring-slate-800 text-slate-400"
-            )}>
-              {step > 1 ? <Check className="h-4 w-4" /> : "1"}
+            <div
+              className={cn(
+                'flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ring-1 transition-all',
+                step === 1
+                  ? 'bg-violet-600/20 ring-violet-500 text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.1)]'
+                  : 'bg-slate-900 ring-slate-800 text-slate-400'
+              )}
+            >
+              {step > 1 ? <Check className="h-4 w-4" /> : '1'}
             </div>
-            <span className={cn("text-sm font-semibold", step === 1 ? "text-white" : "text-slate-500")}>
+            <span
+              className={cn('text-sm font-semibold', step === 1 ? 'text-white' : 'text-slate-500')}
+            >
               Cliente
             </span>
           </div>
 
           {/* Line separator */}
-          <div className={cn("h-[1px] flex-1", step > 1 ? "bg-violet-600" : "bg-slate-900")} />
+          <div className={cn('h-[1px] flex-1', step > 1 ? 'bg-violet-600' : 'bg-slate-900')} />
 
           {/* Step 2 Indicator */}
           <div className="flex items-center gap-2.5">
-            <div className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ring-1 transition-all",
-              step === 2 
-                ? "bg-violet-600/20 ring-violet-500 text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.1)]" 
-                : "bg-slate-900 ring-slate-800 text-slate-400"
-            )}>
+            <div
+              className={cn(
+                'flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ring-1 transition-all',
+                step === 2
+                  ? 'bg-violet-600/20 ring-violet-500 text-violet-400 shadow-[0_0_15px_rgba(139,92,246,0.1)]'
+                  : 'bg-slate-900 ring-slate-800 text-slate-400'
+              )}
+            >
               2
             </div>
-            <span className={cn("text-sm font-semibold", step === 2 ? "text-white" : "text-slate-500")}>
+            <span
+              className={cn('text-sm font-semibold', step === 2 ? 'text-white' : 'text-slate-500')}
+            >
               Detalles del Evento
             </span>
           </div>
@@ -271,7 +297,7 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
               className="border-slate-800 bg-slate-950/40 text-slate-300 hover:text-white hover:bg-slate-900 text-sm flex items-center gap-1.5"
             >
               <UserPlus className="h-4 w-4" />
-              {isNewClientForm ? "Seleccionar Existente" : "Crear Cliente Rápido"}
+              {isNewClientForm ? 'Seleccionar Existente' : 'Crear Cliente Rápido'}
             </Button>
           </div>
 
@@ -279,8 +305,12 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
             /* Quick create Client form */
             <Card className="border-slate-900 bg-slate-900/20 text-slate-100">
               <CardHeader>
-                <CardTitle className="text-md font-bold text-white">Registrar Cliente Nuevo</CardTitle>
-                <CardDescription className="text-slate-400">Introduce la información del nuevo cliente para proceder.</CardDescription>
+                <CardTitle className="text-md font-bold text-white">
+                  Registrar Cliente Nuevo
+                </CardTitle>
+                <CardDescription className="text-slate-400">
+                  Introduce la información del nuevo cliente para proceder.
+                </CardDescription>
               </CardHeader>
               <form onSubmit={handleClientSubmit(handleQuickClientCreate)}>
                 <CardContent className="space-y-4">
@@ -290,13 +320,15 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                       <input
                         placeholder="Ej. Juan Gómez"
                         className={cn(
-                          "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                          clientErrors.nombre && "border-rose-500 focus-visible:ring-rose-500"
+                          'flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                          clientErrors.nombre && 'border-rose-500 focus-visible:ring-rose-500'
                         )}
                         aria-invalid={!!clientErrors.nombre}
-                        {...registerClient("nombre")}
+                        {...registerClient('nombre')}
                       />
-                      {clientErrors.nombre && <p className="text-xs text-rose-500">{clientErrors.nombre.message}</p>}
+                      {clientErrors.nombre && (
+                        <p className="text-xs text-rose-500">{clientErrors.nombre.message}</p>
+                      )}
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium text-slate-300">Teléfono</label>
@@ -306,38 +338,44 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                         maxLength={10}
                         inputMode="numeric"
                         className={cn(
-                          "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                          clientErrors.telefono && "border-rose-500 focus-visible:ring-rose-500"
+                          'flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                          clientErrors.telefono && 'border-rose-500 focus-visible:ring-rose-500'
                         )}
                         aria-invalid={!!clientErrors.telefono}
-                        {...registerClient("telefono", {
+                        {...registerClient('telefono', {
                           onChange: (e) => {
-                            e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
-                          }
+                            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          },
                         })}
                       />
-                      {clientErrors.telefono && <p className="text-xs text-rose-500">{clientErrors.telefono.message}</p>}
+                      {clientErrors.telefono && (
+                        <p className="text-xs text-rose-500">{clientErrors.telefono.message}</p>
+                      )}
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-slate-300">Correo Electrónico</label>
+                      <label className="text-sm font-medium text-slate-300">
+                        Correo Electrónico
+                      </label>
                       <input
                         placeholder="Ej. juan@example.com"
                         className={cn(
-                          "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                          clientErrors.email && "border-rose-500 focus-visible:ring-rose-500"
+                          'flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                          clientErrors.email && 'border-rose-500 focus-visible:ring-rose-500'
                         )}
                         aria-invalid={!!clientErrors.email}
-                        {...registerClient("email")}
+                        {...registerClient('email')}
                       />
-                      {clientErrors.email && <p className="text-xs text-rose-500">{clientErrors.email.message}</p>}
+                      {clientErrors.email && (
+                        <p className="text-xs text-rose-500">{clientErrors.email.message}</p>
+                      )}
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium text-slate-300">Origen *</label>
                       <select
                         className="flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-                        {...registerClient("fuente")}
+                        {...registerClient('fuente')}
                       >
                         <option value="tienda">Tienda</option>
                         <option value="instagram">Instagram</option>
@@ -353,7 +391,11 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                     className="bg-violet-600 hover:bg-violet-500 text-white font-semibold flex items-center gap-1.5"
                     disabled={isLoading}
                   >
-                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <ArrowRight className="h-4 w-4" />
+                    )}
                     Crear y Continuar
                   </Button>
                 </div>
@@ -374,7 +416,9 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
 
               <div className="border border-slate-900 rounded-xl max-h-72 overflow-y-auto bg-slate-900/10">
                 {filteredClientes.length === 0 ? (
-                  <p className="text-sm text-slate-500 italic p-6 text-center">No hay clientes que coincidan con la búsqueda.</p>
+                  <p className="text-sm text-slate-500 italic p-6 text-center">
+                    No hay clientes que coincidan con la búsqueda.
+                  </p>
                 ) : (
                   <div className="divide-y divide-slate-900/50">
                     {filteredClientes.map((c) => (
@@ -382,18 +426,20 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                         key={c.id}
                         onClick={() => {
                           setSelectedClienteId(c.id);
-                          setEventValue("clienteId", c.id);
+                          setEventValue('clienteId', c.id);
                         }}
                         className={cn(
-                          "flex items-center justify-between p-4 cursor-pointer transition-colors",
-                          selectedClienteId === c.id 
-                            ? "bg-violet-600/10 hover:bg-violet-600/15" 
-                            : "hover:bg-slate-900/20"
+                          'flex items-center justify-between p-4 cursor-pointer transition-colors',
+                          selectedClienteId === c.id
+                            ? 'bg-violet-600/10 hover:bg-violet-600/15'
+                            : 'hover:bg-slate-900/20'
                         )}
                       >
                         <div>
                           <p className="font-semibold text-white">{c.nombre}</p>
-                          <p className="text-xs text-slate-500">{c.email || "Sin email"} | {c.telefono || "Sin teléfono"}</p>
+                          <p className="text-xs text-slate-500">
+                            {c.email || 'Sin email'} | {c.telefono || 'Sin teléfono'}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="rounded-full bg-slate-800 px-2 py-0.5 text-3xs font-medium text-slate-400 capitalize">
@@ -461,85 +507,101 @@ export function NuevoPedidoClient({ clientes: initialClientes }: NuevoPedidoClie
                     <select
                       className="flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                       disabled={isLoading}
-                      {...registerEvent("paquete")}
+                      {...registerEvent('paquete')}
                       onChange={(e) => {
-                        const val = e.target.value as "esencial" | "completa" | "premium";
-                        setEventValue("paquete", val);
+                        const val = e.target.value as 'esencial' | 'completa' | 'premium';
+                        setEventValue('paquete', val);
                         const prices = { esencial: 350, completa: 550, premium: 850 };
-                        setEventValue("precio", prices[val]);
-                        setEventValue("template", `cumpleanos-${val}`);
+                        setEventValue('precio', prices[val]);
+                        setEventValue('template', `cumpleanos-${val}`);
                       }}
                     >
                       <option value="esencial">Esencial ($350)</option>
                       <option value="completa">Completa ($550)</option>
                       <option value="premium">Premium ($850)</option>
                     </select>
-                    {eventErrors.paquete && <p className="text-xs text-rose-500">{eventErrors.paquete.message}</p>}
+                    {eventErrors.paquete && (
+                      <p className="text-xs text-rose-500">{eventErrors.paquete.message}</p>
+                    )}
                   </div>
                 </div>
 
                 {/* Date, Time & Price */}
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div className="space-y-1.5">
-                    <label htmlFor="fechaEvento" className="text-sm font-medium text-slate-300">Fecha del Evento *</label>
+                    <label htmlFor="fechaEvento" className="text-sm font-medium text-slate-300">
+                      Fecha del Evento *
+                    </label>
                     <input
                       id="fechaEvento"
                       type="date"
                       className={cn(
-                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                        eventErrors.fechaPart && "border-rose-500 focus-visible:ring-rose-500"
+                        'flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                        eventErrors.fechaPart && 'border-rose-500 focus-visible:ring-rose-500'
                       )}
                       disabled={isLoading}
                       aria-invalid={!!eventErrors.fechaPart}
-                      {...registerEvent("fechaPart")}
+                      {...registerEvent('fechaPart')}
                     />
-                    {eventErrors.fechaPart && <p className="text-xs text-rose-500">{eventErrors.fechaPart.message}</p>}
+                    {eventErrors.fechaPart && (
+                      <p className="text-xs text-rose-500">{eventErrors.fechaPart.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
-                    <label htmlFor="horaPart" className="text-sm font-medium text-slate-300">Hora del Evento *</label>
+                    <label htmlFor="horaPart" className="text-sm font-medium text-slate-300">
+                      Hora del Evento *
+                    </label>
                     <input
                       id="horaPart"
                       type="time"
                       className={cn(
-                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                        eventErrors.horaPart && "border-rose-500 focus-visible:ring-rose-500"
+                        'flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                        eventErrors.horaPart && 'border-rose-500 focus-visible:ring-rose-500'
                       )}
                       disabled={isLoading}
                       aria-invalid={!!eventErrors.horaPart}
-                      {...registerEvent("horaPart")}
+                      {...registerEvent('horaPart')}
                     />
-                    {eventErrors.horaPart && <p className="text-xs text-rose-500">{eventErrors.horaPart.message}</p>}
+                    {eventErrors.horaPart && (
+                      <p className="text-xs text-rose-500">{eventErrors.horaPart.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
-                    <label htmlFor="precio" className="text-sm font-medium text-slate-300">Precio Total (MXN) *</label>
+                    <label htmlFor="precio" className="text-sm font-medium text-slate-300">
+                      Precio Total (MXN) *
+                    </label>
                     <input
                       id="precio"
                       type="number"
                       placeholder="Ej. 350"
                       readOnly
                       className={cn(
-                        "flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50 bg-slate-950/30 text-slate-400 cursor-not-allowed",
-                        eventErrors.precio && "border-rose-500 focus-visible:ring-rose-500"
+                        'flex h-10 w-full rounded-md border border-slate-850 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50 bg-slate-950/30 text-slate-400 cursor-not-allowed',
+                        eventErrors.precio && 'border-rose-500 focus-visible:ring-rose-500'
                       )}
                       disabled={isLoading}
                       aria-invalid={!!eventErrors.precio}
-                      {...registerEvent("precio")}
+                      {...registerEvent('precio')}
                     />
-                    {eventErrors.precio && <p className="text-xs text-rose-500">{eventErrors.precio.message}</p>}
+                    {eventErrors.precio && (
+                      <p className="text-xs text-rose-500">{eventErrors.precio.message}</p>
+                    )}
                   </div>
                 </div>
 
                 {/* Notes */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-300">Notas / Requerimientos</label>
+                  <label className="text-sm font-medium text-slate-300">
+                    Notas / Requerimientos
+                  </label>
                   <textarea
                     placeholder="Detalles sobre el evento o personalización..."
                     rows={4}
                     className="flex w-full rounded-md border border-slate-855 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 resize-none"
                     disabled={isLoading}
-                    {...registerEvent("notas")}
+                    {...registerEvent('notas')}
                   />
                 </div>
               </CardContent>

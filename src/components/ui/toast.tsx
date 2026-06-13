@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useCallback } from "react";
-import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export type ToastType = "success" | "error" | "info";
+export type ToastType = 'success' | 'error' | 'info';
 
 export interface ToastMessage {
   id: string;
@@ -14,7 +14,7 @@ export interface ToastMessage {
 }
 
 interface ToastContextType {
-  toast: (msg: Omit<ToastMessage, "id">) => void;
+  toast: (msg: Omit<ToastMessage, 'id'>) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -22,7 +22,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
+    throw new Error('useToast must be used within a ToastProvider');
   }
   return context;
 }
@@ -30,7 +30,7 @@ export function useToast() {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  const toast = useCallback((msg: Omit<ToastMessage, "id">) => {
+  const toast = useCallback((msg: Omit<ToastMessage, 'id'>) => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { ...msg, id }]);
     setTimeout(() => {
@@ -55,10 +55,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
               className="pointer-events-auto flex w-full items-start gap-3 rounded-xl border border-slate-900 bg-slate-950 p-4 shadow-xl backdrop-blur-md"
             >
-              {t.type === "success" && <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />}
-              {t.type === "error" && <AlertCircle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />}
-              {t.type === "info" && <Info className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />}
-              
+              {t.type === 'success' && (
+                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              )}
+              {t.type === 'error' && (
+                <AlertCircle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
+              )}
+              {t.type === 'info' && <Info className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />}
+
               <div className="flex-1 space-y-1">
                 <p className="text-xs font-semibold text-white">{t.title}</p>
                 {t.description && <p className="text-2xs text-slate-400">{t.description}</p>}

@@ -1,8 +1,8 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
 
 export interface ActionResult<T = void> {
   success: boolean;
@@ -11,29 +11,32 @@ export interface ActionResult<T = void> {
 }
 
 const rsvpSchema = z.object({
-  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   asiste: z.boolean({
-    required_error: "Debe indicar si asistirá",
+    required_error: 'Debe indicar si asistirá',
   }),
-  pax: z.preprocess((val) => Number(val), z.number().int().min(1, "El número de personas (pax) debe ser al menos 1")),
-  telefono: z.string().optional().nullable().or(z.literal("")),
-  mensaje: z.string().optional().nullable().or(z.literal("")),
+  pax: z.preprocess(
+    (val) => Number(val),
+    z.number().int().min(1, 'El número de personas (pax) debe ser al menos 1')
+  ),
+  telefono: z.string().optional().nullable().or(z.literal('')),
+  mensaje: z.string().optional().nullable().or(z.literal('')),
 });
 
 export type RSVPInput = z.infer<typeof rsvpSchema>;
 
-export async function createRSVPAction(
-  slug: string,
-  input: RSVPInput
-): Promise<ActionResult> {
+export async function createRSVPAction(slug: string, input: RSVPInput): Promise<ActionResult> {
   try {
     if (!slug) {
-      return { success: false, error: "El slug de la invitación es requerido" };
+      return { success: false, error: 'El slug de la invitación es requerido' };
     }
 
     const parsed = rsvpSchema.safeParse(input);
     if (!parsed.success) {
-      return { success: false, error: parsed.error.issues[0]?.message || "Datos del RSVP no válidos" };
+      return {
+        success: false,
+        error: parsed.error.issues[0]?.message || 'Datos del RSVP no válidos',
+      };
     }
 
     const pedido = await prisma.pedido.findUnique({
@@ -41,7 +44,7 @@ export async function createRSVPAction(
     });
 
     if (!pedido) {
-      return { success: false, error: "La invitación no existe o no es válida" };
+      return { success: false, error: 'La invitación no existe o no es válida' };
     }
 
     const { nombre, asiste, pax, telefono, mensaje } = parsed.data;
@@ -66,8 +69,8 @@ export async function createRSVPAction(
 
     return { success: true };
   } catch (error) {
-    console.error("[createRSVPAction]", error);
-    return { success: false, error: "Ocurrió un error inesperado al registrar tu confirmación" };
+    console.error('[createRSVPAction]', error);
+    return { success: false, error: 'Ocurrió un error inesperado al registrar tu confirmación' };
   }
 }
 
@@ -78,7 +81,7 @@ export async function registrarVisitaAction(
 ): Promise<ActionResult> {
   try {
     if (!slug) {
-      return { success: false, error: "El slug es requerido" };
+      return { success: false, error: 'El slug es requerido' };
     }
 
     const pedido = await prisma.pedido.findUnique({
@@ -86,7 +89,7 @@ export async function registrarVisitaAction(
     });
 
     if (!pedido) {
-      return { success: false, error: "El pedido no existe" };
+      return { success: false, error: 'El pedido no existe' };
     }
 
     await prisma.visita.create({
@@ -99,7 +102,7 @@ export async function registrarVisitaAction(
 
     return { success: true };
   } catch (error) {
-    console.error("[registrarVisitaAction]", error);
-    return { success: false, error: "Error al registrar la visita" };
+    console.error('[registrarVisitaAction]', error);
+    return { success: false, error: 'Error al registrar la visita' };
   }
 }

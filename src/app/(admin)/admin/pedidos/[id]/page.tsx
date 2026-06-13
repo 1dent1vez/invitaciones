@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { PedidoDetalleClient } from "./pedido-detalle-client";
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { PedidoDetalleClient } from './pedido-detalle-client';
 
 export const revalidate = 0;
 
@@ -19,12 +19,12 @@ export default async function PedidoDetallePage({ params }: PedidoDetallePagePro
       cliente: true,
       pagos: {
         orderBy: {
-          fecha: "desc",
+          fecha: 'desc',
         },
       },
       rsvps: {
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       },
       visitas: {

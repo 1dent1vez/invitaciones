@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import React from "react";
-import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, Shirt, ChevronDown } from "lucide-react";
-import { InvitacionData } from "@/types";
-import { getOptimizedImageUrl, getFraseEdad, formatFechaMX } from "./shared/utils";
-import { MapsLink } from "./shared/MapsLink";
-import { RSVPForm } from "./shared/RSVPForm";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Calendar, Clock, MapPin, Shirt, ChevronDown } from 'lucide-react';
+import { InvitacionData } from '@/types';
+import { getOptimizedImageUrl, getFraseEdad, formatFechaMX } from './shared/utils';
+import { MapsLink } from './shared/MapsLink';
+import { RSVPForm } from './shared/RSVPForm';
 
-if (typeof window !== "undefined" && !window.IntersectionObserver) {
-  Object.defineProperty(window, "IntersectionObserver", {
+if (typeof window !== 'undefined' && !window.IntersectionObserver) {
+  Object.defineProperty(window, 'IntersectionObserver', {
     writable: true,
     configurable: true,
     value: class IntersectionObserver {
       observe() {}
       unobserve() {}
       disconnect() {}
-    }
+    },
   });
 }
 
@@ -32,32 +32,36 @@ interface CumpleEsencialProps {
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-50px" },
-  transition: { duration: 0.6, ease: "easeOut" }
+  viewport: { once: true, margin: '-50px' },
+  transition: { duration: 0.6, ease: 'easeOut' },
 };
 
 export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialProps) {
-  const nombreFestejado = data.nombre || data.nombres || "Festejado";
-  const edadFestejado = data.edad || "";
-  const fraseEdad = data.edad ? getFraseEdad(Number(data.edad)) : "";
-  const fotoPortada = getOptimizedImageUrl(data.fotoPortada || data.portadaUrl || "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop");
-  
-  const lugarFiesta = data.lugar || data.ubicacion || "Lugar del Evento";
-  const direccionFiesta = direccion || data.direccion || "";
-  const horaFiesta = data.hora || "";
+  const nombreFestejado = data.nombre || data.nombres || 'Festejado';
+  const edadFestejado = data.edad || '';
+  const fraseEdad = data.edad ? getFraseEdad(Number(data.edad)) : '';
+  const fotoPortada = getOptimizedImageUrl(
+    data.fotoPortada ||
+      data.portadaUrl ||
+      'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800&auto=format&fit=crop'
+  );
+
+  const lugarFiesta = data.lugar || data.ubicacion || 'Lugar del Evento';
+  const direccionFiesta = direccion || data.direccion || '';
+  const horaFiesta = data.hora || '';
 
   // Parse and format date
   const dateObj = fechaEvento || (data.fecha ? new Date(data.fecha) : null);
-  let dateText = "";
+  let dateText = '';
   if (dateObj && !isNaN(dateObj.getTime())) {
     dateText = formatFechaMX(dateObj);
   } else {
-    dateText = data.fecha || "";
+    dateText = data.fecha || '';
   }
 
-  const primaryColor = data.colorPrimario || "#F97316";
+  const primaryColor = data.colorPrimario || '#F97316';
   const themeStyles = {
-    "--primary": primaryColor,
+    '--primary': primaryColor,
   } as React.CSSProperties;
 
   return (
@@ -68,11 +72,11 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
       {/* Hero Portada */}
       <div className="relative h-[65vh] min-h-[450px] max-h-[80vh] w-full overflow-hidden flex items-end animate-fade-in md:h-[50vh] md:rounded-t-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-        
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="absolute inset-0 w-full h-full"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -84,16 +88,20 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
         </motion.div>
 
         <div className="w-full p-8 z-10 space-y-4 text-center flex flex-col items-center">
-          {data.tipoCelebracion && data.tipoCelebracion !== "general" && (
+          {data.tipoCelebracion && data.tipoCelebracion !== 'general' && (
             <div
               className="inline-flex items-center gap-1 rounded-full bg-violet-600/30 px-3 py-1 text-xs font-semibold ring-1 ring-violet-500/50 text-violet-300"
               data-testid="tipo-celebracion-badge"
             >
-              {data.tipoCelebracion.toLowerCase() === "infantil" && "🎈 Infantil"}
-              {(data.tipoCelebracion.toLowerCase() === "adultos" || data.tipoCelebracion.toLowerCase() === "adulto") && "🍷 Adultos"}
-              {data.tipoCelebracion.toLowerCase() === "sorpresa" && "🎁 Sorpresa"}
-              {data.tipoCelebracion.toLowerCase() === "juvenil" && "🎸 Juvenil"}
-              {!["infantil", "juvenil", "adultos", "adulto", "sorpresa"].includes(data.tipoCelebracion.toLowerCase()) && `Celeb: ${data.tipoCelebracion}`}
+              {data.tipoCelebracion.toLowerCase() === 'infantil' && '🎈 Infantil'}
+              {(data.tipoCelebracion.toLowerCase() === 'adultos' ||
+                data.tipoCelebracion.toLowerCase() === 'adulto') &&
+                '🍷 Adultos'}
+              {data.tipoCelebracion.toLowerCase() === 'sorpresa' && '🎁 Sorpresa'}
+              {data.tipoCelebracion.toLowerCase() === 'juvenil' && '🎸 Juvenil'}
+              {!['infantil', 'juvenil', 'adultos', 'adulto', 'sorpresa'].includes(
+                data.tipoCelebracion.toLowerCase()
+              ) && `Celeb: ${data.tipoCelebracion}`}
             </div>
           )}
 
@@ -111,9 +119,7 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
                 {edadFestejado} Años
               </span>
               {fraseEdad && (
-                <p className="text-sm font-semibold text-slate-200 drop-shadow-md">
-                  {fraseEdad}
-                </p>
+                <p className="text-sm font-semibold text-slate-200 drop-shadow-md">{fraseEdad}</p>
               )}
             </div>
           )}
@@ -127,7 +133,7 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
           {/* Scroll indicator sutil */}
           <motion.div
             animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
             className="pt-2"
           >
             <ChevronDown className="w-6 h-6 text-white/80" />
@@ -166,7 +172,9 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
               <Calendar className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿Cuándo?</span>
+              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+                ¿Cuándo?
+              </span>
               <p className="text-sm font-semibold text-gray-800 capitalize">{dateText}</p>
             </div>
           </div>
@@ -178,7 +186,9 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
                 <Clock className="h-5 w-5" />
               </div>
               <div className="space-y-1">
-                <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿A qué hora?</span>
+                <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+                  ¿A qué hora?
+                </span>
                 <p className="text-sm font-semibold text-gray-800">A las {horaFiesta} hrs</p>
               </div>
             </div>
@@ -190,9 +200,13 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
               <MapPin className="h-5 w-5" />
             </div>
             <div className="space-y-1 w-full">
-              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">¿Dónde?</span>
+              <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+                ¿Dónde?
+              </span>
               <p className="text-sm font-semibold text-gray-800">{lugarFiesta}</p>
-              {direccionFiesta && <p className="text-xs text-gray-500 leading-normal">{direccionFiesta}</p>}
+              {direccionFiesta && (
+                <p className="text-xs text-gray-500 leading-normal">{direccionFiesta}</p>
+              )}
             </div>
           </div>
         </motion.div>
@@ -209,9 +223,13 @@ export function CumpleEsencial({ data, fechaEvento, direccion }: CumpleEsencialP
             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] mb-2">
               <Shirt className="h-5 w-5" />
             </div>
-            <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">Código de Vestimenta</span>
+            <span className="text-2xs tracking-wider text-gray-400 uppercase font-bold">
+              Código de Vestimenta
+            </span>
             <p className="text-sm font-bold text-gray-800 uppercase mt-0.5">{data.dressCode}</p>
-            {data.dressCodeDesc && <p className="text-xs text-gray-500 mt-1 max-w-xs">{data.dressCodeDesc}</p>}
+            {data.dressCodeDesc && (
+              <p className="text-xs text-gray-500 mt-1 max-w-xs">{data.dressCodeDesc}</p>
+            )}
           </motion.div>
         )}
 

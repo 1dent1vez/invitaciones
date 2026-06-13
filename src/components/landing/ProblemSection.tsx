@@ -1,7 +1,15 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { XCircle, CheckCircle2, MessageSquare, Music, MapPin, Sparkles, AlertTriangle } from "lucide-react";
+import { motion } from 'framer-motion';
+import {
+  XCircle,
+  CheckCircle2,
+  MessageSquare,
+  Music,
+  MapPin,
+  Sparkles,
+  AlertTriangle,
+} from 'lucide-react';
 
 export default function ProblemSection() {
   const containerVariants = {
@@ -15,7 +23,7 @@ export default function ProblemSection() {
 
   const itemVariants = {
     initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80 } },
+    animate: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 80 } },
   };
 
   return (
@@ -33,7 +41,8 @@ export default function ProblemSection() {
             Nadie quiere otro PDF de 20 Megas por WhatsApp
           </h2>
           <p className="text-base sm:text-lg text-carbon-suave/80 font-medium">
-            Seamos honestos. La forma tradicional de invitar a tus seres queridos se siente vieja, aburrida y es un caos de organizar.
+            Seamos honestos. La forma tradicional de invitar a tus seres queridos se siente vieja,
+            aburrida y es un caos de organizar.
           </p>
         </motion.div>
 
@@ -42,7 +51,7 @@ export default function ProblemSection() {
           variants={containerVariants}
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           className="grid md:grid-cols-2 gap-8 items-stretch"
         >
           {/* TARJETA ANTES */}
@@ -58,8 +67,12 @@ export default function ProblemSection() {
 
             <div className="space-y-6 pt-4">
               <div className="space-y-2">
-                <span className="text-gray-400 font-extrabold uppercase text-[10px] tracking-widest">El Pasado</span>
-                <h3 className="text-2xl font-extrabold text-gray-700">El PDF estático o captura de Canva</h3>
+                <span className="text-gray-400 font-extrabold uppercase text-[10px] tracking-widest">
+                  El Pasado
+                </span>
+                <h3 className="text-2xl font-extrabold text-gray-700">
+                  El PDF estático o captura de Canva
+                </h3>
               </div>
 
               <ul className="space-y-4">
@@ -72,19 +85,22 @@ export default function ProblemSection() {
                 <li className="flex items-start gap-3">
                   <XCircle className="w-5.5 h-5.5 text-gray-400 shrink-0 mt-0.5" />
                   <span className="text-sm font-medium text-gray-500">
-                    <strong>Ubicación ciega:</strong> Tienen que copiar la dirección a mano en Google Maps.
+                    <strong>Ubicación ciega:</strong> Tienen que copiar la dirección a mano en
+                    Google Maps.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <XCircle className="w-5.5 h-5.5 text-gray-400 shrink-0 mt-0.5" />
                   <span className="text-sm font-medium text-gray-500">
-                    <strong>RSVP infernal:</strong> Te toca perseguir a cada persona por chat para saber si va a ir.
+                    <strong>RSVP infernal:</strong> Te toca perseguir a cada persona por chat para
+                    saber si va a ir.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <XCircle className="w-5.5 h-5.5 text-gray-400 shrink-0 mt-0.5" />
                   <span className="text-sm font-medium text-gray-500">
-                    <strong>Estática y fría:</strong> No hay música, no hay animaciones, no transmite emoción.
+                    <strong>Estática y fría:</strong> No hay música, no hay animaciones, no
+                    transmite emoción.
                   </span>
                 </li>
               </ul>
@@ -110,15 +126,20 @@ export default function ProblemSection() {
 
             <div className="space-y-6 pt-4">
               <div className="space-y-2">
-                <span className="text-dorado-calido font-extrabold uppercase text-[10px] tracking-widest">El Futuro</span>
-                <h3 className="text-2xl font-extrabold text-carbon-suave">La Caja de Regalo Interactiva</h3>
+                <span className="text-dorado-calido font-extrabold uppercase text-[10px] tracking-widest">
+                  El Futuro
+                </span>
+                <h3 className="text-2xl font-extrabold text-carbon-suave">
+                  La Caja de Regalo Interactiva
+                </h3>
               </div>
 
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-5.5 h-5.5 text-terracota shrink-0 mt-0.5" />
                   <span className="text-sm font-medium text-carbon-suave/80">
-                    <strong>Un link rápido:</strong> Carga al instante en cualquier teléfono, sin descargar nada.
+                    <strong>Un link rápido:</strong> Carga al instante en cualquier teléfono, sin
+                    descargar nada.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -132,14 +153,16 @@ export default function ProblemSection() {
                   <CheckCircle2 className="w-5.5 h-5.5 text-terracota shrink-0 mt-0.5" />
                   <span className="text-sm font-medium text-carbon-suave/80">
                     <MessageSquare className="inline w-4 h-4 mr-1 text-dorado-calido" />
-                    <strong>Confirmación RSVP automatizada:</strong> Registro en segundos que controlas desde tu panel.
+                    <strong>Confirmación RSVP automatizada:</strong> Registro en segundos que
+                    controlas desde tu panel.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-5.5 h-5.5 text-terracota shrink-0 mt-0.5" />
                   <span className="text-sm font-medium text-carbon-suave/80">
                     <Music className="inline w-4 h-4 mr-1 text-dorado-calido" />
-                    <strong>Música y animación:</strong> Confeti interactivo y tus canciones favoritas de fondo.
+                    <strong>Música y animación:</strong> Confeti interactivo y tus canciones
+                    favoritas de fondo.
                   </span>
                 </li>
               </ul>

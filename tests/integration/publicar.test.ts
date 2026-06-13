@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterAll } from "vitest";
-import { prisma } from "@/lib/prisma";
-import { publicarInvitacionAction } from "@/app/(admin)/admin/pedidos/[id]/editar/actions";
-import PublicInvitationPage, { generateMetadata } from "@/app/(public)/i/[slug]/page";
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { prisma } from '@/lib/prisma';
+import { publicarInvitacionAction } from '@/app/(admin)/admin/pedidos/[id]/editar/actions';
+import PublicInvitationPage, { generateMetadata } from '@/app/(public)/i/[slug]/page';
 
-describe("Publicación e Invitación Pública Integration Tests", () => {
+describe('Publicación e Invitación Pública Integration Tests', () => {
   let testClienteId: string;
 
   beforeEach(async () => {
@@ -15,8 +15,8 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
 
     const client = await prisma.cliente.create({
       data: {
-        nombre: "María y Juan",
-        fuente: "instagram",
+        nombre: 'María y Juan',
+        fuente: 'instagram',
       },
     });
     testClienteId = client.id;
@@ -26,20 +26,20 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
     await prisma.$disconnect();
   });
 
-  it("debe publicar un pedido y renderizar la página pública exitosamente", async () => {
+  it('debe publicar un pedido y renderizar la página pública exitosamente', async () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "cumpleanos",
-        paquete: "esencial",
-        fechaEvento: new Date("2026-10-12T15:00:00Z"),
-        template: "cumpleanos-esencial",
+        tipoEvento: 'cumpleanos',
+        paquete: 'esencial',
+        fechaEvento: new Date('2026-10-12T15:00:00Z'),
+        template: 'cumpleanos-esencial',
         precio: 2500,
-        estado: "cotizado",
+        estado: 'cotizado',
         datosInvitacion: {
-          nombre: "María y Juan",
-          fecha: "2026-10-12T15:00:00Z",
-          ubicacion: "Hacienda del Sol",
+          nombre: 'María y Juan',
+          fecha: '2026-10-12T15:00:00Z',
+          ubicacion: 'Hacienda del Sol',
         },
       },
     });
@@ -51,8 +51,8 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
 
     // Generar metadata
     const metadata = await generateMetadata({ params: { slug } });
-    expect(metadata.title).toContain("María y Juan");
-    expect(metadata.description).toContain("celebrar mi Cumpleaños");
+    expect(metadata.title).toContain('María y Juan');
+    expect(metadata.description).toContain('celebrar mi Cumpleaños');
 
     // Renderizar página pública
     const result = await PublicInvitationPage({ params: { slug } });
@@ -60,51 +60,47 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
     expect(result.props.children).toBeDefined();
   });
 
-  it("debe retornar error notFound si el slug no existe", async () => {
-    await expect(
-      PublicInvitationPage({ params: { slug: "slug-inexistente" } })
-    ).rejects.toThrow();
+  it('debe retornar error notFound si el slug no existe', async () => {
+    await expect(PublicInvitationPage({ params: { slug: 'slug-inexistente' } })).rejects.toThrow();
   });
 
-  it("debe retornar error notFound (arrojar) si la invitación está en estado BORRADOR (no publicada)", async () => {
+  it('debe retornar error notFound (arrojar) si la invitación está en estado BORRADOR (no publicada)', async () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "cumpleanos",
-        paquete: "esencial",
-        fechaEvento: new Date("2026-10-12T15:00:00Z"),
-        template: "cumpleanos-esencial",
+        tipoEvento: 'cumpleanos',
+        paquete: 'esencial',
+        fechaEvento: new Date('2026-10-12T15:00:00Z'),
+        template: 'cumpleanos-esencial',
         precio: 2500,
-        estado: "cotizado",
-        estadoInvitacion: "BORRADOR",
-        slug: "draft-slug",
+        estado: 'cotizado',
+        estadoInvitacion: 'BORRADOR',
+        slug: 'draft-slug',
         datosInvitacion: {
-          nombre: "María y Juan",
+          nombre: 'María y Juan',
         },
       },
     });
 
     // Intentar acceder a la página de borrador no publicado
-    await expect(
-      PublicInvitationPage({ params: { slug: "draft-slug" } })
-    ).rejects.toThrow();
+    await expect(PublicInvitationPage({ params: { slug: 'draft-slug' } })).rejects.toThrow();
 
     // Intentar generar metadata
-    const metadata = await generateMetadata({ params: { slug: "draft-slug" } });
-    expect(metadata.title).toBe("Invitación Digital");
+    const metadata = await generateMetadata({ params: { slug: 'draft-slug' } });
+    expect(metadata.title).toBe('Invitación Digital');
   });
 
-  it("debe crear el pedido con slug y urlPublica nulos, y luego asignarlos al publicar", async () => {
-    const { createPedidoAction } = await import("@/app/(admin)/admin/pedidos/actions");
-    
+  it('debe crear el pedido con slug y urlPublica nulos, y luego asignarlos al publicar', async () => {
+    const { createPedidoAction } = await import('@/app/(admin)/admin/pedidos/actions');
+
     const res = await createPedidoAction({
       clienteId: testClienteId,
-      tipoEvento: "cumpleanos",
-      paquete: "esencial",
-      fechaEvento: "2026-10-12T15:00:00.000Z",
-      template: "cumpleanos-esencial",
+      tipoEvento: 'cumpleanos',
+      paquete: 'esencial',
+      fechaEvento: '2026-10-12T15:00:00.000Z',
+      template: 'cumpleanos-esencial',
       precio: 350,
-      notas: "Notas de prueba",
+      notas: 'Notas de prueba',
     });
 
     expect(res.success).toBe(true);
@@ -114,15 +110,15 @@ describe("Publicación e Invitación Pública Integration Tests", () => {
     const pedido = await prisma.pedido.findUnique({ where: { id } });
     expect(pedido?.slug).not.toBeNull();
     expect(pedido?.urlPublica).not.toBeNull();
-    expect(pedido?.estadoInvitacion).toBe("BORRADOR");
+    expect(pedido?.estadoInvitacion).toBe('BORRADOR');
 
     // Publicar
     const pubRes = await publicarInvitacionAction(id);
     expect(pubRes.success).toBe(true);
-    
+
     const pedidoPublicado = await prisma.pedido.findUnique({ where: { id } });
     expect(pedidoPublicado?.slug).not.toBeNull();
     expect(pedidoPublicado?.urlPublica).not.toBeNull();
-    expect(pedidoPublicado?.estadoInvitacion).toBe("PUBLICADA");
+    expect(pedidoPublicado?.estadoInvitacion).toBe('PUBLICADA');
   });
 });

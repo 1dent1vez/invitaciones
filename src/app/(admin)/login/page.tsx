@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Lock, Loader2, Sparkles } from "lucide-react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Lock, Loader2, Sparkles } from 'lucide-react';
 
-import { loginAction } from "./actions";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { loginAction } from './actions';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -17,10 +17,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 const loginSchema = z.object({
-  password: z.string().min(1, "La contraseña es requerida"),
+  password: z.string().min(1, 'La contraseña es requerida'),
 });
 
 type LoginInput = z.infer<typeof loginSchema>;
@@ -37,7 +37,7 @@ export default function LoginPage() {
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      password: "",
+      password: '',
     },
   });
 
@@ -48,13 +48,13 @@ export default function LoginPage() {
     try {
       const result = await loginAction(data.password);
       if (!result.success) {
-        setError(result.error || "Contraseña incorrecta");
+        setError(result.error || 'Contraseña incorrecta');
       } else {
-        router.push("/admin");
+        router.push('/admin');
         router.refresh();
       }
     } catch {
-      setError("Ocurrió un error inesperado. Inténtelo de nuevo.");
+      setError('Ocurrió un error inesperado. Inténtelo de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +70,7 @@ export default function LoginPage() {
       <Card className="relative w-full max-w-md border-slate-800 bg-slate-900/60 backdrop-blur-xl shadow-2xl text-slate-100 mx-4">
         {/* Top accent line */}
         <div className="absolute top-0 left-1/2 h-[1px] w-1/2 -translate-x-1/2 bg-gradient-to-r from-transparent via-violet-500 to-transparent" />
-        
+
         <CardHeader className="space-y-2 text-center pt-8">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-violet-500/10 text-violet-400 ring-1 ring-violet-500/20">
             <Lock className="h-5 w-5" />
@@ -97,17 +97,15 @@ export default function LoginPage() {
                 type="password"
                 placeholder="••••••••"
                 className={cn(
-                  "h-8 w-full min-w-0 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-1 text-base text-slate-100 placeholder:text-slate-600 transition-colors outline-none focus-visible:ring-violet-500 focus-visible:ring-offset-slate-950 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-rose-500 md:text-sm",
-                  errors.password && "border-rose-500 focus-visible:ring-rose-500"
+                  'h-8 w-full min-w-0 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-1 text-base text-slate-100 placeholder:text-slate-600 transition-colors outline-none focus-visible:ring-violet-500 focus-visible:ring-offset-slate-950 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-rose-500 md:text-sm',
+                  errors.password && 'border-rose-500 focus-visible:ring-rose-500'
                 )}
                 disabled={isLoading}
                 aria-invalid={!!errors.password}
-                {...register("password")}
+                {...register('password')}
               />
               {errors.password && (
-                <p className="text-xs font-semibold text-rose-500">
-                  {errors.password.message}
-                </p>
+                <p className="text-xs font-semibold text-rose-500">{errors.password.message}</p>
               )}
             </div>
 
@@ -130,7 +128,7 @@ export default function LoginPage() {
                   Verificando...
                 </>
               ) : (
-                "Entrar al Panel"
+                'Entrar al Panel'
               )}
             </Button>
           </CardFooter>

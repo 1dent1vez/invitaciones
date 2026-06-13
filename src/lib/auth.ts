@@ -11,14 +11,14 @@ export function getWeeklySalt(): string {
 
 export async function sha256(message: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   return hashHex;
 }
 
 export async function getSessionHash(): Promise<string> {
-  const password = process.env.ADMIN_PASSWORD || "admin_super_secret";
+  const password = process.env.ADMIN_PASSWORD || 'admin_super_secret';
   const salt = getWeeklySalt();
   return sha256(password + salt);
 }

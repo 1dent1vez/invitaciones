@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { X, Upload, Loader2 } from "lucide-react";
-import { uploadImageAction } from "@/app/(admin)/admin/pedidos/[id]/editar/actions";
+import { useState } from 'react';
+import { X, Upload, Loader2 } from 'lucide-react';
+import { uploadImageAction } from '@/app/(admin)/admin/pedidos/[id]/editar/actions';
 
 interface MultiImageUploaderProps {
   value: string[];
@@ -30,15 +30,15 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
     for (const file of filesArray) {
       try {
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append('file', file);
         const res = await uploadImageAction(formData);
         if (res.success && res.data) {
           newUrls.push(res.data);
         } else {
-          alert(res.error || "No se pudo subir una de las imágenes.");
+          alert(res.error || 'No se pudo subir una de las imágenes.');
         }
       } catch {
-        alert("No se pudo conectar al servidor para subir las imágenes.");
+        alert('No se pudo conectar al servidor para subir las imágenes.');
       }
     }
 
@@ -51,8 +51,8 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
     onChange(newUrls);
   };
 
-  const moveImage = (index: number, direction: "up" | "down") => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
+  const moveImage = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= value.length) return;
     const newUrls = [...value];
     const temp = newUrls[index];
@@ -65,13 +65,18 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
     <div className="space-y-4">
       <div className="flex justify-between items-center text-xs text-slate-400">
         <span>Fotos de galería:</span>
-        <span className="font-bold" data-testid="gallery-count">{value.length} de {maxImages}</span>
+        <span className="font-bold" data-testid="gallery-count">
+          {value.length} de {maxImages}
+        </span>
       </div>
 
       {value.length > 0 && (
         <div className="grid grid-cols-3 gap-2">
           {value.map((url, idx) => (
-            <div key={idx} className="relative aspect-square rounded-lg border border-slate-800 overflow-hidden bg-slate-950 group">
+            <div
+              key={idx}
+              className="relative aspect-square rounded-lg border border-slate-800 overflow-hidden bg-slate-950 group"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt={`Galería ${idx + 1}`} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1">
@@ -79,7 +84,7 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
                   <button
                     type="button"
                     disabled={idx === 0}
-                    onClick={() => moveImage(idx, "up")}
+                    onClick={() => moveImage(idx, 'up')}
                     className="p-1 bg-slate-900 rounded text-slate-300 hover:text-white disabled:opacity-30 text-xs font-bold"
                   >
                     ←
@@ -87,7 +92,7 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
                   <button
                     type="button"
                     disabled={idx === value.length - 1}
-                    onClick={() => moveImage(idx, "down")}
+                    onClick={() => moveImage(idx, 'down')}
                     className="p-1 bg-slate-900 rounded text-slate-300 hover:text-white disabled:opacity-30 text-xs font-bold"
                   >
                     →
@@ -124,7 +129,7 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
             <Upload className="h-5 w-5 text-slate-400 group-hover:text-violet-400 transition-colors mb-1" />
           )}
           <p className="text-xs font-semibold text-slate-300">
-            {uploading ? "Subiendo fotos..." : "Subir fotos"}
+            {uploading ? 'Subiendo fotos...' : 'Subir fotos'}
           </p>
         </div>
       )}

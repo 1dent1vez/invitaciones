@@ -1,28 +1,21 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { 
-  Search, 
-  Trash2, 
-  Mail,
-  Phone,
-  Calendar,
-  MessageSquare
-} from "lucide-react";
+import { useState } from 'react';
+import { Search, Trash2, Mail, Phone, Calendar, MessageSquare } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Lead } from "@prisma/client";
-import { useToast } from "@/components/ui/toast";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { deleteLeadAction } from "./actions";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Lead } from '@prisma/client';
+import { useToast } from '@/components/ui/toast';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { deleteLeadAction } from './actions';
 
 interface LeadsClientProps {
   initialLeads: Lead[];
@@ -31,33 +24,33 @@ interface LeadsClientProps {
 export function LeadsClient({ initialLeads }: LeadsClientProps) {
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>(initialLeads);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Está seguro de que desea eliminar este lead?")) return;
+    if (!confirm('¿Está seguro de que desea eliminar este lead?')) return;
 
     try {
       const res = await deleteLeadAction(id);
       if (res.success) {
         setLeads((prev) => prev.filter((l) => l.id !== id));
         toast({
-          title: "Lead eliminado",
-          description: "El lead ha sido removido con éxito.",
-          type: "success",
+          title: 'Lead eliminado',
+          description: 'El lead ha sido removido con éxito.',
+          type: 'success',
         });
       } else {
         toast({
-          title: "Error al eliminar",
-          description: res.error || "Ocurrió un error al intentar eliminar el lead.",
-          type: "error",
+          title: 'Error al eliminar',
+          description: res.error || 'Ocurrió un error al intentar eliminar el lead.',
+          type: 'error',
         });
       }
     } catch (err) {
       console.error(err);
       toast({
-        title: "Error de red",
-        description: "No se pudo comunicar con el servidor.",
-        type: "error",
+        title: 'Error de red',
+        description: 'No se pudo comunicar con el servidor.',
+        type: 'error',
       });
     }
   };
@@ -75,16 +68,36 @@ export function LeadsClient({ initialLeads }: LeadsClientProps) {
   const getEventBadge = (evento: string | null) => {
     if (!evento) return <span className="text-slate-500">-</span>;
     switch (evento) {
-      case "boda":
-        return <span className="inline-flex items-center rounded-full bg-violet-500/10 px-2.5 py-0.5 text-xs font-semibold text-violet-400 ring-1 ring-violet-500/20">Boda</span>;
-      case "xv":
-        return <span className="inline-flex items-center rounded-full bg-pink-500/10 px-2.5 py-0.5 text-xs font-semibold text-pink-400 ring-1 ring-pink-500/20">XV Años</span>;
-      case "babyshower":
-        return <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20">Baby Shower</span>;
-      case "cumpleanos":
-        return <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400 ring-1 ring-blue-500/20">Cumpleaños</span>;
+      case 'boda':
+        return (
+          <span className="inline-flex items-center rounded-full bg-violet-500/10 px-2.5 py-0.5 text-xs font-semibold text-violet-400 ring-1 ring-violet-500/20">
+            Boda
+          </span>
+        );
+      case 'xv':
+        return (
+          <span className="inline-flex items-center rounded-full bg-pink-500/10 px-2.5 py-0.5 text-xs font-semibold text-pink-400 ring-1 ring-pink-500/20">
+            XV Años
+          </span>
+        );
+      case 'babyshower':
+        return (
+          <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20">
+            Baby Shower
+          </span>
+        );
+      case 'cumpleanos':
+        return (
+          <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400 ring-1 ring-blue-500/20">
+            Cumpleaños
+          </span>
+        );
       default:
-        return <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-500/20">{evento}</span>;
+        return (
+          <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-500/20">
+            {evento}
+          </span>
+        );
     }
   };
 
@@ -92,22 +105,22 @@ export function LeadsClient({ initialLeads }: LeadsClientProps) {
     if (!date) return <span className="text-slate-500">-</span>;
     const d = new Date(date);
     if (isNaN(d.getTime())) return <span className="text-slate-500">-</span>;
-    return d.toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+    return d.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
     });
   };
 
   const formatDateTime = (date: Date) => {
     const d = new Date(date);
-    if (isNaN(d.getTime())) return "-";
-    return d.toLocaleString("es-ES", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
+    if (isNaN(d.getTime())) return '-';
+    return d.toLocaleString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -120,7 +133,8 @@ export function LeadsClient({ initialLeads }: LeadsClientProps) {
           Leads de Contacto
         </h2>
         <p className="text-slate-400 text-sm mt-1">
-          Bandeja de entrada para los mensajes de clientes recibidos desde el formulario de la landing page.
+          Bandeja de entrada para los mensajes de clientes recibidos desde el formulario de la
+          landing page.
         </p>
       </div>
 
@@ -159,11 +173,16 @@ export function LeadsClient({ initialLeads }: LeadsClientProps) {
               </TableRow>
             ) : (
               filteredLeads.map((lead) => (
-                <TableRow key={lead.id} className="border-b border-slate-900/60 hover:bg-slate-900/20 transition-colors">
+                <TableRow
+                  key={lead.id}
+                  className="border-b border-slate-900/60 hover:bg-slate-900/20 transition-colors"
+                >
                   <TableCell className="text-slate-400 text-xs whitespace-nowrap">
                     {formatDateTime(lead.createdAt)}
                   </TableCell>
-                  <TableCell className="font-medium text-white whitespace-nowrap">{lead.nombre}</TableCell>
+                  <TableCell className="font-medium text-white whitespace-nowrap">
+                    {lead.nombre}
+                  </TableCell>
                   <TableCell className="whitespace-nowrap">{getEventBadge(lead.evento)}</TableCell>
                   <TableCell className="text-slate-300 whitespace-nowrap">
                     {lead.fecha ? (

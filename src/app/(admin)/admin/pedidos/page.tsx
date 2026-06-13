@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { PedidosClient } from "./pedidos-client";
+import { prisma } from '@/lib/prisma';
+import { PedidosClient } from './pedidos-client';
 
 export const revalidate = 0;
 
@@ -9,7 +9,7 @@ export default async function PedidosPage() {
       cliente: true,
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
   });
 

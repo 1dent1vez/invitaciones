@@ -1,35 +1,35 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm, Resolver } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { 
-  Plus, 
-  Search, 
-  Edit2, 
-  Trash2, 
-  Loader2, 
+import { useState } from 'react';
+import { useForm, Resolver } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  Loader2,
   Users,
   Sparkles,
   Phone,
   Mail,
-  FileText
-} from "lucide-react";
+  FileText,
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Cliente } from "@prisma/client";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Cliente } from '@prisma/client';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -37,28 +37,32 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  createClienteAction,
-  updateClienteAction,
-  deleteClienteAction
-} from "./actions";
-import { ClienteInput } from "@/types";
-
+} from '@/components/ui/dialog';
+import { createClienteAction, updateClienteAction, deleteClienteAction } from './actions';
+import { ClienteInput } from '@/types';
 
 const clienteSchema = z.object({
-  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  telefono: z.string().optional().nullable().transform(val => val || ""),
-  fuente: z.enum(["tienda", "instagram", "whatsapp", "referido"], {
-    message: "Selecciona una fuente válida",
-  }),
-  email: z.string()
-    .email("El correo electrónico no es válido")
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  telefono: z
+    .string()
     .optional()
     .nullable()
-    .or(z.literal(""))
-    .transform(val => val || ""),
-  notas: z.string().optional().nullable().transform(val => val || ""),
+    .transform((val) => val || ''),
+  fuente: z.enum(['tienda', 'instagram', 'whatsapp', 'referido'], {
+    message: 'Selecciona una fuente válida',
+  }),
+  email: z
+    .string()
+    .email('El correo electrónico no es válido')
+    .optional()
+    .nullable()
+    .or(z.literal(''))
+    .transform((val) => val || ''),
+  notas: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => val || ''),
 });
 
 interface ClientesClientProps {
@@ -68,7 +72,7 @@ interface ClientesClientProps {
 export function ClientesClient({ initialClientes }: ClientesClientProps) {
   const router = useRouter();
   const [clientes, setClientes] = useState(initialClientes);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -82,11 +86,11 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
   } = useForm<ClienteInput>({
     resolver: zodResolver(clienteSchema) as unknown as Resolver<ClienteInput>,
     defaultValues: {
-      nombre: "",
-      telefono: "",
-      fuente: "tienda",
-      email: "",
-      notas: "",
+      nombre: '',
+      telefono: '',
+      fuente: 'tienda',
+      email: '',
+      notas: '',
     },
   });
 
@@ -94,11 +98,11 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
     setEditingCliente(null);
     setError(null);
     reset({
-      nombre: "",
-      telefono: "",
-      fuente: "tienda",
-      email: "",
-      notas: "",
+      nombre: '',
+      telefono: '',
+      fuente: 'tienda',
+      email: '',
+      notas: '',
     });
     setIsOpen(true);
   };
@@ -108,10 +112,10 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
     setError(null);
     reset({
       nombre: cliente.nombre,
-      telefono: cliente.telefono || "",
-      fuente: cliente.fuente as "tienda" | "instagram" | "whatsapp" | "referido",
-      email: cliente.email || "",
-      notas: cliente.notas || "",
+      telefono: cliente.telefono || '',
+      fuente: cliente.fuente as 'tienda' | 'instagram' | 'whatsapp' | 'referido',
+      email: cliente.email || '',
+      notas: cliente.notas || '',
     });
     setIsOpen(true);
   };
@@ -123,14 +127,14 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
       if (editingCliente) {
         const res = await updateClienteAction(editingCliente.id, data);
         if (res.success) {
-          setClientes(prev =>
-            prev.map(c => (c.id === editingCliente.id ? { ...c, ...data } : c))
+          setClientes((prev) =>
+            prev.map((c) => (c.id === editingCliente.id ? { ...c, ...data } : c))
           );
           setIsOpen(false);
-          router.push("/admin/clientes");
+          router.push('/admin/clientes');
           router.refresh();
         } else {
-          setError(res.error || "Ocurrió un error al actualizar");
+          setError(res.error || 'Ocurrió un error al actualizar');
         }
       } else {
         const res = await createClienteAction(data);
@@ -145,53 +149,70 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
             createdAt: new Date(),
             updatedAt: new Date(),
           };
-          setClientes(prev => [newClient, ...prev]);
+          setClientes((prev) => [newClient, ...prev]);
           setIsOpen(false);
-          router.push("/admin/clientes");
+          router.push('/admin/clientes');
           router.refresh();
         } else {
-          setError(res.error || "Ocurrió un error al crear");
+          setError(res.error || 'Ocurrió un error al crear');
         }
       }
     } catch {
-      setError("Error inesperado en el servidor");
+      setError('Error inesperado en el servidor');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Está seguro de eliminar este cliente?")) return;
+    if (!confirm('¿Está seguro de eliminar este cliente?')) return;
 
     try {
       const res = await deleteClienteAction(id);
       if (res.success) {
-        setClientes(prev => prev.filter(c => c.id !== id));
+        setClientes((prev) => prev.filter((c) => c.id !== id));
       } else {
-        alert(res.error || "No se pudo eliminar el cliente");
+        alert(res.error || 'No se pudo eliminar el cliente');
       }
     } catch {
-      alert("Error al intentar eliminar");
+      alert('Error al intentar eliminar');
     }
   };
 
   // Filter clients client-side for immediate search response
-  const filteredClientes = clientes.filter(c =>
-    c.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    (c.email && c.email.toLowerCase().includes(search.toLowerCase())) ||
-    (c.telefono && c.telefono.includes(search))
+  const filteredClientes = clientes.filter(
+    (c) =>
+      c.nombre.toLowerCase().includes(search.toLowerCase()) ||
+      (c.email && c.email.toLowerCase().includes(search.toLowerCase())) ||
+      (c.telefono && c.telefono.includes(search))
   );
 
   const getSourceBadge = (source: string) => {
     switch (source) {
-      case "instagram":
-        return <span className="inline-flex items-center rounded-full bg-pink-500/10 px-2.5 py-0.5 text-xs font-semibold text-pink-400 ring-1 ring-pink-500/20">Instagram</span>;
-      case "whatsapp":
-        return <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20">WhatsApp</span>;
-      case "referido":
-        return <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-400 ring-1 ring-amber-500/20">Referido</span>;
+      case 'instagram':
+        return (
+          <span className="inline-flex items-center rounded-full bg-pink-500/10 px-2.5 py-0.5 text-xs font-semibold text-pink-400 ring-1 ring-pink-500/20">
+            Instagram
+          </span>
+        );
+      case 'whatsapp':
+        return (
+          <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20">
+            WhatsApp
+          </span>
+        );
+      case 'referido':
+        return (
+          <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-400 ring-1 ring-amber-500/20">
+            Referido
+          </span>
+        );
       default:
-        return <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400 ring-1 ring-blue-500/20">Tienda</span>;
+        return (
+          <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400 ring-1 ring-blue-500/20">
+            Tienda
+          </span>
+        );
     }
   };
 
@@ -208,7 +229,7 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
             Gestiona la información de contacto y origen de tus clientes.
           </p>
         </div>
-        <Button 
+        <Button
           onClick={handleOpenAdd}
           className="bg-violet-600 hover:bg-violet-500 text-white font-semibold flex items-center gap-2"
         >
@@ -251,7 +272,10 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
               </TableRow>
             ) : (
               filteredClientes.map((cliente) => (
-                <TableRow key={cliente.id} className="border-b border-slate-900/60 hover:bg-slate-900/20 transition-colors">
+                <TableRow
+                  key={cliente.id}
+                  className="border-b border-slate-900/60 hover:bg-slate-900/20 transition-colors"
+                >
                   <TableCell className="font-medium text-white">{cliente.nombre}</TableCell>
                   <TableCell className="text-slate-300">
                     {cliente.telefono ? (
@@ -319,10 +343,11 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-violet-400" />
-              {editingCliente ? "Editar Cliente" : "Registrar Nuevo Cliente"}
+              {editingCliente ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
             </DialogTitle>
             <DialogDescription className="text-slate-400">
-              Llena los campos requeridos para {editingCliente ? "actualizar" : "guardar"} la información.
+              Llena los campos requeridos para {editingCliente ? 'actualizar' : 'guardar'} la
+              información.
             </DialogDescription>
           </DialogHeader>
 
@@ -336,12 +361,12 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
                 id="nombre"
                 placeholder="Ej. María López"
                 className={cn(
-                  "flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                  errors.nombre && "border-rose-500 focus-visible:ring-rose-500"
+                  'flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                  errors.nombre && 'border-rose-500 focus-visible:ring-rose-500'
                 )}
                 disabled={isLoading}
                 aria-invalid={!!errors.nombre}
-                {...register("nombre")}
+                {...register('nombre')}
               />
               {errors.nombre && (
                 <p className="text-xs font-semibold text-rose-500">{errors.nombre.message}</p>
@@ -357,12 +382,12 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
                 id="telefono"
                 placeholder="Ej. 5512345678"
                 className={cn(
-                  "flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                  errors.telefono && "border-rose-500 focus-visible:ring-rose-500"
+                  'flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                  errors.telefono && 'border-rose-500 focus-visible:ring-rose-500'
                 )}
                 disabled={isLoading}
                 aria-invalid={!!errors.telefono}
-                {...register("telefono")}
+                {...register('telefono')}
               />
               {errors.telefono && (
                 <p className="text-xs font-semibold text-rose-500">{errors.telefono.message}</p>
@@ -379,12 +404,12 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
                 type="text"
                 placeholder="Ej. maria@example.com"
                 className={cn(
-                  "flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50",
-                  errors.email && "border-rose-500 focus-visible:ring-rose-500"
+                  'flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 placeholder:text-slate-600 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50',
+                  errors.email && 'border-rose-500 focus-visible:ring-rose-500'
                 )}
                 disabled={isLoading}
                 aria-invalid={!!errors.email}
-                {...register("email")}
+                {...register('email')}
               />
               {errors.email && (
                 <p className="text-xs font-semibold text-rose-500">{errors.email.message}</p>
@@ -400,12 +425,20 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
                 id="fuente"
                 className="flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:opacity-50"
                 disabled={isLoading}
-                {...register("fuente")}
+                {...register('fuente')}
               >
-                <option value="tienda" className="bg-slate-900">Tienda</option>
-                <option value="instagram" className="bg-slate-900">Instagram</option>
-                <option value="whatsapp" className="bg-slate-900">WhatsApp</option>
-                <option value="referido" className="bg-slate-900">Referido</option>
+                <option value="tienda" className="bg-slate-900">
+                  Tienda
+                </option>
+                <option value="instagram" className="bg-slate-900">
+                  Instagram
+                </option>
+                <option value="whatsapp" className="bg-slate-900">
+                  WhatsApp
+                </option>
+                <option value="referido" className="bg-slate-900">
+                  Referido
+                </option>
               </select>
               {errors.fuente && (
                 <p className="text-xs font-semibold text-rose-500">{errors.fuente.message}</p>
@@ -423,7 +456,7 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
                 rows={3}
                 className="flex w-full rounded-md border border-slate-800 bg-slate-950/60 text-slate-100 px-3 py-2 text-sm placeholder:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:opacity-50 resize-none"
                 disabled={isLoading}
-                {...register("notas")}
+                {...register('notas')}
               />
               {errors.notas && (
                 <p className="text-xs font-semibold text-rose-500">{errors.notas.message}</p>
@@ -457,7 +490,7 @@ export function ClientesClient({ initialClientes }: ClientesClientProps) {
                     Guardando...
                   </>
                 ) : (
-                  "Guardar"
+                  'Guardar'
                 )}
               </Button>
             </DialogFooter>

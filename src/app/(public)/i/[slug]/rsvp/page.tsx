@@ -1,8 +1,8 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { TemplateWrapper } from "@/components/templates/TemplateWrapper";
-import { InvitacionData } from "@/types";
-import { PublicRSVPForm } from "../rsvp-form";
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { TemplateWrapper } from '@/components/templates/TemplateWrapper';
+import { InvitacionData } from '@/types';
+import { PublicRSVPForm } from '../rsvp-form';
 
 interface PublicRSVPPageProps {
   params: {
@@ -17,12 +17,12 @@ export default async function PublicRSVPPage({ params }: PublicRSVPPageProps) {
     where: { slug },
   });
 
-  if (!order || !order.datosInvitacion || order.estadoInvitacion !== "PUBLICADA") {
+  if (!order || !order.datosInvitacion || order.estadoInvitacion !== 'PUBLICADA') {
     notFound();
   }
 
   const datos = order.datosInvitacion as unknown as InvitacionData;
-  const nombreFestejado = datos.nombre || datos.nombres || "Festejado";
+  const nombreFestejado = datos.nombre || datos.nombres || 'Festejado';
 
   return (
     <TemplateWrapper data={datos}>

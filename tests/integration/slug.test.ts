@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterAll } from "vitest";
-import { prisma } from "@/lib/prisma";
-import { publicarInvitacionAction, slugify } from "@/app/(admin)/admin/pedidos/[id]/editar/actions";
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { prisma } from '@/lib/prisma';
+import { publicarInvitacionAction, slugify } from '@/app/(admin)/admin/pedidos/[id]/editar/actions';
 
-describe("Slug Integration Tests", () => {
+describe('Slug Integration Tests', () => {
   let testClienteId: string;
 
   beforeEach(async () => {
@@ -15,8 +15,8 @@ describe("Slug Integration Tests", () => {
 
     const client = await prisma.cliente.create({
       data: {
-        nombre: "Ana y Carlos",
-        fuente: "instagram",
+        nombre: 'Ana y Carlos',
+        fuente: 'instagram',
       },
     });
     testClienteId = client.id;
@@ -26,48 +26,48 @@ describe("Slug Integration Tests", () => {
     await prisma.$disconnect();
   });
 
-  it("debe slugificar texto correctamente", async () => {
-    expect(await slugify("Ana & Carlos - Bodas!")).toBe("ana-carlos-bodas");
-    expect(await slugify("  María José y Andrés  ")).toBe("maria-jose-y-andres");
+  it('debe slugificar texto correctamente', async () => {
+    expect(await slugify('Ana & Carlos - Bodas!')).toBe('ana-carlos-bodas');
+    expect(await slugify('  María José y Andrés  ')).toBe('maria-jose-y-andres');
   });
 
-  it("debe generar slug único para un pedido al publicar", async () => {
+  it('debe generar slug único para un pedido al publicar', async () => {
     const pedido = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "cumpleanos",
-        fechaEvento: new Date("2026-08-15T18:00:00Z"),
-        template: "cumpleanos-esencial",
+        tipoEvento: 'cumpleanos',
+        fechaEvento: new Date('2026-08-15T18:00:00Z'),
+        template: 'cumpleanos-esencial',
         precio: 2500,
-        estado: "cotizado",
+        estado: 'cotizado',
         datosInvitacion: {
-          nombre: "Ana y Carlos",
+          nombre: 'Ana y Carlos',
         },
       },
     });
 
     const res = await publicarInvitacionAction(pedido.id);
     expect(res.success).toBe(true);
-    expect(res.data?.slug).toBe("ana-y-carlos-2026-08-15");
+    expect(res.data?.slug).toBe('ana-y-carlos-2026-08-15');
 
     const check = await prisma.pedido.findUnique({
       where: { id: pedido.id },
     });
-    expect(check?.slug).toBe("ana-y-carlos-2026-08-15");
-    expect(check?.estado).toBe("entregado");
+    expect(check?.slug).toBe('ana-y-carlos-2026-08-15');
+    expect(check?.estado).toBe('entregado');
   });
 
-  it("debe manejar colisiones de slugs añadiendo sufijos numéricos", async () => {
+  it('debe manejar colisiones de slugs añadiendo sufijos numéricos', async () => {
     const pedido1 = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "cumpleanos",
-        fechaEvento: new Date("2026-08-15T18:00:00Z"),
-        template: "cumpleanos-esencial",
+        tipoEvento: 'cumpleanos',
+        fechaEvento: new Date('2026-08-15T18:00:00Z'),
+        template: 'cumpleanos-esencial',
         precio: 2500,
-        estado: "cotizado",
+        estado: 'cotizado',
         datosInvitacion: {
-          nombre: "Ana y Carlos",
+          nombre: 'Ana y Carlos',
         },
       },
     });
@@ -75,28 +75,28 @@ describe("Slug Integration Tests", () => {
     const pedido2 = await prisma.pedido.create({
       data: {
         clienteId: testClienteId,
-        tipoEvento: "cumpleanos",
-        fechaEvento: new Date("2026-08-15T18:00:00Z"),
-        template: "cumpleanos-esencial",
+        tipoEvento: 'cumpleanos',
+        fechaEvento: new Date('2026-08-15T18:00:00Z'),
+        template: 'cumpleanos-esencial',
         precio: 2500,
-        estado: "cotizado",
+        estado: 'cotizado',
         datosInvitacion: {
-          nombre: "Ana y Carlos",
+          nombre: 'Ana y Carlos',
         },
       },
     });
 
     const res1 = await publicarInvitacionAction(pedido1.id);
     expect(res1.success).toBe(true);
-    expect(res1.data?.slug).toBe("ana-y-carlos-2026-08-15");
+    expect(res1.data?.slug).toBe('ana-y-carlos-2026-08-15');
 
     const res2 = await publicarInvitacionAction(pedido2.id);
     expect(res2.success).toBe(true);
-    expect(res2.data?.slug).toBe("ana-y-carlos-2026-08-15-1");
+    expect(res2.data?.slug).toBe('ana-y-carlos-2026-08-15-1');
 
     const check1 = await prisma.pedido.findUnique({ where: { id: pedido1.id } });
     const check2 = await prisma.pedido.findUnique({ where: { id: pedido2.id } });
-    expect(check1?.slug).toBe("ana-y-carlos-2026-08-15");
-    expect(check2?.slug).toBe("ana-y-carlos-2026-08-15-1");
+    expect(check1?.slug).toBe('ana-y-carlos-2026-08-15');
+    expect(check2?.slug).toBe('ana-y-carlos-2026-08-15-1');
   });
 });

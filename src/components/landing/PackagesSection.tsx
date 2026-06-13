@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { motion, useMotionValue, useTransform, useReducedMotion } from "framer-motion";
-import { Check, Star, ArrowRight, Gift } from "lucide-react";
-import { PRECIOS_PAQUETE } from "@/lib/paquetes";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { useState } from 'react';
+import { motion, useMotionValue, useTransform, useReducedMotion } from 'framer-motion';
+import { Check, Star, ArrowRight, Gift } from 'lucide-react';
+import { PRECIOS_PAQUETE } from '@/lib/paquetes';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 // Tarjeta interactiva 3D con efecto Tilt
 function PhysicalCard({
@@ -59,18 +59,20 @@ function PhysicalCard({
       onMouseEnter={() => setIsHovered(true)}
       style={{
         borderColor: color,
-        ...(shouldReduceMotion ? {} : { rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }),
+        ...(shouldReduceMotion
+          ? {}
+          : { rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 1000 }),
       }}
       className={`flex flex-col justify-between rounded-3xl p-8 bg-white border-2 shadow-md hover:shadow-xl transition-shadow duration-300 relative overflow-hidden select-none`}
       whileHover={shouldReduceMotion ? { y: -4 } : { y: -8, scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 20 }}
     >
       {/* Efecto de Brillo (Shine) al pasar el cursor (solo Premium) */}
       {isPremium && (
         <motion.div
-          initial={{ x: "-150%", y: "-150%" }}
-          animate={isHovered ? { x: "150%", y: "150%" } : { x: "-150%", y: "-150%" }}
-          transition={{ duration: 1.4, ease: "easeInOut" }}
+          initial={{ x: '-150%', y: '-150%' }}
+          animate={isHovered ? { x: '150%', y: '150%' } : { x: '-150%', y: '-150%' }}
+          transition={{ duration: 1.4, ease: 'easeInOut' }}
           className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/45 to-transparent pointer-events-none z-10"
         />
       )}
@@ -85,7 +87,7 @@ function PhysicalCard({
       )}
 
       {/* Contenido de la tarjeta física */}
-      <div style={shouldReduceMotion ? {} : { transform: "translateZ(30px)" }}>
+      <div style={shouldReduceMotion ? {} : { transform: 'translateZ(30px)' }}>
         {/* Cabecera */}
         <div className="relative mb-6">
           {badgeText && (
@@ -95,11 +97,15 @@ function PhysicalCard({
           )}
           <h3 className="text-xl font-extrabold text-carbon-suave flex items-center gap-2">
             {name}
-            {isPremium && <Star className="w-5 h-5 fill-dorado-calido text-dorado-calido animate-pulse" />}
+            {isPremium && (
+              <Star className="w-5 h-5 fill-dorado-calido text-dorado-calido animate-pulse" />
+            )}
           </h3>
           <div className="flex items-baseline gap-1 mt-3">
             <span className="text-4xl font-extrabold text-carbon-suave">${price}</span>
-            <span className="text-xs text-carbon-suave/60 font-bold uppercase">MXN / Pago Único</span>
+            <span className="text-xs text-carbon-suave/60 font-bold uppercase">
+              MXN / Pago Único
+            </span>
           </div>
         </div>
 
@@ -117,17 +123,20 @@ function PhysicalCard({
       </div>
 
       {/* Botón de Comienzo */}
-      <div className="w-full mt-auto" style={shouldReduceMotion ? {} : { transform: "translateZ(45px)" }}>
+      <div
+        className="w-full mt-auto"
+        style={shouldReduceMotion ? {} : { transform: 'translateZ(45px)' }}
+      >
         <Link
           href="#contacto"
           className={cn(
             buttonVariants(),
-            "w-full py-6 rounded-full font-bold text-xs uppercase tracking-widest transition-transform flex items-center justify-center gap-1.5 h-auto",
+            'w-full py-6 rounded-full font-bold text-xs uppercase tracking-widest transition-transform flex items-center justify-center gap-1.5 h-auto',
             isPremium
-              ? "bg-terracota hover:bg-terracota/95 text-white shadow-lg shadow-terracota/20"
-              : name === "Completa"
-              ? "bg-carbon-suave hover:bg-carbon-suave/90 text-white"
-              : "bg-crema-seda hover:bg-rosa-regalo/30 text-carbon-suave border border-[#E8B4B8]"
+              ? 'bg-terracota hover:bg-terracota/95 text-white shadow-lg shadow-terracota/20'
+              : name === 'Completa'
+                ? 'bg-carbon-suave hover:bg-carbon-suave/90 text-white'
+                : 'bg-crema-seda hover:bg-rosa-regalo/30 text-carbon-suave border border-[#E8B4B8]'
           )}
         >
           {ctaText}
@@ -141,50 +150,50 @@ function PhysicalCard({
 export default function PackagesSection() {
   const packagesList = [
     {
-      name: "Esencial",
+      name: 'Esencial',
       price: PRECIOS_PAQUETE.esencial,
-      color: "#E8B4B8",
-      badgeText: "El Básico",
-      ctaText: "Quiero Esencial",
+      color: '#E8B4B8',
+      badgeText: 'El Básico',
+      ctaText: 'Quiero Esencial',
       features: [
-        "Portada personalizada (foto, nombre, edad y frase)",
-        "Ubicación exacta conectada con Google Maps",
-        "Formulario RSVP básico (confirmación de asistencia)",
-        "Canción favorita de música de fondo (reproductor)",
-        "Diseño 100% móvil y responsive",
+        'Portada personalizada (foto, nombre, edad y frase)',
+        'Ubicación exacta conectada con Google Maps',
+        'Formulario RSVP básico (confirmación de asistencia)',
+        'Canción favorita de música de fondo (reproductor)',
+        'Diseño 100% móvil y responsive',
       ],
     },
     {
-      name: "Completa",
+      name: 'Completa',
       price: PRECIOS_PAQUETE.completa,
-      color: "#D4A373",
-      badgeText: "El Más Popular",
-      ctaText: "Elegir Completa",
+      color: '#D4A373',
+      badgeText: 'El Más Popular',
+      ctaText: 'Elegir Completa',
       features: [
-        "Todo lo del paquete Esencial",
-        "Galería de fotos interactiva (hasta 6 fotos)",
-        "Sección detallada de Código de vestimenta",
-        "Itinerario completo del evento con iconos",
-        "Datos de mesa de regalos o transferencias",
-        "Mensaje especial del cumpleañero",
+        'Todo lo del paquete Esencial',
+        'Galería de fotos interactiva (hasta 6 fotos)',
+        'Sección detallada de Código de vestimenta',
+        'Itinerario completo del evento con iconos',
+        'Datos de mesa de regalos o transferencias',
+        'Mensaje especial del cumpleañero',
       ],
     },
     {
-      name: "Premium",
+      name: 'Premium',
       price: PRECIOS_PAQUETE.premium,
-      color: "#C85C5C",
+      color: '#C85C5C',
       isPremium: true,
-      badgeText: "Experiencia Completa",
-      ctaText: "Obtener Premium",
+      badgeText: 'Experiencia Completa',
+      ctaText: 'Obtener Premium',
       features: [
-        "Todo lo del paquete Completa",
-        "Historia personal (3 momentos con fotos)",
-        "Galería de fotos ampliada (hasta 12 fotos)",
-        "Buzón de deseos digital para invitados",
-        "Álbum QR interactivo para subir fotos post-evento",
-        "Asignación de pases individuales por invitado",
-        "Video de agradecimiento integrado",
-        "Temática visual y colores personalizados",
+        'Todo lo del paquete Completa',
+        'Historia personal (3 momentos con fotos)',
+        'Galería de fotos ampliada (hasta 12 fotos)',
+        'Buzón de deseos digital para invitados',
+        'Álbum QR interactivo para subir fotos post-evento',
+        'Asignación de pases individuales por invitado',
+        'Video de agradecimiento integrado',
+        'Temática visual y colores personalizados',
       ],
     },
   ];

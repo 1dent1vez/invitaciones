@@ -1,11 +1,10 @@
-import { z } from "zod";
-import { pedidoSchema } from "@/app/(admin)/admin/pedidos/schemas";
-import { pagoSchema } from "@/app/(admin)/admin/pedidos/[id]/schemas";
-import { savePedidoSchema } from "@/app/(admin)/admin/pedidos/[id]/editar/schemas";
-import { clienteSchema } from "@/app/(admin)/admin/clientes/schemas";
+import { z } from 'zod';
+import { pedidoSchema } from '@/app/(admin)/admin/pedidos/schemas';
+import { pagoSchema } from '@/app/(admin)/admin/pedidos/[id]/schemas';
+import { savePedidoSchema } from '@/app/(admin)/admin/pedidos/[id]/editar/schemas';
+import { clienteSchema } from '@/app/(admin)/admin/clientes/schemas';
 
-export type TemplateType =
-  | 'cumpleanos-esencial' | 'cumpleanos-completa' | 'cumpleanos-premium';
+export type TemplateType = 'cumpleanos-esencial' | 'cumpleanos-completa' | 'cumpleanos-premium';
 
 export interface TimelineEvent {
   hora: string;
@@ -97,7 +96,20 @@ export interface InvitacionData extends InvitacionCompletaData {
   cuentaRegresiva?: boolean;
 }
 
-export type FieldType = 'text' | 'date' | 'color' | 'image' | 'textarea' | 'timeline' | 'time' | 'number' | 'tel' | 'url' | 'select' | 'boolean' | 'gallery';
+export type FieldType =
+  | 'text'
+  | 'date'
+  | 'color'
+  | 'image'
+  | 'textarea'
+  | 'timeline'
+  | 'time'
+  | 'number'
+  | 'tel'
+  | 'url'
+  | 'select'
+  | 'boolean'
+  | 'gallery';
 
 export interface FieldConfig {
   key: keyof InvitacionData | string;
@@ -127,4 +139,3 @@ export type PedidoInput = z.infer<typeof pedidoSchema>;
 export type PagoInput = z.infer<typeof pagoSchema>;
 export type ClienteInput = z.infer<typeof clienteSchema>;
 export type SavePedidoInput = z.infer<ReturnType<typeof savePedidoSchema>>;
-

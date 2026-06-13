@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { HelpCircle, ArrowLeft, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { HelpCircle, ArrowLeft, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
   return (
@@ -20,7 +20,8 @@ export default function NotFound() {
             Invitación No Encontrada
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed px-4">
-            Lo sentimos, el enlace de invitación no es válido, no existe o ha expirado. Por favor verifica la dirección e intenta de nuevo.
+            Lo sentimos, el enlace de invitación no es válido, no existe o ha expirado. Por favor
+            verifica la dirección e intenta de nuevo.
           </p>
         </div>
 
@@ -33,7 +34,7 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
-      
+
       {/* Decorative Brand Tag */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-2xs uppercase tracking-widest text-slate-600 flex items-center gap-1.5 font-semibold">
         <Sparkles className="h-3 w-3 text-violet-500" />

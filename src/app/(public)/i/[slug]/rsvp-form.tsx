@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import React, { useState, useTransition } from "react";
-import { useForm, Resolver } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Loader2, CheckCircle, X, Sparkles } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import React, { useState, useTransition } from 'react';
+import { useForm, Resolver } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Loader2, CheckCircle, X, Sparkles } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { createRSVPAction } from "./actions";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { createRSVPAction } from './actions';
 
 const rsvpFormSchema = z.object({
-  nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
+  nombre: z.string().min(3, 'El nombre debe tener al menos 3 caracteres'),
   asiste: z.boolean({
-    required_error: "Selecciona si asistirás o no",
+    required_error: 'Selecciona si asistirás o no',
   }),
   pax: z.preprocess(
     (val) => Number(val),
-    z.number().int().min(1, "Al menos 1").max(10, "El límite máximo de acompañantes es 10")
+    z.number().int().min(1, 'Al menos 1').max(10, 'El límite máximo de acompañantes es 10')
   ),
   telefono: z.string().optional(),
   mensaje: z.string().max(200, 'El mensaje no debe superar los 200 caracteres').optional(),
@@ -55,19 +55,19 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
   } = useForm<RSVPFormValues>({
     resolver: zodResolver(rsvpFormSchema) as unknown as Resolver<RSVPFormValues>,
     defaultValues: {
-      nombre: "",
+      nombre: '',
       asiste: true,
       pax: 1,
-      telefono: "",
-      mensaje: "",
+      telefono: '',
+      mensaje: '',
     },
   });
 
-  const watchAsiste = watch("asiste");
+  const watchAsiste = watch('asiste');
 
   const onSubmit = async (data: RSVPFormValues) => {
     if (isPastDeadline) {
-      setSubmitError("El período de confirmación ha cerrado.");
+      setSubmitError('El período de confirmación ha cerrado.');
       return;
     }
     setSubmitError(null);
@@ -88,7 +88,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
           setShowConfetti(false);
         }, 3000);
       } else {
-        setSubmitError(res.error || "Ocurrió un error al registrar el RSVP");
+        setSubmitError(res.error || 'Ocurrió un error al registrar el RSVP');
       }
     });
   };
@@ -111,7 +111,9 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6 flex flex-col items-center gap-3 animate-fade-in">
           <CheckCircle className="h-10 w-10 text-emerald-400" />
           <p className="text-sm font-semibold text-white">¡Confirmación Registrada!</p>
-          <p className="text-xs text-slate-400">Gracias, tus detalles han sido guardados con éxito.</p>
+          <p className="text-xs text-slate-400">
+            Gracias, tus detalles han sido guardados con éxito.
+          </p>
           <Button
             onClick={() => setIsSubmitted(false)}
             variant="outline"
@@ -180,7 +182,10 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
                 {/* Nombre */}
                 <div className="space-y-1.5">
-                  <label htmlFor="rsvp-nombre" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <label
+                    htmlFor="rsvp-nombre"
+                    className="text-xs font-bold uppercase tracking-wider text-slate-400"
+                  >
                     Nombre Completo *
                   </label>
                   <Input
@@ -189,7 +194,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                     placeholder="Ej. Juan Pérez"
                     className="border-slate-900 bg-slate-950 text-slate-100 placeholder:text-slate-700"
                     disabled={isPending}
-                    {...register("nombre")}
+                    {...register('nombre')}
                   />
                   {errors.nombre && (
                     <p className="text-2xs font-semibold text-rose-500">{errors.nombre.message}</p>
@@ -198,29 +203,32 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
 
                 {/* ¿Asistirá? */}
                 <div className="space-y-1.5">
-                  <label htmlFor="rsvp-asiste" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <label
+                    htmlFor="rsvp-asiste"
+                    className="text-xs font-bold uppercase tracking-wider text-slate-400"
+                  >
                     ¿Asistirás al evento? *
                   </label>
                   <Input type="text" id="rsvp-asiste" className="hidden" />
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
-                      onClick={() => setValue("asiste", true)}
+                      onClick={() => setValue('asiste', true)}
                       className={`py-3 rounded-lg border text-xs font-bold tracking-wide transition-all ${
                         watchAsiste
-                          ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                          : "border-slate-900 bg-slate-950/40 text-slate-400 hover:text-white"
+                          ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]'
+                          : 'border-slate-900 bg-slate-950/40 text-slate-400 hover:text-white'
                       }`}
                     >
                       Sí, asistiré
                     </button>
                     <button
                       type="button"
-                      onClick={() => setValue("asiste", false)}
+                      onClick={() => setValue('asiste', false)}
                       className={`py-3 rounded-lg border text-xs font-bold tracking-wide transition-all ${
                         !watchAsiste
-                          ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                          : "border-slate-900 bg-slate-950/40 text-slate-400 hover:text-white"
+                          ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]'
+                          : 'border-slate-900 bg-slate-950/40 text-slate-400 hover:text-white'
                       }`}
                     >
                       No podré asistir
@@ -233,12 +241,15 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                   {watchAsiste && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
+                      animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden space-y-1.5"
                     >
-                      <label htmlFor="rsvp-pax" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      <label
+                        htmlFor="rsvp-pax"
+                        className="text-xs font-bold uppercase tracking-wider text-slate-400"
+                      >
                         Cantidad de Lugares (Pax) *
                       </label>
                       <Input
@@ -247,7 +258,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                         min="1"
                         className="border-slate-900 bg-slate-950 text-slate-100"
                         disabled={isPending}
-                        {...register("pax")}
+                        {...register('pax')}
                       />
                       {errors.pax && (
                         <p className="text-2xs font-semibold text-rose-500">{errors.pax.message}</p>
@@ -266,13 +277,16 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                     placeholder="Ej. 5512345678"
                     className="border-slate-900 bg-slate-950 text-slate-100 placeholder:text-slate-700"
                     disabled={isPending}
-                    {...register("telefono")}
+                    {...register('telefono')}
                   />
                 </div>
 
                 {/* Mensaje */}
                 <div className="space-y-1.5">
-                  <label htmlFor="rsvp-mensaje" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <label
+                    htmlFor="rsvp-mensaje"
+                    className="text-xs font-bold uppercase tracking-wider text-slate-400"
+                  >
                     Mensaje para los novios / festejados
                   </label>
                   <textarea
@@ -281,7 +295,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                     rows={3}
                     className="w-full rounded-lg border border-slate-900 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-700 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] focus:border-[var(--primary)] transition-all resize-none"
                     disabled={isPending}
-                    {...register("mensaje")}
+                    {...register('mensaje')}
                   />
                   {errors.mensaje && (
                     <p className="text-2xs font-semibold text-rose-500">{errors.mensaje.message}</p>
@@ -303,36 +317,39 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
                     className="flex-1 bg-[var(--primary)] hover:opacity-90 text-[#0e0e13] font-bold"
                     disabled={isPending}
                   >
-                    {isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "Confirmar"
-                    )}
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Confirmar'}
                   </Button>
                   {showConfetti && (
-        <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
-          {Array.from({ length: 20 }).map((_, i) => {
-            const left = `${i * 5}%`;
-            const delay = `${(i % 5) * 0.2}s`;
-            const duration = `${1.5 + (i % 3) * 0.5}s`;
-            const colors = ["#f59e0b", "#10b981", "#3b82f6", "#ec4899", "#8b5cf6", "#ef4444"];
-            const color = colors[i % colors.length];
-            return (
-              <div
-                key={i}
-                className="absolute top-0 w-2 h-4 rounded-xs animate-fall"
-                style={{
-                  left,
-                  backgroundColor: color,
-                  animationDelay: delay,
-                  animationDuration: duration,
-                }}
-              />
-            );
-          })}
-        </div>
-      )}
-    </div>
+                    <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
+                      {Array.from({ length: 20 }).map((_, i) => {
+                        const left = `${i * 5}%`;
+                        const delay = `${(i % 5) * 0.2}s`;
+                        const duration = `${1.5 + (i % 3) * 0.5}s`;
+                        const colors = [
+                          '#f59e0b',
+                          '#10b981',
+                          '#3b82f6',
+                          '#ec4899',
+                          '#8b5cf6',
+                          '#ef4444',
+                        ];
+                        const color = colors[i % colors.length];
+                        return (
+                          <div
+                            key={i}
+                            className="absolute top-0 w-2 h-4 rounded-xs animate-fall"
+                            style={{
+                              left,
+                              backgroundColor: color,
+                              animationDelay: delay,
+                              animationDuration: duration,
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </form>
             </motion.div>
           </div>
