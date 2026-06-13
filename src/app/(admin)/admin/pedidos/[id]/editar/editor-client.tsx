@@ -764,7 +764,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
     }
   };
 
-  const onSave = async (data: EditorFormValues) => {
+  const onSave = (data: EditorFormValues) => {
     setActionError(null);
 
     startTransition(async () => {
@@ -795,7 +795,7 @@ export function EditorClient({ pedido: initialPedido, initialIsLoading }: Editor
     });
   };
 
-  const onPublish = async () => {
+  const onPublish = () => {
     setActionError(null);
     clearErrors();
 

@@ -112,7 +112,7 @@ export type FieldType =
   | 'gallery';
 
 export interface FieldConfig {
-  key: keyof InvitacionData | string;
+  key: keyof InvitacionData | (string & {});
   label: string;
   type: FieldType;
   required: boolean;

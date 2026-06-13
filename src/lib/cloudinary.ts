@@ -18,7 +18,7 @@ export async function uploadToCloudinary(
       },
       (error, result) => {
         if (error) {
-          reject(error);
+          reject(new Error(error.message));
         } else if (result) {
           let url = result.secure_url;
           if (url.includes('/upload/')) {

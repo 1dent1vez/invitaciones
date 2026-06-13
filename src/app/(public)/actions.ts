@@ -42,9 +42,11 @@ export async function createLeadAction(input: LeadInput): Promise<ActionResult> 
     await prisma.lead.create({
       data: {
         nombre,
-        evento: evento ? evento : null,
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        evento: evento || null,
         fecha: parsedFecha,
-        telefono: telefono ? telefono : null,
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        telefono: telefono || null,
         mensaje,
       },
     });

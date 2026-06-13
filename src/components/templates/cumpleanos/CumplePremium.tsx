@@ -29,15 +29,23 @@ if (typeof window !== 'undefined' && !window.IntersectionObserver) {
     writable: true,
     configurable: true,
     value: class IntersectionObserver {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
+      observe() {
+        // mock
+      }
+      unobserve() {
+        // mock
+      }
+      disconnect() {
+        // mock
+      }
     },
   });
 }
 
 function triggerConfetti() {
-  if (typeof window === 'undefined') return () => {};
+  if (typeof window === 'undefined') return () => {
+    // noop
+  };
 
   const canvas = document.createElement('canvas');
   canvas.style.position = 'fixed';
@@ -50,7 +58,9 @@ function triggerConfetti() {
   document.body.appendChild(canvas);
 
   const ctx = canvas.getContext('2d');
-  if (!ctx) return () => {};
+  if (!ctx) return () => {
+    // noop
+  };
 
   let width = (canvas.width = window.innerWidth);
   let height = (canvas.height = window.innerHeight);

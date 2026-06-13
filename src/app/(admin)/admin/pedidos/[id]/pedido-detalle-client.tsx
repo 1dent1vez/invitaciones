@@ -504,7 +504,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
     document.body.removeChild(link);
   };
 
-  const handleStateChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const nextState = e.target.value;
     const previousState = pedido.estado;
 

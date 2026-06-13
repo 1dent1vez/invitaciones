@@ -9,9 +9,15 @@ if (typeof window !== 'undefined' && !window.IntersectionObserver) {
     writable: true,
     configurable: true,
     value: class IntersectionObserver {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
+      observe() {
+        // mock
+      }
+      unobserve() {
+        // mock
+      }
+      disconnect() {
+        // mock
+      }
     },
   });
 }

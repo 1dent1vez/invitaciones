@@ -41,6 +41,7 @@ export async function logoutAction(): Promise<ActionResult<void>> {
       maxAge: 0,
       path: '/',
     });
+    await Promise.resolve();
     return { success: true };
   } catch (error) {
     console.error('[logoutAction]', error);

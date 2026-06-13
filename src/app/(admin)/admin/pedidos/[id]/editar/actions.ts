@@ -9,6 +9,7 @@ import { Prisma } from '@prisma/client';
 import { savePedidoSchema } from './schemas';
 
 export async function slugify(text: string): Promise<string> {
+  await Promise.resolve();
   return text
     .toLowerCase()
     .normalize('NFD')

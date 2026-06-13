@@ -65,7 +65,7 @@ export function PublicRSVPForm({ slug, fechaLimiteRSVP }: PublicRSVPFormProps) {
 
   const watchAsiste = watch('asiste');
 
-  const onSubmit = async (data: RSVPFormValues) => {
+  const onSubmit = (data: RSVPFormValues) => {
     if (isPastDeadline) {
       setSubmitError('El período de confirmación ha cerrado.');
       return;

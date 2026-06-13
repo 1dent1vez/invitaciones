@@ -105,7 +105,7 @@ export function RSVPTable({ rsvps, precio, datosInvitacion }: RSVPTableProps) {
   const filteredRSVPs = rsvps.filter((r) => {
     const matchesSearch =
       r.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (r.telefono && r.telefono.includes(searchTerm));
+      (r.telefono?.includes(searchTerm) ?? false);
 
     if (filterType === 'asiste') {
       return matchesSearch && r.asiste;
