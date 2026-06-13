@@ -8,7 +8,11 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: "./tests/setup.ts",
-    exclude: [...configDefaults.exclude, "**/tests/e2e/**"],
+    exclude: [...configDefaults.exclude, "**/tests/e2e/**", "**/ecc-config/**", "**/scratch/**"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+    },
   },
   resolve: {
     alias: {

@@ -1,0 +1,14 @@
+node_modules
+.next
+ecc-config
+scratch
+test-results
+coverage
+out
+build
+dist
+playwright.config.ts
+next.config.mjs
+tailwind.config.ts
+postcss.config.mjs
+eslint-report.json
