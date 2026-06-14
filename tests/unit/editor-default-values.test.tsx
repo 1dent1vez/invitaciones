@@ -84,52 +84,52 @@ describe('EditorClient defaultValues Tests', () => {
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
     // Check input elements are initialized with mock values
-    const nombreInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
-    const edadInput = container.querySelector('input[name="edad"]') as HTMLInputElement;
-    const lugarInput = container.querySelector('input[name="lugar"]') as HTMLInputElement;
+    const nombreInput = container.querySelector('input[name="nombre"]')!;
+    const edadInput = container.querySelector('input[name="edad"]')!;
+    const lugarInput = container.querySelector('input[name="lugar"]')!;
     const direccionInput = container.querySelector(
       'textarea[name="direccion"]'
-    ) as HTMLTextAreaElement;
+    )!;
     const fotoPortadaInput = container.querySelector(
       'input[name="fotoPortada"]'
-    ) as HTMLInputElement;
+    )!;
     const tipoCelebracionInput = container.querySelector(
       'select[name="tipoCelebracion"]'
-    ) as HTMLSelectElement;
+    )!;
     const mensajeFestejoInput = container.querySelector(
       'textarea[name="mensajeFestejo"]'
-    ) as HTMLTextAreaElement;
+    )!;
     const itinerarioInput = container.querySelector(
       'textarea[name="itinerario"]'
-    ) as HTMLTextAreaElement;
+    )!;
     const datosRegaloInput = container.querySelector(
       'textarea[name="datosRegalo"]'
-    ) as HTMLTextAreaElement;
+    )!;
     const colorPrimarioInput = container.querySelector(
       'input[name="colorPrimario"]'
-    ) as HTMLInputElement;
+    )!;
     const colorSecundarioInput = container.querySelector(
       'input[name="colorSecundario"]'
-    ) as HTMLInputElement;
+    )!;
     const historiaEdadInput = container.querySelector(
       'textarea[name="historiaEdad"]'
-    ) as HTMLTextAreaElement;
+    )!;
     const historiaSeresQueridosInput = container.querySelector(
       'textarea[name="historiaSeresQueridos"]'
-    ) as HTMLTextAreaElement;
+    )!;
     const historiaRecuerdoInput = container.querySelector(
       'textarea[name="historiaRecuerdo"]'
-    ) as HTMLTextAreaElement;
+    )!;
     const buzonDeseosInput = container.querySelector(
       'input[name="buzonDeseos"]'
-    ) as HTMLInputElement;
-    const pasesInput = container.querySelector('input[name="pases"]') as HTMLInputElement;
-    const numPasesInput = container.querySelector('input[name="numPases"]') as HTMLInputElement;
-    const tematicaInput = container.querySelector('select[name="tematica"]') as HTMLSelectElement;
-    const videoURLInput = container.querySelector('input[name="videoURL"]') as HTMLInputElement;
+    )!;
+    const pasesInput = container.querySelector('input[name="pases"]')!;
+    const numPasesInput = container.querySelector('input[name="numPases"]')!;
+    const tematicaInput = container.querySelector('select[name="tematica"]')!;
+    const videoURLInput = container.querySelector('input[name="videoURL"]')!;
     const colorAcentoInput = container.querySelector(
       'select[name="colorAcento"]'
-    ) as HTMLSelectElement;
+    )!;
 
     expect(nombreInput?.value).toBe('María Festejada');
     expect(edadInput?.value).toBe('25');

@@ -45,3 +45,13 @@ ecc-config/
 ecc-universal/
 .agent/
 
+# Context and reports (markdown files in root except README)
+/*.md
+!/README.md
+
+# Reports and local scratch files
+eslint-report.json
+vitest-coverage.log
+/scratch/
+/.lighthouseci/
+

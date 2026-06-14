@@ -12,7 +12,7 @@ describe('Middleware Route Protection Tests', () => {
     const req = new NextRequest('http://localhost:3000/i/sofia-esencial');
     const res = await middleware(req);
     expect(res).toBeDefined();
-    expect(res!.headers.get('x-middleware-next')).toBe('1');
+    expect(res.headers.get('x-middleware-next')).toBe('1');
   });
 
   it('debe redirigir a /login si accede a /admin sin sesión activa', async () => {
@@ -21,8 +21,8 @@ describe('Middleware Route Protection Tests', () => {
 
     const res = await middleware(req);
     expect(res).toBeDefined();
-    expect(res!.status).toBe(307);
-    expect(res!.headers.get('Location')).toContain('/login');
+    expect(res.status).toBe(307);
+    expect(res.headers.get('Location')).toContain('/login');
   });
 
   it('debe retornar 401 si accede a /api/admin sin sesión activa', async () => {
@@ -31,8 +31,8 @@ describe('Middleware Route Protection Tests', () => {
 
     const res = await middleware(req);
     expect(res).toBeDefined();
-    expect(res!.status).toBe(401);
-    const json = await res!.json();
+    expect(res.status).toBe(401);
+    const json = await res.json();
     expect(json.success).toBe(false);
     expect(json.error).toContain('No autorizado');
   });
@@ -44,6 +44,6 @@ describe('Middleware Route Protection Tests', () => {
 
     const res = await middleware(req);
     expect(res).toBeDefined();
-    expect(res!.headers.get('x-middleware-next')).toBe('1');
+    expect(res.headers.get('x-middleware-next')).toBe('1');
   });
 });

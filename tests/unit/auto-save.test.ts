@@ -6,7 +6,7 @@ describe('Auto-guardado', () => {
 
     vi.useFakeTimers();
 
-    let isDirty = true;
+    const isDirty = true;
     let timer: NodeJS.Timeout | null = null;
 
     const triggerChange = () => {

@@ -825,11 +825,11 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
                   className={cn(
                     'px-3 py-1 rounded-full text-2xs font-bold uppercase border tracking-wider',
                     pedido.paquete === 'esencial' &&
-                      'bg-amber-50 text-amber-700 border-amber-200/50',
+                    'bg-amber-50 text-amber-700 border-amber-200/50',
                     pedido.paquete === 'completa' &&
-                      'bg-violet-50 text-violet-700 border-violet-200/50',
+                    'bg-violet-50 text-violet-700 border-violet-200/50',
                     pedido.paquete === 'premium' &&
-                      'bg-emerald-50 text-emerald-700 border-emerald-200/50'
+                    'bg-emerald-50 text-emerald-700 border-emerald-200/50'
                   )}
                 >
                   {pedido.paquete}

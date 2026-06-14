@@ -79,7 +79,7 @@ describe('EditorClient Component Tests', () => {
   it('debe actualizar el preview instantáneamente al escribir en un campo', async () => {
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
-    const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
+    const nombresInput = container.querySelector('input[name="nombre"]')!;
     expect(nombresInput).not.toBeNull();
     console.log('DIAGNOSTIC - nombresInput value:', nombresInput.value);
 
@@ -96,11 +96,11 @@ describe('EditorClient Component Tests', () => {
     // Default primary color is #F59E0B for cumpleanos-esencial
     const wrapper = container.querySelector('[style*="--primary"]');
     expect(wrapper).not.toBeNull();
-    let styleAttr = wrapper?.getAttribute('style') || '';
+    const styleAttr = wrapper?.getAttribute('style') || '';
     expect(styleAttr.toLowerCase()).toContain('--primary: #f59e0b');
 
     // Get color principal text input (associated with default color value)
-    const colorInput = container.querySelector('input[name="colorPrimario"]') as HTMLInputElement;
+    const colorInput = container.querySelector('input[name="colorPrimario"]')!;
     expect(colorInput).not.toBeNull();
 
     // Change color input value to #ff0000
@@ -118,7 +118,7 @@ describe('EditorClient Component Tests', () => {
       await import('@/app/(admin)/admin/pedidos/[id]/editar/actions');
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
-    const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
+    const nombresInput = container.querySelector('input[name="nombre"]')!;
     expect(nombresInput).not.toBeNull();
     fireEvent.change(nombresInput, { target: { value: '' } });
 
@@ -144,7 +144,7 @@ describe('EditorClient Component Tests', () => {
       await import('@/app/(admin)/admin/pedidos/[id]/editar/actions');
     const { container } = render(<EditorClient pedido={mockPedido as any} />);
 
-    const nombresInput = container.querySelector('input[name="nombre"]') as HTMLInputElement;
+    const nombresInput = container.querySelector('input[name="nombre"]')!;
     expect(nombresInput).not.toBeNull();
     fireEvent.change(nombresInput, { target: { value: '' } });
 

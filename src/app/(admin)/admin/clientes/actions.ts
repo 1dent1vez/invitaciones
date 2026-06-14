@@ -11,11 +11,11 @@ export async function getClientesAction(search?: string): Promise<ActionResult<C
     const clients = await prisma.cliente.findMany({
       where: search
         ? {
-            nombre: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          }
+          nombre: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        }
         : undefined,
       orderBy: {
         createdAt: 'desc',

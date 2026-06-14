@@ -4,7 +4,7 @@ import { registrarVisitaAction } from '@/app/(public)/i/[slug]/actions';
 
 describe('Visitas Integration Tests', () => {
   let testPedidoId: string;
-  const testSlug: string = 'test-visit-analytics';
+  const testSlug = 'test-visit-analytics';
 
   beforeEach(async () => {
     // Clear dependencies and setup mock order

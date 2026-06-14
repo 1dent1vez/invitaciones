@@ -4,7 +4,7 @@ import { createRSVPAction } from '@/app/(public)/i/[slug]/actions';
 
 describe('RSVP Integration Tests', () => {
   let testPedidoId: string;
-  const testSlug: string = 'test-event-rsvp';
+  const testSlug = 'test-event-rsvp';
 
   beforeEach(async () => {
     await prisma.visita.deleteMany();
