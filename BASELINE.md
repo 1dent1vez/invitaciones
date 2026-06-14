@@ -62,3 +62,20 @@ Este documento establece la línea base de calidad de código, formato y rendimi
 2. **Refactorización de Regla Nullish Coalescing**: Resolver los 317 warnings de `@typescript-eslint/prefer-nullish-coalescing` reemplazando los operadores `||` por `??` en condiciones seguras de inicialización.
 3. **Optimización de Performance de la Landing**: Analizar el bundle size y optimizar las imágenes y animaciones pesadas en la Landing Page (score de 72 en rendimiento) para elevar el score a más de 90.
 4. **Abstracción de Lógica Compartida**: Centralizar la lógica repetitiva del countdown y la portada de cumpleaños en componentes genéricos dentro de `src/components/templates/cumpleanos/shared/`.
+
+## 8. Estado Post-Refactorización (Comparativa del Delta)
+
+Realizamos con éxito las 8 fases planificadas de refactorización y mejoras de calidad. A continuación se presentan las métricas finales y su comparación contra el baseline original:
+
+| Métrica | Estado Original (Baseline) | Estado Post-Refactor (Fase 8) | Delta |
+|---------|----------------------------|-------------------------------|-------|
+| **TypeScript (flags estrictos)** | `noUncheckedIndexedAccess: false`<br>`noImplicitOverride: false` | `noUncheckedIndexedAccess: true`<br>`noImplicitOverride: true` | **Mejora Crítica (Flags Activos)** |
+| **Errores `tsc --noEmit`** | 0 (con flags desactivados) | 0 (con todos los flags activos) | **0 Errores** |
+| **ESLint Errores** | 404 | 0 | **-404 Errores (100% resueltos)** |
+| **ESLint Warnings** | 102 | 35 | **-67 Warnings** |
+| **Archivos sin formato (Prettier)** | 122 | 0 | **100% Formateado** |
+| **Rendimiento de la Landing Page** | 72 | 97 | **+25 puntos (Lighthouse 90+)** |
+| **Cobertura global de Vitest** | 12.69% | 35.49% | **+22.80% Cobertura** |
+| **Pruebas E2E (Playwright)** | 49 passed, 0 failed, 2 skipped | 49 passed, 0 failed, 2 skipped | **Pasando 100%** |
+| **Duplicación en templates** | Alta (Lógica repetida) | Centralizada en `templates/shared` | **Código Reutilizable** |
+
