@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="900" height="700" viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo y Estilos -->
+  <defs>
+    <style>
+      .bg { fill: #0F172A; }
+      .title { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 800; fill: #F1F5F9; }
+      .subtitle { font-family: 'Inter', sans-serif; font-size: 12px; fill: #94A3B8; }
+      .group-title { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; fill: #38BDF8; }
+      .box { rx: 8; stroke-width: 1.5; }
+      .box-api { fill: #1E293B; stroke: #38BDF8; }
+      .box-page { fill: #1E293B; stroke: #10B981; }
+      .box-lib { fill: #1E293B; stroke: #A855F7; }
+      .box-tmpl { fill: #1E293B; stroke: #F59E0B; }
+      .box-shared { fill: #334155; stroke: #94A3B8; }
+      .text-node { font-family: 'Inter', sans-serif; font-size: 11px; fill: #E2E8F0; font-weight: 500; }
+      .text-title { font-family: 'Inter', sans-serif; font-size: 12px; fill: #FFFFFF; font-weight: bold; }
+      .arrow { stroke: #64748B; stroke-width: 1.5; fill: none; stroke-dasharray: 4 2; }
+      .arrow-solid { stroke: #38BDF8; stroke-width: 1.8; fill: none; }
+      .marker { fill: #64748B; }
+      .marker-solid { fill: #38BDF8; }
+    </style>
+    <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" class="marker" />
+    </marker>
+    <marker id="arrowhead-solid" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" class="marker-solid" />
+    </marker>
+  </defs>
+
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Cabecera -->
+  <text x="30" y="40" class="title">Grafo de Dependencias del Proyecto</text>
+  <text x="30" y="60" class="subtitle">Mapeo de relaciones entre Rutas, Templates y Helpers Compartidos (Fase refactor/quality-improvement)</text>
+
+  <!-- Leyenda -->
+  <g transform="translate(630, 25)">
+    <rect x="0" y="0" width="15" height="15" rx="3" class="box-page" />
+    <text x="22" y="12" class="subtitle">Rutas / Páginas</text>
+    
+    <rect x="120" y="0" width="15" height="15" rx="3" class="box-api" />
+    <text x="142" y="12" class="subtitle">Endpoints API</text>
+    
+    <rect x="0" y="25" width="15" height="15" rx="3" class="box-tmpl" />
+    <text x="22" y="37" class="subtitle">Templates</text>
+    
+    <rect x="120" y="25" width="15" height="15" rx="3" class="box-lib" />
+    <text x="142" y="37" class="subtitle">Core Lib / Helpers</text>
+  </g>
+
+  <!-- 1. GRUPO: PÁGINAS Y RUTAS (Izquierda) -->
+  <text x="50" y="120" class="group-title">Rutas de Usuario (app/)</text>
+  <rect x="40" y="135" width="220" height="420" fill="none" stroke="#334155" stroke-dasharray="5 5" rx="10" />
+
+  <!-- Nodo: Landing Page -->
+  <g transform="translate(60, 160)">
+    <rect width="180" height="50" class="box box-page" />
+    <text x="15" y="22" class="text-title">Landing Page</text>
+    <text x="15" y="38" class="text-node">app/(public)/page.tsx</text>
+  </g>
+
+  <!-- Nodo: Invitación Pública -->
+  <g transform="translate(60, 240)">
+    <rect width="180" height="50" class="box box-page" />
+    <text x="15" y="22" class="text-title">Visor Invitación</text>
+    <text x="15" y="38" class="text-node">app/(public)/i/[slug]/page.tsx</text>
+  </g>
+
+  <!-- Nodo: RSVP Form Page -->
+  <g transform="translate(60, 320)">
+    <rect width="180" height="50" class="box box-page" />
+    <text x="15" y="22" class="text-title">Formulario RSVP</text>
+    <text x="15" y="38" class="text-node">app/(public)/i/[slug]/rsvp</text>
+  </g>
+
+  <!-- Nodo: Admin Dashboard -->
+  <g transform="translate(60, 420)">
+    <rect width="180" height="80" class="box box-page" />
+    <text x="15" y="22" class="text-title">Panel Admin</text>
+    <text x="15" y="38" class="text-node">/admin (Dashboard)</text>
+    <text x="15" y="54" class="text-node">/admin/pedidos (Gestión)</text>
+    <text x="15" y="70" class="text-node">/admin/clientes (Clientes)</text>
+  </g>
+
+
+  <!-- 2. GRUPO: LOGICA CENTRAL (Centro-Derecha) -->
+  <text x="330" y="120" class="group-title">Templates &amp; Registro (lib/ &amp; components/)</text>
+  <rect x="315" y="135" width="260" height="420" fill="none" stroke="#334155" stroke-dasharray="5 5" rx="10" />
+
+  <!-- Nodo: lib/templates.ts -->
+  <g transform="translate(340, 160)">
+    <rect width="210" height="50" class="box box-lib" />
+    <text x="15" y="22" class="text-title">Gestor de Templates</text>
+    <text x="15" y="38" class="text-node">src/lib/templates.ts</text>
+  </g>
+
+  <!-- Nodo: CumpleEsencial -->
+  <g transform="translate(340, 250)">
+    <rect width="210" height="45" class="box box-tmpl" />
+    <text x="15" y="18" class="text-title">CumpleEsencial.tsx</text>
+    <text x="15" y="32" class="text-node">Secciones Básicas ($350)</text>
+  </g>
+
+  <!-- Nodo: CumpleCompleta -->
+  <g transform="translate(340, 320)">
+    <rect width="210" height="45" class="box box-tmpl" />
+    <text x="15" y="18" class="text-title">CumpleCompleta.tsx</text>
+    <text x="15" y="32" class="text-node">Secciones Avanzadas ($550)</text>
+  </g>
+
+  <!-- Nodo: CumplePremium -->
+  <g transform="translate(340, 390)">
+    <rect width="210" height="45" class="box box-tmpl" />
+    <text x="15" y="18" class="text-title">CumplePremium.tsx</text>
+    <text x="15" y="32" class="text-node">Premium / Extras ($850)</text>
+  </g>
+
+  <!-- Nodo: lib/paquetes.ts -->
+  <g transform="translate(340, 480)">
+    <rect width="210" height="50" class="box box-lib" />
+    <text x="15" y="22" class="text-title">Config de Paquetes</text>
+    <text x="15" y="38" class="text-node">src/lib/paquetes.ts</text>
+  </g>
+
+
+  <!-- 3. GRUPO: COMPONENTES COMPARTIDOS (Derecha) -->
+  <text x="630" y="120" class="group-title">Lógica Compartida (shared/)</text>
+  <rect x="615" y="135" width="250" height="420" fill="none" stroke="#334155" stroke-dasharray="5 5" rx="10" />
+
+  <!-- Nodo: Portada & Countdown -->
+  <g transform="translate(635, 160)">
+    <rect width="210" height="60" class="box box-shared" />
+    <text x="12" y="18" class="text-title">Componentes de Portada</text>
+    <text x="12" y="33" class="text-node">HeroPortada.tsx</text>
+    <text x="12" y="48" class="text-node">useCountdown.ts (Premium)</text>
+  </g>
+
+  <!-- Nodo: RSVP & Maps -->
+  <g transform="translate(635, 240)">
+    <rect width="210" height="75" class="box box-shared" />
+    <text x="12" y="18" class="text-title">Asistencia e Interacción</text>
+    <text x="12" y="33" class="text-node">RSVPWrapper.tsx / RSVPForm.tsx</text>
+    <text x="12" y="48" class="text-node">MapsLink.tsx (Google Maps)</text>
+    <text x="12" y="63" class="text-node">ConfettiAmbient.tsx (Confetti)</text>
+  </g>
+
+  <!-- Nodo: Helpers shared/utils.ts -->
+  <g transform="translate(635, 340)">
+    <rect width="210" height="50" class="box box-shared" />
+    <text x="12" y="22" class="text-title">shared/utils.ts</text>
+    <text x="12" y="38" class="text-node">Imágenes Cloudinary, Fechas</text>
+  </g>
+
+  <!-- Nodo: Servicios Prisma & DB -->
+  <g transform="translate(635, 480)">
+    <rect width="210" height="50" class="box box-lib" />
+    <text x="12" y="22" class="text-title">Base de Datos &amp; API</text>
+    <text x="12" y="38" class="text-node">lib/prisma.ts | app/api/*</text>
+  </g>
+
+  <!-- FLECHAS DE CONEXIÓN -->
+  
+  <!-- Relación: Visor Invitación -> Gestor Templates (Solid) -->
+  <path d="M 240 265 L 340 185" class="arrow-solid" marker-end="url(#arrowhead-solid)" />
+  
+  <!-- Relación: Gestor Templates -> Templates (Básico/Completo/Premium) -->
+  <path d="M 445 210 L 445 242" class="arrow" marker-end="url(#arrowhead)" />
+  <path d="M 500 210 Q 530 230 500 320" class="arrow" marker-end="url(#arrowhead)" />
+  <path d="M 520 210 Q 560 250 510 390" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Relación: Templates -> Shared components -->
+  <!-- Esencial -> Shared -->
+  <path d="M 550 272 L 627 200" class="arrow" marker-end="url(#arrowhead)" />
+  <path d="M 550 272 L 627 265" class="arrow" marker-end="url(#arrowhead)" />
+  
+  <!-- Completa -> Shared -->
+  <path d="M 550 342 L 627 275" class="arrow" marker-end="url(#arrowhead)" />
+  <path d="M 550 342 L 627 350" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Premium -> Shared -->
+  <path d="M 550 412 L 627 290" class="arrow" marker-end="url(#arrowhead)" />
+  <path d="M 550 412 L 627 365" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Relación: RSVP Form Page -> API RSVP -->
+  <path d="M 150 370 Q 200 450 627 500" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Relación: Shared Utils -> Cloudinary & DB -->
+  <path d="M 740 390 L 740 472" class="arrow" marker-dasharray="none" marker-end="url(#arrowhead)" />
+
+  <!-- Relación: Templates -> lib/paquetes.ts -->
+  <path d="M 445 472 L 445 450" class="arrow" marker-end="url(#arrowhead)" />
+</svg>
