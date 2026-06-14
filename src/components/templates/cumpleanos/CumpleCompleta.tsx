@@ -8,8 +8,6 @@ import {
   MapPin,
   Shirt,
   ChevronDown,
-  Volume2,
-  VolumeX,
   Image as ImageIcon,
   Gift,
   Milestone,
@@ -18,7 +16,8 @@ import {
 import { InvitacionData } from '@/types';
 import { getOptimizedImageUrl, getFraseEdad, formatFechaMX, parseItinerario } from './shared/utils';
 import { MapsLink } from './shared/MapsLink';
-import { RSVPForm } from './shared/RSVPForm';
+import { RSVPWrapper } from './shared/RSVPWrapper';
+import { HeroPortada } from './shared/HeroPortada';
 
 if (typeof window !== 'undefined' && !window.IntersectionObserver) {
   Object.defineProperty(window, 'IntersectionObserver', {
@@ -136,92 +135,16 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
       style={themeStyles}
       className="flex-1 flex flex-col justify-between bg-[#FEF7F0] text-gray-800 pb-16 relative md:max-w-2xl md:mx-auto md:shadow-2xl min-h-screen font-sans"
     >
-      {/* Hero Portada */}
-      <div className="relative h-[65vh] min-h-[450px] max-h-[80vh] w-full overflow-hidden flex items-end animate-fade-in md:h-[50vh] md:rounded-t-2xl">
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
-          className="absolute inset-0 w-full h-full"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={fotoPortada}
-            alt="Cumpleañero"
-            className="w-full h-full object-cover select-none"
-          />
-        </motion.div>
-
-        {/* Float button for background music */}
-        {data.musicaUrl && (
-          <button
-            onClick={toggleMusic}
-            className="absolute top-6 right-6 z-20 h-11 w-11 flex items-center justify-center rounded-full bg-slate-950/70 border border-white/10 text-[var(--primary)] backdrop-blur-sm shadow-xl active:scale-95 transition-all cursor-pointer"
-            data-testid="toggle-musica-btn"
-          >
-            {isPlaying ? (
-              <Volume2 className="h-5 w-5 animate-pulse" />
-            ) : (
-              <VolumeX className="h-5 w-5 text-slate-400" />
-            )}
-          </button>
-        )}
-
-        <div className="w-full p-8 z-10 space-y-4 text-center flex flex-col items-center">
-          {data.tipoCelebracion && data.tipoCelebracion !== 'general' && (
-            <div
-              className="inline-flex items-center gap-1 rounded-full bg-violet-600/30 px-3 py-1 text-xs font-semibold ring-1 ring-violet-500/50 text-violet-300"
-              data-testid="tipo-celebracion-badge"
-            >
-              {data.tipoCelebracion.toLowerCase() === 'infantil' && '🎈 Infantil'}
-              {(data.tipoCelebracion.toLowerCase() === 'adultos' ||
-                data.tipoCelebracion.toLowerCase() === 'adulto') &&
-                '🍷 Adultos'}
-              {data.tipoCelebracion.toLowerCase() === 'sorpresa' && '🎁 Sorpresa'}
-              {data.tipoCelebracion.toLowerCase() === 'juvenil' && '🎸 Juvenil'}
-              {!['infantil', 'juvenil', 'adultos', 'adulto', 'sorpresa'].includes(
-                data.tipoCelebracion.toLowerCase()
-              ) && `Celeb: ${data.tipoCelebracion}`}
-            </div>
-          )}
-
-          <p className="text-xs uppercase tracking-[0.3em] text-[var(--primary)] font-bold drop-shadow-md">
-            ¡Estás Invitado!
-          </p>
-
-          <h2 className="text-[clamp(2rem,8vw,4rem)] font-bold text-white text-center drop-shadow-lg leading-tight tracking-tight">
-            {nombreFestejado}
-          </h2>
-
-          {edadFestejado && (
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
-                {edadFestejado} Años
-              </span>
-              {fraseEdad && (
-                <p className="text-sm font-semibold text-slate-200 drop-shadow-md">{fraseEdad}</p>
-              )}
-            </div>
-          )}
-
-          {dateText && (
-            <p className="text-xs text-slate-200 font-medium drop-shadow-md uppercase tracking-wider">
-              {dateText}
-            </p>
-          )}
-
-          {/* Scroll indicator sutil */}
-          <motion.div
-            animate={shouldReduceMotion ? {} : { y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="pt-2"
-          >
-            <ChevronDown className="w-6 h-6 text-white/80" />
-          </motion.div>
-        </div>
-      </div>
+      <HeroPortada
+        data={data}
+        fotoPortada={fotoPortada}
+        nombreFestejado={nombreFestejado}
+        edadFestejado={edadFestejado}
+        fraseEdad={fraseEdad}
+        dateText={dateText}
+        isPlaying={isPlaying}
+        onToggleMusic={toggleMusic}
+      />
 
       {/* Main Content Details */}
       <div className="px-6 space-y-8 mt-6 relative md:px-10 md:py-12">
@@ -458,7 +381,7 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
         </motion.div>
 
         {/* RSVP Section */}
-        <RSVPForm whatsapp={data.whatsapp} />
+        <RSVPWrapper whatsapp={data.whatsapp} />
       </div>
 
       {/* Lightbox Modal Carousel (Carrusel accesible con control swipe) */}

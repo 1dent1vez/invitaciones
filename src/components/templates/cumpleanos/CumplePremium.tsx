@@ -5,9 +5,6 @@ import {
   Calendar,
   Clock,
   MapPin,
-  Sparkles,
-  Volume2,
-  VolumeX,
   Image as ImageIcon,
   Gift,
   Shirt,
@@ -22,7 +19,10 @@ import { InvitacionData } from '@/types';
 import { motion } from 'framer-motion';
 import { getOptimizedImageUrl, formatFechaMX, parseItinerario } from './shared/utils';
 import { MapsLink } from './shared/MapsLink';
-import { RSVPForm } from './shared/RSVPForm';
+import { RSVPWrapper } from './shared/RSVPWrapper';
+import { HeroPortada } from './shared/HeroPortada';
+import { useCountdown } from './shared/useCountdown';
+import { ConfettiAmbient, triggerConfetti } from './shared/ConfettiAmbient';
 
 if (typeof window !== 'undefined' && !window.IntersectionObserver) {
   Object.defineProperty(window, 'IntersectionObserver', {
@@ -42,135 +42,8 @@ if (typeof window !== 'undefined' && !window.IntersectionObserver) {
   });
 }
 
-function triggerConfetti() {
-  if (typeof window === 'undefined') return () => {
-    // noop
-  };
-
-  const canvas = document.createElement('canvas');
-  canvas.style.position = 'fixed';
-  canvas.style.top = '0';
-  canvas.style.left = '0';
-  canvas.style.width = '100%';
-  canvas.style.height = '100%';
-  canvas.style.pointerEvents = 'none';
-  canvas.style.zIndex = '9999';
-  document.body.appendChild(canvas);
-
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return () => {
-    // noop
-  };
-
-  let width = (canvas.width = window.innerWidth);
-  let height = (canvas.height = window.innerHeight);
-
-  const resizeHandler = () => {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-  };
-  window.addEventListener('resize', resizeHandler);
-
-  const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#aa77ff', '#ff77ff'];
-  const particles: {
-    x: number;
-    y: number;
-    size: number;
-    color: string;
-    speedX: number;
-    speedY: number;
-    rotation: number;
-    rotationSpeed: number;
-  }[] = [];
-
-  for (let i = 0; i < 120; i++) {
-    particles.push({
-      x: Math.random() * width,
-      y: Math.random() * -height - 20,
-      size: Math.random() * 6 + 3,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      speedX: Math.random() * 3 - 1.5,
-      speedY: Math.random() * 4 + 2,
-      rotation: Math.random() * 360,
-      rotationSpeed: Math.random() * 3 - 1.5,
-    });
-  }
-
-  let animationFrameId: number;
-  function update() {
-    ctx!.clearRect(0, 0, width, height);
-    let alive = false;
-
-    particles.forEach((p) => {
-      p.x += p.speedX;
-      p.y += p.speedY;
-      p.rotation += p.rotationSpeed;
-
-      if (p.y < height) {
-        alive = true;
-      }
-
-      ctx!.save();
-      ctx!.translate(p.x, p.y);
-      ctx!.rotate((p.rotation * Math.PI) / 180);
-      ctx!.fillStyle = p.color;
-      ctx!.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-      ctx!.restore();
-    });
-
-    if (alive) {
-      animationFrameId = requestAnimationFrame(update);
-    } else {
-      if (canvas.parentNode) {
-        document.body.removeChild(canvas);
-      }
-      window.removeEventListener('resize', resizeHandler);
-    }
-  }
-
-  update();
-
-  return () => {
-    cancelAnimationFrame(animationFrameId);
-    window.removeEventListener('resize', resizeHandler);
-    if (canvas.parentNode) {
-      document.body.removeChild(canvas);
-    }
-  };
-}
-
 function CountdownTimer({ fecha }: { fecha: string }) {
-  const [timeLeft, setTimeLeft] = useState<{
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-  } | null>(null);
-
-  useEffect(() => {
-    const target = new Date(fecha).getTime();
-    if (isNaN(target)) return;
-
-    const calculateTime = () => {
-      const now = new Date().getTime();
-      const diff = target - now;
-
-      if (diff <= 0) {
-        setTimeLeft(null);
-      } else {
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        setTimeLeft({ days, hours, minutes, seconds });
-      }
-    };
-
-    calculateTime();
-    const interval = setInterval(calculateTime, 1000);
-
-    return () => clearInterval(interval);
-  }, [fecha]);
+  const timeLeft = useCountdown(fecha);
 
   if (!timeLeft) return null;
 
@@ -306,75 +179,25 @@ export function CumplePremium({ data }: CumplePremiumProps) {
   return (
     <div className="flex-1 flex flex-col justify-between bg-[#0B0C10] text-[#C5C6C7] pb-16 relative">
       {/* CSS Confetti / Falling particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40 z-0">
-        <div className="absolute top-12 left-10 h-3 w-3 rounded-full bg-yellow-400 animate-ping" />
-        <div className="absolute top-24 left-1/4 h-2 w-4 bg-violet-500 rotate-45 animate-bounce" />
-        <div className="absolute top-48 right-16 h-3 w-1.5 bg-pink-500 -rotate-12 animate-pulse" />
-        <div className="absolute top-96 left-12 h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-        <div className="absolute top-[500px] right-24 h-2 w-5 bg-amber-500 rotate-12" />
-        <div className="absolute bottom-64 left-20 h-3 w-3 bg-red-400 rounded-full animate-bounce" />
-        <div className="absolute bottom-24 right-10 h-2 w-2 bg-indigo-500 animate-pulse" />
-      </div>
+      <ConfettiAmbient />
 
       {/* Styled Double Border */}
       <div className="absolute inset-4 border border-[var(--primary)]/10 pointer-events-none rounded-2xl z-10" />
       <div className="absolute inset-5 border border-[var(--primary)]/5 pointer-events-none rounded-2xl z-10" />
 
       {/* Hero Portada */}
-      <div className="relative h-[440px] w-full overflow-hidden flex items-end">
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-[#0B0C10]/40 to-transparent z-10" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={fotoPortada}
-          alt="Cumpleañero"
-          className="absolute inset-0 w-full h-full object-cover select-none"
-        />
-
-        {/* Confetti float button */}
-        {data.confettiAnimacion !== false && (
-          <button
-            onClick={() => triggerConfetti()}
-            className="absolute top-6 left-6 z-20 h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/70 border border-white/10 text-xl backdrop-blur-sm shadow-xl active:scale-95 transition-all hover:bg-slate-900"
-            title="Lanzar Confetti"
-          >
-            🎉
-          </button>
-        )}
-
-        {/* Play/Pause float button for background music */}
-        {data.musicaUrl && (
-          <button
-            onClick={toggleMusic}
-            className="absolute top-6 right-6 z-20 h-10 w-10 flex items-center justify-center rounded-full bg-slate-950/70 border border-white/10 text-[var(--primary)] backdrop-blur-sm shadow-xl active:scale-95 transition-all"
-          >
-            {isPlaying ? (
-              <Volume2 className="h-5 w-5 animate-pulse" />
-            ) : (
-              <VolumeX className="h-5 w-5 text-slate-400" />
-            )}
-          </button>
-        )}
-
-        <div className="w-full p-8 z-10 space-y-2 text-center">
-          <div className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20 mb-1">
-            <Sparkles className="h-4.5 w-4.5" />
-          </div>
-          <p className="text-2xs uppercase tracking-[0.3em] text-[var(--primary)] font-bold">
-            VIP Invitation
-          </p>
-          <h1 className="text-4xl font-extrabold text-white uppercase tracking-tight font-sans">
-            Mis {edadFestejado} Años
-          </h1>
-          <h2 className="text-xl font-bold text-white font-mono tracking-wide">
-            {nombreFestejado}
-          </h2>
-          {tematicaDeco && (
-            <span className="inline-block rounded-full bg-[var(--primary)]/10 px-3 py-0.5 text-3xs font-semibold text-[var(--primary)] ring-1 ring-[var(--primary)]/20 uppercase tracking-widest mt-1">
-              Temática: {tematicaDeco}
-            </span>
-          )}
-        </div>
-      </div>
+      <HeroPortada
+        data={data}
+        fotoPortada={fotoPortada}
+        nombreFestejado={nombreFestejado}
+        edadFestejado={edadFestejado}
+        isPlaying={isPlaying}
+        onToggleMusic={toggleMusic}
+        showConfettiButton={data.confettiAnimacion !== false}
+        onTriggerConfetti={triggerConfetti}
+        isPremium={true}
+        tematicaDeco={tematicaDeco}
+      />
 
       {/* Main Content */}
       <div className="px-6 space-y-10 mt-4 relative z-10">
@@ -659,7 +482,7 @@ export function CumplePremium({ data }: CumplePremiumProps) {
         )}
 
         {/* RSVP Form */}
-        <RSVPForm whatsapp={data.whatsapp} />
+        <RSVPWrapper whatsapp={data.whatsapp} />
       </div>
 
       {/* Mensaje de Agradecimiento */}
