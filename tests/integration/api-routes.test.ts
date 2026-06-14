@@ -93,8 +93,8 @@ describe('API Routes Integration Tests', () => {
         where: { pedidoId: testPedidoId },
       });
       expect(rsvps.length).toBe(1);
-      expect(rsvps[0].nombre).toBe('Invitado API');
-      expect(rsvps[0].pax).toBe(2);
+      expect(rsvps[0]!.nombre).toBe('Invitado API');
+      expect(rsvps[0]!.pax).toBe(2);
     });
 
     it('debe retornar 404 si el slug no existe', async () => {
@@ -136,8 +136,8 @@ describe('API Routes Integration Tests', () => {
         where: { pedidoId: testPedidoId },
       });
       expect(visitas.length).toBe(1);
-      expect(visitas[0].ip).toBe('127.0.0.1');
-      expect(visitas[0].userAgent).toBe('Vitest Agent');
+      expect(visitas[0]!.ip).toBe('127.0.0.1');
+      expect(visitas[0]!.userAgent).toBe('Vitest Agent');
     });
   });
 });

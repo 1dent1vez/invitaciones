@@ -31,6 +31,8 @@ export default function HeroBox({ onOpen }: HeroBoxProps) {
 
   // Escuchar scroll, rueda del mouse y gestos táctiles para abrir automáticamente
   useEffect(() => {
+    let touchStartY = 0;
+
     const handleScroll = () => {
       if (!isOpen && window.scrollY > 10) {
         handleOpen();
@@ -43,18 +45,23 @@ export default function HeroBox({ onOpen }: HeroBoxProps) {
       }
     };
 
-    let touchStartY = 0;
     const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
+      const touch = e.touches[0];
+      if (touch) {
+        touchStartY = touch.clientY;
+      }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (isOpen) return;
-      const touchEndY = e.touches[0].clientY;
-      const diffY = touchStartY - touchEndY;
-      if (diffY > 10) {
-        // Desplazamiento hacia arriba
-        handleOpen();
+      const touch = e.touches[0];
+      if (touch) {
+        const touchEndY = touch.clientY;
+        const diffY = touchStartY - touchEndY;
+        if (diffY > 10) {
+          // Desplazamiento hacia arriba
+          handleOpen();
+        }
       }
     };
 

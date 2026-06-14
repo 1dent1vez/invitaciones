@@ -344,11 +344,11 @@ class PreviewErrorBoundary extends React.Component<
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Preview rendering error caught:', error, errorInfo);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div className="p-6 text-center text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl m-4 space-y-2">

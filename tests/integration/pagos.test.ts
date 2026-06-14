@@ -54,7 +54,7 @@ describe('Pagos Integration Tests', () => {
     // Verify payments count and sum
     let payments = await prisma.pago.findMany({ where: { pedidoId: testPedidoId } });
     expect(payments.length).toBe(1);
-    expect(Number(payments[0].monto)).toBe(1000);
+    expect(Number(payments[0]!.monto)).toBe(1000);
 
     const input2 = {
       monto: 500,

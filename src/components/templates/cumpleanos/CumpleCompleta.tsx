@@ -443,7 +443,7 @@ export function CumpleCompleta({ data, fechaEvento, direccion }: CumpleCompletaP
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={getOptimizedImageUrl(galleryPhotos[selectedImageIndex])}
+              src={getOptimizedImageUrl(galleryPhotos[selectedImageIndex] ?? '')}
               alt={`Imagen ampliada ${selectedImageIndex + 1}`}
               className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
             />

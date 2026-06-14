@@ -59,7 +59,9 @@ export function PedidosClient({ initialPedidos }: PedidosClientProps) {
 
     if (nextIndex === currentIndex) return;
 
-    const nextState = ESTADOS[nextIndex].key;
+    const targetState = ESTADOS[nextIndex];
+    if (!targetState) return;
+    const nextState = targetState.key;
 
     // Optimistic UI update
     setPedidos((prev) => prev.map((p) => (p.id === pedidoId ? { ...p, estado: nextState } : p)));

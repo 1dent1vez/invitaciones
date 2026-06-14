@@ -60,7 +60,7 @@ describe('Date Validation Tests', () => {
     const parsed = pedidoSchema.safeParse(data);
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
-      expect(parsed.error.issues[0].message).toContain('no puede ser anterior');
+      expect(parsed.error.issues[0]!.message).toContain('no puede ser anterior');
     }
   });
 });

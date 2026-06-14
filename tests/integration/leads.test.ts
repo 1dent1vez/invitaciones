@@ -25,13 +25,13 @@ describe('Leads Integration Tests', () => {
 
     const leads = await prisma.lead.findMany();
     expect(leads.length).toBe(1);
-    expect(leads[0].nombre).toBe('Roberto Sánchez');
-    expect(leads[0].evento).toBe('cumpleanos');
-    expect(leads[0].telefono).toBe('5566778899');
-    expect(leads[0].mensaje).toBe(
+    expect(leads[0]!.nombre).toBe('Roberto Sánchez');
+    expect(leads[0]!.evento).toBe('cumpleanos');
+    expect(leads[0]!.telefono).toBe('5566778899');
+    expect(leads[0]!.mensaje).toBe(
       'Me interesa el paquete Premium para mi cumpleaños en Cuernavaca.'
     );
-    expect(leads[0].fecha).not.toBeNull();
+    expect(leads[0]!.fecha).not.toBeNull();
   });
 
   it('debe crear un lead exitosamente con campos opcionales vacíos', async () => {
@@ -47,10 +47,10 @@ describe('Leads Integration Tests', () => {
 
     const leads = await prisma.lead.findMany();
     expect(leads.length).toBe(1);
-    expect(leads[0].nombre).toBe('Gabriela Montes');
-    expect(leads[0].evento).toBeNull();
-    expect(leads[0].fecha).toBeNull();
-    expect(leads[0].telefono).toBeNull();
+    expect(leads[0]!.nombre).toBe('Gabriela Montes');
+    expect(leads[0]!.evento).toBeNull();
+    expect(leads[0]!.fecha).toBeNull();
+    expect(leads[0]!.telefono).toBeNull();
   });
 
   it('debe rechazar nombres de menos de 2 caracteres', async () => {

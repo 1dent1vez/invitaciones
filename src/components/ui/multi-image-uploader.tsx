@@ -56,9 +56,12 @@ export function MultiImageUploader({ value = [], onChange, maxImages }: MultiIma
     if (targetIndex < 0 || targetIndex >= value.length) return;
     const newUrls = [...value];
     const temp = newUrls[index];
-    newUrls[index] = newUrls[targetIndex];
-    newUrls[targetIndex] = temp;
-    onChange(newUrls);
+    const targetVal = newUrls[targetIndex];
+    if (temp !== undefined && targetVal !== undefined) {
+      newUrls[index] = targetVal;
+      newUrls[targetIndex] = temp;
+      onChange(newUrls);
+    }
   };
 
   return (

@@ -12,7 +12,7 @@ describe('MultiImageUploader', () => {
     const onChange = vi.fn();
     render(<MultiImageUploader value={['url1', 'url2']} onChange={onChange} maxImages={3} />);
     const botonesEliminar = screen.getAllByRole('button', { name: /eliminar 1/i });
-    fireEvent.click(botonesEliminar[0]);
+    fireEvent.click(botonesEliminar[0]!);
     expect(onChange).toHaveBeenCalledWith(['url2']);
   });
 

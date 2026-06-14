@@ -52,7 +52,7 @@ describe('Clientes CRUD Integration Tests', () => {
     expect(getRes.success).toBe(true);
     expect(getRes.data).toBeDefined();
     expect(getRes.data!.length).toBeGreaterThan(0);
-    expect(getRes.data![0].nombre).toBe(input.nombre);
+    expect(getRes.data![0]!.nombre).toBe(input.nombre);
   });
 
   it('debe rechazar nombres de cliente con menos de 2 caracteres', async () => {

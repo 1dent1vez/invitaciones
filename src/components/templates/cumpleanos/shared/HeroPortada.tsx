@@ -9,7 +9,7 @@ interface HeroPortadaProps {
   data: InvitacionData;
   fotoPortada: string;
   nombreFestejado: string;
-  edadFestejado: string;
+  edadFestejado: string | number;
   fraseEdad?: string;
   dateText?: string;
   // Music config

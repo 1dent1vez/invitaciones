@@ -37,7 +37,7 @@ describe('Kanban (PedidosClient) Component Tests', () => {
   ];
 
   it('debe renderizar correctamente las columnas y las tarjetas de pedido', () => {
-    render(<PedidosClient initialPedidos={initialPedidos} />);
+    render(<PedidosClient initialPedidos={initialPedidos as any} />);
 
     // Check columns are rendered
     expect(screen.getByText('Cotizado')).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('Kanban (PedidosClient) Component Tests', () => {
   it('debe invocar la acción de actualizar estado al mover de columna', async () => {
     const { updatePedidoEstadoAction } = await import('@/app/(admin)/admin/pedidos/actions');
 
-    render(<PedidosClient initialPedidos={initialPedidos} />);
+    render(<PedidosClient initialPedidos={initialPedidos as any} />);
 
     // Pedro Perez starts in "Cotizado" column
     // Find right arrow button on Pedro Perez card
@@ -64,7 +64,7 @@ describe('Kanban (PedidosClient) Component Tests', () => {
   });
 
   it('debe renderizar el badge de cumpleaños y el paquete', () => {
-    render(<PedidosClient initialPedidos={initialPedidos} />);
+    render(<PedidosClient initialPedidos={initialPedidos as any} />);
     expect(screen.getAllByText('Cumpleaños').length).toBeGreaterThan(0);
     expect(screen.getByText('ESENCIAL')).toBeInTheDocument();
   });
@@ -94,7 +94,7 @@ describe('Kanban (PedidosClient) Component Tests', () => {
       },
     ];
 
-    render(<PedidosClient initialPedidos={festejadoPedidos} />);
+    render(<PedidosClient initialPedidos={festejadoPedidos as any} />);
 
     // Mateo card should render initially since search is empty
     expect(screen.getByText('Felipe Gomez')).toBeInTheDocument();

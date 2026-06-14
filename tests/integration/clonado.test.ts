@@ -68,7 +68,7 @@ describe('Clonación de Pedidos Integration Tests', () => {
     }
 
     expect(redirectUrl).toContain('Redirected to: /admin/pedidos/');
-    const newPedidoId = redirectUrl.split('/admin/pedidos/')[1].split('/editar')[0];
+    const newPedidoId = redirectUrl.split('/admin/pedidos/')[1]!.split('/editar')[0]!;
     expect(newPedidoId).toBeDefined();
 
     // Check database copy

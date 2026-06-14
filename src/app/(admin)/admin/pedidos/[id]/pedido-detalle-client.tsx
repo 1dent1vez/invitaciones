@@ -1097,7 +1097,7 @@ export function PedidoDetalleClient({ pedido: initialPedido }: PedidoDetalleClie
               {pedido.urlPublica ? (
                 <div className="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100">
                   <img
-                    src={qrDataUrl || pedido.qrUrl ?? ''}
+                    src={(qrDataUrl || pedido.qrUrl) ?? ''}
                     alt="QR Invitación"
                     className="w-48 h-48 object-contain"
                   />

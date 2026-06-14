@@ -53,7 +53,9 @@ describe('generateMetadata Dynamic OG & SEO Meta Tags Tests', () => {
     expect(metadata.description).toContain('20 de agosto de 2026');
     expect(metadata.openGraph?.title).toBe('Juan Carlos | Invitación Digital');
     expect(metadata.openGraph?.description).toContain('mi Cumpleaños');
-    expect(metadata.openGraph?.images?.[0]).toEqual(
+    const images = metadata.openGraph?.images;
+    const firstImage = Array.isArray(images) ? images[0] : images;
+    expect(firstImage).toEqual(
       expect.objectContaining({
         url: 'https://example.com/cumple.jpg',
       })

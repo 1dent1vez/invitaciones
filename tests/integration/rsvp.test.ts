@@ -58,10 +58,10 @@ describe('RSVP Integration Tests', () => {
       where: { pedidoId: testPedidoId },
     });
     expect(rsvps.length).toBe(1);
-    expect(rsvps[0].nombre).toBe('José Pérez');
-    expect(rsvps[0].asiste).toBe(true);
-    expect(rsvps[0].pax).toBe(2);
-    expect(rsvps[0].telefono).toBe('5512345678');
+    expect(rsvps[0]!.nombre).toBe('José Pérez');
+    expect(rsvps[0]!.asiste).toBe(true);
+    expect(rsvps[0]!.pax).toBe(2);
+    expect(rsvps[0]!.telefono).toBe('5512345678');
   });
 
   it('debe forzar pax a 0 en base de datos si asiste es false', async () => {
@@ -77,8 +77,8 @@ describe('RSVP Integration Tests', () => {
       where: { pedidoId: testPedidoId },
     });
     expect(rsvps.length).toBe(1);
-    expect(rsvps[0].asiste).toBe(false);
-    expect(rsvps[0].pax).toBe(0);
+    expect(rsvps[0]!.asiste).toBe(false);
+    expect(rsvps[0]!.pax).toBe(0);
   });
 
   it('debe rechazar nombres demasiado cortos', async () => {

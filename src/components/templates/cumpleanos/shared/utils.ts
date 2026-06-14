@@ -30,13 +30,16 @@ export const parseItinerario = (text?: string) => {
     .map((line) => {
       const parts = line.split(/—|-|:/);
       if (parts.length >= 2) {
-        const possibleHora = parts[0].trim();
-        if (/\d+/.test(possibleHora)) {
-          const rest = line
-            .substring(line.indexOf(parts[0]) + parts[0].length)
-            .replace(/^[\s—\-\:]+/, '')
-            .trim();
-          return { hora: possibleHora, event: rest };
+        const firstPart = parts[0];
+        if (firstPart) {
+          const possibleHora = firstPart.trim();
+          if (/\d+/.test(possibleHora)) {
+            const rest = line
+              .substring(line.indexOf(firstPart) + firstPart.length)
+              .replace(/^[\s—\-\:]+/, '')
+              .trim();
+            return { hora: possibleHora, event: rest };
+          }
         }
       }
       return { hora: '', event: line.trim() };

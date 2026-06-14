@@ -51,8 +51,8 @@ describe('Visitas Integration Tests', () => {
       where: { pedidoId: testPedidoId },
     });
     expect(visits.length).toBe(1);
-    expect(visits[0].ip).toBe('192.168.1.100');
-    expect(visits[0].userAgent).toBe('Mozilla/5.0 Chrome');
+    expect(visits[0]!.ip).toBe('192.168.1.100');
+    expect(visits[0]!.userAgent).toBe('Mozilla/5.0 Chrome');
   });
 
   it('debe registrar una visita exitosamente con datos nulos/vacíos para ip y userAgent', async () => {
@@ -63,8 +63,8 @@ describe('Visitas Integration Tests', () => {
       where: { pedidoId: testPedidoId },
     });
     expect(visits.length).toBe(1);
-    expect(visits[0].ip).toBeNull();
-    expect(visits[0].userAgent).toBeNull();
+    expect(visits[0]!.ip).toBeNull();
+    expect(visits[0]!.userAgent).toBeNull();
   });
 
   it('debe retornar error si el slug no existe', async () => {
