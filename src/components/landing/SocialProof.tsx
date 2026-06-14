@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Star, Smartphone, Eye, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CumpleEsencial } from '@/components/templates/cumpleanos/CumpleEsencial';
@@ -47,11 +48,12 @@ function FanCard({ title, age, theme, image, index, hovered }: FanCardProps) {
       className="absolute w-48 h-64 bg-white rounded-2xl border-2 border-rosa-regalo shadow-xl overflow-hidden flex flex-col justify-between p-4 origin-bottom cursor-pointer select-none"
     >
       <div className="relative w-full h-32 rounded-xl overflow-hidden bg-crema-seda">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          fill
+          sizes="192px"
+          className="object-cover transition-transform duration-500 hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/10" />
       </div>

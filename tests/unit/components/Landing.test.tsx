@@ -16,7 +16,7 @@ vi.mock('@/components/landing/HeroBox', () => ({
 }));
 
 describe('LandingPage Component', () => {
-  it('renderiza la landing page correctamente', () => {
+  it('renderiza la landing page correctamente', async () => {
     render(
       <ToastProvider>
         <LandingPage />
@@ -32,11 +32,11 @@ describe('LandingPage Component', () => {
     fireEvent.click(openButton);
 
     // Verificar presencia del CTA "Ver Demo Completo"
-    const ctaLink = screen.getByText(/Ver Demo Completo/i);
+    const ctaLink = await screen.findByText(/Ver Demo Completo/i);
     expect(ctaLink).toBeInTheDocument();
   });
 
-  it('muestra las secciones clave: características, ejemplos y precios', () => {
+  it('muestra las secciones clave: características, ejemplos y precios', async () => {
     render(
       <ToastProvider>
         <LandingPage />
@@ -48,15 +48,15 @@ describe('LandingPage Component', () => {
     fireEvent.click(openButton);
 
     // Verificar los pasos de cómo funciona
-    expect(screen.getByText(/Elige tu plan/i)).toBeInTheDocument();
-    expect(screen.getByText(/Envía tus datos/i)).toBeInTheDocument();
-    expect(screen.getByText(/Diseñamos con magia/i)).toBeInTheDocument();
-    expect(screen.getByText(/Comparte por WhatsApp/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Elige tu plan/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Envía tus datos/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Diseñamos con magia/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Comparte por WhatsApp/i)).toBeInTheDocument();
 
     // Verificar sección ejemplos/galería/demo
-    expect(screen.getByText(/Elige tu estilo favorito/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Elige tu estilo favorito/i)).toBeInTheDocument();
 
     // Verificar sección precios
-    expect(screen.getByText(/Elige el plan ideal para tu fiesta/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Elige el plan ideal para tu fiesta/i)).toBeInTheDocument();
   });
 });

@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Gift, ChevronDown, Sparkles } from 'lucide-react';
-import { fireConfetti } from './ConfettiBurst';
 import { Button } from '@/components/ui/button';
 
 interface HeroBoxProps {
@@ -18,7 +17,12 @@ export default function HeroBox({ onOpen }: HeroBoxProps) {
   const handleOpen = useCallback(() => {
     if (isOpen) return;
     setIsOpen(true);
-    fireConfetti();
+    
+    // Importación dinámica de ConfettiBurst para optimizar el bundle inicial de la landing
+    void import('./ConfettiBurst').then((mod) => {
+      mod.fireConfetti();
+    });
+
     // Esperar a que la animación termine antes de revelar el contenido
     setTimeout(() => {
       onOpen();
